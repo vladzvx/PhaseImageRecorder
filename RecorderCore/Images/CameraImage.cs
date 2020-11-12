@@ -11,5 +11,10 @@ namespace RecorderCore
         {
 
         }
+
+        public CameraImage(double[,] image) : base(image)
+        {
+
+        }
     }
 }

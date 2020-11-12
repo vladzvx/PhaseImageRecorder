@@ -3,11 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recorder", "Recorder\Recorder.csproj", "{FD2B7EDE-2A74-4880-B23D-C0F162E8BA76}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI", "UI\UI.csproj", "{6B35EF8F-18A7-4005-9FDB-717DC4B4F12B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecorderCore", "RecorderCore\RecorderCore.csproj", "{779FE982-ED86-41E2-ADA1-B9E49BA67ADE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecorderCore", "RecorderCore\RecorderCore.csproj", "{779FE982-ED86-41E2-ADA1-B9E49BA67ADE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,14 +15,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FD2B7EDE-2A74-4880-B23D-C0F162E8BA76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FD2B7EDE-2A74-4880-B23D-C0F162E8BA76}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FD2B7EDE-2A74-4880-B23D-C0F162E8BA76}.Debug|x64.ActiveCfg = Debug|x64
-		{FD2B7EDE-2A74-4880-B23D-C0F162E8BA76}.Debug|x64.Build.0 = Debug|x64
-		{FD2B7EDE-2A74-4880-B23D-C0F162E8BA76}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FD2B7EDE-2A74-4880-B23D-C0F162E8BA76}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FD2B7EDE-2A74-4880-B23D-C0F162E8BA76}.Release|x64.ActiveCfg = Release|x64
-		{FD2B7EDE-2A74-4880-B23D-C0F162E8BA76}.Release|x64.Build.0 = Release|x64
 		{6B35EF8F-18A7-4005-9FDB-717DC4B4F12B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6B35EF8F-18A7-4005-9FDB-717DC4B4F12B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B35EF8F-18A7-4005-9FDB-717DC4B4F12B}.Debug|x64.ActiveCfg = Debug|x64

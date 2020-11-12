@@ -11,5 +11,9 @@ namespace RecorderCore
         {
 
         }
+        public HilbertPhaseImage(double[,] image) : base(image)
+        {
+
+        }
     }
 }

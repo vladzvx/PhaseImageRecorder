@@ -16,6 +16,8 @@ namespace RecorderCore
         }
         private Thread thread;
         private Random rnd = new Random();
+        private ReaderWriterLockSlim _lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+        private bool paused = false;
         #region image Generator
         private double[,] GetSphere(int x, int y, double x_size, double y_size, double R, double x_center_shift, double y_center_shift, double PhaseHeigh = 1)
         {
@@ -89,7 +91,7 @@ namespace RecorderCore
             {
                 for (int j = 0; j <= matrix.GetUpperBound(1); j++)
                 {
-                    ForRetirn[i, j] = (1 + Math.Cos(matrix[i, j] + shift)) * mult;
+                    ForRetirn[i, j] = (1 + Math.Cos(matrix[i, j] + shift)) * mult*0.5;
                 }
             }
             return ForRetirn;
@@ -127,6 +129,19 @@ namespace RecorderCore
             thread.Start();
         }
 
+        public void Pause()
+        {
+            _lock.EnterWriteLock();
+            paused = true;
+            _lock.ExitWriteLock();
+        }
+
+        public void PauseRelease()
+        {
+            _lock.EnterWriteLock();
+            paused = false;
+            _lock.ExitWriteLock();
+        }
         private void get_image(double val)
         {
             //Bitmap bitmap = new Bitmap(pictureBox1.Height, pictureBox1.Width);
@@ -134,16 +149,16 @@ namespace RecorderCore
             double[,] matrix2 = GetPlane(Height, Width, 10);
             double[,] matrix3 = SummMatrix(matrix1, matrix2);
 
-            double[,] image1 = GetCos(matrix3);
+            double[,] image1 = GetCos(matrix3,mult:255);
             if (rec != null) rec.Invoke(image1);
             Thread.Sleep((int)(1000 * 1 / FPS));
-            double[,] image2 = GetCos(matrix3, Math.PI / 2);
+            double[,] image2 = GetCos(matrix3, Math.PI / 2, mult: 255);
             if (rec != null) rec.Invoke(image2);
             Thread.Sleep((int)(1000 * 1 / FPS));
-            double[,] image3 = GetCos(matrix3, Math.PI);
+            double[,] image3 = GetCos(matrix3, Math.PI, mult: 255);
             if (rec != null) rec.Invoke(image3);
             Thread.Sleep((int)(1000 * 1 / FPS));
-            double[,] image4 = GetCos(matrix3, 3 * Math.PI / 2);
+            double[,] image4 = GetCos(matrix3, 3 * Math.PI / 2, mult: 255);
             if (rec != null) rec.Invoke(image4);
             Thread.Sleep((int)(1000 * 1 / FPS));
         }
@@ -153,8 +168,16 @@ namespace RecorderCore
             double rate = 0;
             while (true)
             {
-                get_image(rate);
-                rate += 0.02;
+                _lock.EnterReadLock();
+                bool local_paused = paused;
+                _lock.ExitReadLock();
+                if (!local_paused)
+                {
+                    get_image(rate);
+                    rate += 0.02;
+                }
+                else Thread.Sleep(300);
+
             }
 
         }
@@ -169,6 +192,7 @@ namespace RecorderCore
         public int Width = 1024;
 
     }
+    /*
     class PhaseImageModeling
     {
         #region fields
@@ -318,7 +342,7 @@ namespace RecorderCore
             }
             return bitmap;
         }
-*/
+
         public double[,] GetInterferogramm(double[,] matrix, double MaxValue = 255, double MinValue = 0)
         {
             double[,] ForRetirn = new double[matrix.GetUpperBound(0) + 1, matrix.GetUpperBound(1) + 1];
@@ -390,4 +414,6 @@ namespace RecorderCore
         }
 
     }
+
+    */
 }

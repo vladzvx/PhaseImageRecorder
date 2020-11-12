@@ -3,6 +3,7 @@ using Emgu.CV.Structure;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -10,6 +11,29 @@ namespace RecorderCore
 {
     public abstract class PhaseImage
     {
+        List<string> lines = new List<string>();
+        public void Save(object _path)
+        {
+            string path = _path.ToString();
+            try
+            {
+                for (int i = 0; i < Image.GetUpperBound(0) + 1; i++)
+                {
+                    string line = "";
+                    for (int j = 0; j < Image.GetUpperBound(1) + 1; j++)
+                    {
+                        line += Math.Round(Image[i, j], 2).ToString() + ";";
+                    }
+                    lines.Add(line);
+                }
+                File.WriteAllLines(path, lines);
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+        }
         internal static class NativeMethods
         {
             [DllImport(@"uwr.dll", EntryPoint = "unwrap2D")]
@@ -104,7 +128,6 @@ namespace RecorderCore
         {
             if (status <= SettingsContainer.ProcessingStep.Interferogramm)
             {
-
                 status = SettingsContainer.ProcessingStep.WrappedPhaseImage;
             }
 
@@ -147,7 +170,6 @@ namespace RecorderCore
             Image = matrix;
             if (status <= SettingsContainer.ProcessingStep.WrappedPhaseImage)
             {
-
                 status = SettingsContainer.ProcessingStep.UnwrappedPhaseImage;
             }
         }
@@ -155,10 +177,8 @@ namespace RecorderCore
         {
             if (status <= SettingsContainer.ProcessingStep.UnwrappedPhaseImage)
             {
-
                 status = SettingsContainer.ProcessingStep.ProcessedImage;
             }
-
         }
     }
 

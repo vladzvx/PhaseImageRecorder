@@ -72,6 +72,7 @@ namespace RecorderCore
                         ImageForUI[i, j, 2] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
                     }
                 }
+               // images = new List<double[,]>();
 
             }
         }
