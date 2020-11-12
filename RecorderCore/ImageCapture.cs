@@ -33,7 +33,7 @@ namespace RecorderCore
         {
             lock (locker)
             {
-                capture = new VideoCapture(1);
+                capture = new VideoCapture(0);
                 thread = new Thread(new ParameterizedThreadStart(grab));
                 
             }
