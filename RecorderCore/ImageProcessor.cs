@@ -11,24 +11,6 @@ using System.Runtime.InteropServices;
 
 namespace RecorderCore
 {
-
-
-
-    public class HilbertPhaseImage : PhaseImage
-    {
-        public HilbertPhaseImage(Mat image) : base(image)
-        {
-
-        }
-    }
-
-    public class CameraImage : PhaseImage
-    {
-        public CameraImage(Mat image) : base(image)
-        {
-
-        }
-    }
     class ImageProcessor
     {
 
