@@ -31,7 +31,7 @@ namespace RecorderCore
             imageCapture.rec += AddImage;
             imageCapture2.rec += AddImage;
             imageCapture.action += ArduinoWorker.Action;
-            //imageCapture.Start();
+            imageCapture.Start();
             imageCapture2.Pause();
             imageCapture2.Start();
         }

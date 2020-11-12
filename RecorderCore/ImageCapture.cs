@@ -33,7 +33,7 @@ namespace RecorderCore
         {
             lock (locker)
             {
-                capture = new VideoCapture(0);
+                capture = new VideoCapture(1);
                 thread = new Thread(new ParameterizedThreadStart(grab));
                 
             }
@@ -115,7 +115,7 @@ namespace RecorderCore
             Mat mat = new Mat();
             capture.Grab();
             capture.Retrieve(mat);
-            if (rec != null)
+            if (rec != null&& !mat.Size.IsEmpty)
             {
                 rec.Invoke(mat);
             } 
@@ -171,7 +171,4 @@ namespace RecorderCore
         #endregion
 
     }
-
-
-
 }
