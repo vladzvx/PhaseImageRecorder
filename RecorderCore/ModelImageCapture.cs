@@ -13,7 +13,21 @@ namespace RecorderCore
         public ModelImageCapture()
         {
             thread = new Thread(new ThreadStart(GetImage));
+            Recreate(4);
         }
+
+        public void Recreate(int NSteps)
+        {
+            images = new List<double[,]>();
+            for (int i = 0; i < 100; i++)
+            {
+                images.AddRange(get_image(i * Math.PI / 25, 4));
+            }
+        }
+        //private double FPS = 1;
+        private object locker = new object();
+        private new List<double[,]> images = new List<double[,]>();
+        private int currentImage = 0;
         private Thread thread;
         private Random rnd = new Random();
         private ReaderWriterLockSlim _lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
@@ -142,25 +156,21 @@ namespace RecorderCore
             paused = false;
             _lock.ExitWriteLock();
         }
-        private void get_image(double val)
+        private List<double[,]> get_image(double val,uint NSteps)
         {
+            List<double[,]> temp = new List<double[,]>();
             //Bitmap bitmap = new Bitmap(pictureBox1.Height, pictureBox1.Width);
             double[,] matrix1 = GetSphere(Height, Width, 500, 500, 150, 250, 250, Math.PI * 4 * (1.2 + Math.Cos(Math.PI * val)));
             double[,] matrix2 = GetPlane(Height, Width, 10);
             double[,] matrix3 = SummMatrix(matrix1, matrix2);
 
-            double[,] image1 = GetCos(matrix3,mult:255);
-            if (rec != null) rec.Invoke(image1);
-            Thread.Sleep((int)(1000 * 1 / FPS));
-            double[,] image2 = GetCos(matrix3, Math.PI / 2, mult: 255);
-            if (rec != null) rec.Invoke(image2);
-            Thread.Sleep((int)(1000 * 1 / FPS));
-            double[,] image3 = GetCos(matrix3, Math.PI, mult: 255);
-            if (rec != null) rec.Invoke(image3);
-            Thread.Sleep((int)(1000 * 1 / FPS));
-            double[,] image4 = GetCos(matrix3, 3 * Math.PI / 2, mult: 255);
-            if (rec != null) rec.Invoke(image4);
-            Thread.Sleep((int)(1000 * 1 / FPS));
+            temp.Add(GetCos(matrix3,mult:255));
+            temp.Add(GetCos(matrix3, Math.PI / 2, mult: 255));
+            temp.Add(GetCos(matrix3, Math.PI, mult: 255));
+            if (NSteps >= 4)  temp.Add(GetCos(matrix3, 3 * Math.PI / 2, mult: 255));
+
+            if (NSteps >= 5) temp.Add(GetCos(matrix3, 4 * Math.PI / 2, mult: 255));
+            return temp;
         }
 
         public void GetImage()
@@ -173,7 +183,12 @@ namespace RecorderCore
                 _lock.ExitReadLock();
                 if (!local_paused)
                 {
-                    get_image(rate);
+                    foreach (double[,] image in images)
+                    {
+                        if (rec != null) rec.Invoke((double[,])image.Clone());
+                        Thread.Sleep((int)(1000 / FPS));
+
+                    }
                     rate += 0.02;
                 }
                 else Thread.Sleep(300);

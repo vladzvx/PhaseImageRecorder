@@ -109,7 +109,7 @@ namespace RecorderCore
         public DateTime RecordingTime { get; private set; }
         public double[,] Image { get; internal set; }
         public byte[,,] ImageForUI { get; internal set; }
-        public Bitmap bitmap { get; internal set; }
+       // public Bitmap bitmap { get; internal set; }
         #endregion
         public PhaseImage(Mat image)
         {

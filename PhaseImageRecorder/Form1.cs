@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
 
-namespace UI
+namespace PhaseImageRecorder
 {
     public partial class Form1 : Form
     {
@@ -91,7 +91,7 @@ namespace UI
                     }
 
             }
-            
+
             recordingDriver.UpdateSettings(SettingsContainer);
         }
         private void TabSelectedHndler(object sender, TabControlEventArgs e)
@@ -113,19 +113,19 @@ namespace UI
         }
         private void action(object sender, ElapsedEventArgs e)
         {
-           // bool is_is_locked = false;
+            // bool is_is_locked = false;
             //Monitor.Enter(locker, ref is_is_locked);
             lock (locker)
             {
                 try
                 {
-                    if (imagePlotted|| phaseImage==null) return;
+                    if (imagePlotted || phaseImage == null) return;
 
                     try
                     {
-                        
-                        pictureBox1.Image = new Bitmap(phaseImage.ImageForUI.GetUpperBound(1) + 1, phaseImage.ImageForUI.GetUpperBound(0) + 1, 3*(phaseImage.ImageForUI.GetUpperBound(1) + 1),
-                            System.Drawing.Imaging.PixelFormat.Format24bppRgb, Marshal.UnsafeAddrOfPinnedArrayElement(phaseImage.ImageForUI,0));
+
+                        pictureBox1.Image = new Bitmap(phaseImage.ImageForUI.GetUpperBound(1) + 1, phaseImage.ImageForUI.GetUpperBound(0) + 1, 3 * (phaseImage.ImageForUI.GetUpperBound(1) + 1),
+                            System.Drawing.Imaging.PixelFormat.Format24bppRgb, Marshal.UnsafeAddrOfPinnedArrayElement(phaseImage.ImageForUI, 0));
                         pictureBox1.Update();
                         imagePlotted = true;
                         FrameCounter++;
@@ -162,7 +162,7 @@ namespace UI
                 }
 
             }
-          //  Monitor.Exit(locker);
+            //  Monitor.Exit(locker);
 
 
         }
@@ -236,7 +236,7 @@ namespace UI
         {
             lock (locker)
             {
-                string path = Path.Combine(this.richTextBox1.Text, SaveCount.ToString() + "_" + DateTime.UtcNow.ToString().Replace('.','_').Replace(':', '_').Replace(' ', '_') + ".csv");
+                string path = Path.Combine(this.richTextBox1.Text, SaveCount.ToString() + "_" + DateTime.UtcNow.ToString().Replace('.', '_').Replace(':', '_').Replace(' ', '_') + ".csv");
                 Task.Factory.StartNew(phaseImage.Save, path);
                 //phaseImage.Save(path);
                 SaveCount++;
