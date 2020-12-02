@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace RecorderCore
 {
@@ -57,13 +58,18 @@ namespace RecorderCore
             if (settings.model)
             {
                 imageCapture.Pause();
+                lock (locker)
+                    BufferPhaseImage = null;
                 imageCapture2.PauseRelease();
+
             }
             else
             {
                 imageCapture2.Pause();
+                lock (locker)
+                    BufferPhaseImage = null;
                 imageCapture.PauseRelease();
-                
+
             }
         }
         private void AddImage(Mat image)

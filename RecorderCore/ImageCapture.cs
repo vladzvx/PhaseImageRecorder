@@ -98,13 +98,20 @@ namespace RecorderCore
                 int frameCounter = 0;
                 while (!ct.IsCancellationRequested)
                 {
-                    lock (locker)
+                    _lock.EnterReadLock();
+                    bool local_pause = paused;
+                    _lock.ExitReadLock();
+                    if (!local_pause)
                     {
-                        if (action != null) action.Invoke(frameCounter);
-                        Thread.Sleep(FramePause);
-                        Grab();
-                        frameCounter = frameCounter < MaxFrameCounter ? frameCounter + 1 : 0;
+                        lock (locker)
+                        {
+                            if (action != null) action.Invoke(frameCounter);
+                            Thread.Sleep(FramePause);
+                            Grab();
+                            frameCounter = frameCounter < MaxFrameCounter ? frameCounter + 1 : 0;
+                        }
                     }
+                    else Thread.Sleep(300);
                 }
             }
 

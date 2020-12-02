@@ -19,7 +19,7 @@ namespace RecorderCore
         public void Recreate(int NSteps)
         {
             images = new List<double[,]>();
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 10; i++)
             {
                 images.AddRange(get_image(i * Math.PI / 25, 4));
             }
@@ -202,7 +202,7 @@ namespace RecorderCore
 
         public event ImageReciever rec;
 
-        public double FPS = 25;
+        public double FPS = 100;
         public int Height = 1920;
         public int Width = 1024;
 
