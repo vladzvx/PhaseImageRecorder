@@ -142,7 +142,10 @@ namespace RecorderCore
         {
             thread.Start();
         }
-
+        public void Stop()
+        {
+            thread.Start();
+        }
         public void Pause()
         {
             _lock.EnterWriteLock();
@@ -175,7 +178,6 @@ namespace RecorderCore
 
         public void GetImage()
         {
-            double rate = 0;
             while (true)
             {
                 _lock.EnterReadLock();
@@ -185,11 +187,11 @@ namespace RecorderCore
                 {
                     foreach (double[,] image in images)
                     {
-                        if (rec != null) rec.Invoke((double[,])image.Clone());
+                        //if (rec != null) rec.Invoke((double[,])image.Clone());
+                        if (rec != null) rec.Invoke(image);
                         Thread.Sleep((int)(1000 / FPS));
 
                     }
-                    rate += 0.02;
                 }
                 else Thread.Sleep(300);
 
@@ -202,7 +204,7 @@ namespace RecorderCore
 
         public event ImageReciever rec;
 
-        public double FPS = 100;
+        public double FPS = 25;
         public int Height = 1920;
         public int Width = 1024;
 
