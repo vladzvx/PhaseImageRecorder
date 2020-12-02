@@ -8,7 +8,7 @@ namespace RecorderCore.Models.Tests
         [TestMethod]
         public void FPS_test()
         {
-			
+		
         }
     }
 }
