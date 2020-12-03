@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 [assembly: InternalsVisibleTo("RecorderCoreTests")]
-
+[assembly: InternalsVisibleTo("Benchmarks")]
 namespace RecorderCore
 {
     public class RecordingDriver

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RecorderCore
 {
-    internal class ImageSource
+    public class ImageSource
     {
         public static bool AreEqual(double[,] arr1, double[,] arr2) 
         {
@@ -57,6 +57,7 @@ namespace RecorderCore
         {
             lock (locker)
             {
+                Thread.Sleep(20);
                 CurrentIndex = CurrentIndex < images.Count ? CurrentIndex : 0;
                 double[,] buffer = (double[,])images[CurrentIndex].Clone();
                 CurrentIndex++;
@@ -236,7 +237,7 @@ namespace RecorderCore
         
         public ModelImageCapture(): base()
         {
-            imageSource.CreateImagesForStepMethod(10, 4);
+            imageSource.CreateImagesForStepMethod(5, 4);
         }
         internal override double[,] GetImage()
         {

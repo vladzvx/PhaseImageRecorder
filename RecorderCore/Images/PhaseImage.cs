@@ -66,22 +66,23 @@ namespace RecorderCore
         }
         public void GetArrayFromMat(Mat mat, bool Dispose = true)
         {
-            Image<Gray, double> image = mat.ToImage<Gray, double>();
-            // int Dim0 = image.Data.GetUpperBound(0) + 1;
-            //int Dim1 = image.Data.GetUpperBound(1) + 1;
-            Image = (double[,])image.Data.Clone();// new double[Dim0, Dim1];
-            //ImageForUI = new byte[Dim0, Dim1, image.Data.GetUpperBound(2) + 1];
-            /*
+            Image<Rgb, double> image = mat.ToImage<Rgb, double>();
+            int Dim0 = image.Data.GetUpperBound(0) + 1;
+            int Dim1 = image.Data.GetUpperBound(1) + 1;
+            //Image = (double[,])image.Data.Clone();// new double[Dim0, Dim1];
+            Image = new double[Dim0, Dim1];
+            ImageForUI = new byte[Dim0, Dim1, image.Data.GetUpperBound(2) + 1];
+            
             for (int i = 0; i < Dim0; i++)
             {
                 for (int j = 0; j < Dim1; j++)
                 {
-                  //  Image[i, j] = image.Data[i, j, 0];
-                  //  ImageForUI[i, j, 0] = (byte)image.Data[i, j, 0];
-                   // ImageForUI[i, j, 1] = (byte)image.Data[i, j, 1];
+                    Image[i, j] = image.Data[i, j, 0];
+                    //ImageForUI[i, j, 0] = (byte)image.Data[i, j, 0];
+                    //ImageForUI[i, j, 1] = (byte)image.Data[i, j, 1];
                     //ImageForUI[i, j, 2] = (byte)image.Data[i, j, 2];
                 }
-            }*/
+            }
             if (Dispose)
             {
                 mat.Dispose();
@@ -94,28 +95,28 @@ namespace RecorderCore
             int Dim0 = Image.GetUpperBound(0) + 1;
             int Dim1 = Image.GetUpperBound(1) + 1;
             ImageForUI = new byte[Dim0, Dim1, 3];
-            //double max = 0;
-            //double min = 0;
-            //for (int i = 0; i <= Image.GetUpperBound(0); i++)
-            //{
-            //    for (int j = 0; j <= Image.GetUpperBound(1); j++)
-            //    {
-            //        double val1 = Image[i, j];
-            //        if (val1 < min) min = val1;
-            //        if (val1 > max) max = val1;
+            double max = 0;
+            double min = 0;
+            for (int i = 0; i <= Image.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j <= Image.GetUpperBound(1); j++)
+                {
+                    double val1 = Image[i, j];
+                    if (val1 < min) min = val1;
+                    if (val1 > max) max = val1;
 
-            //    }
-            //}
-            //for (int i = 0; i <= Image.GetUpperBound(0); i++)
-            //{
-            //    for (int j = 0; j <= Image.GetUpperBound(1); j++)
-            //    {
-            //        byte val1 = (byte)(255 * (Image[i, j] - min) / (max - min));
-            //        ImageForUI[i, j, 0] = val1;
-            //        ImageForUI[i, j, 1] = val1;
-            //        ImageForUI[i, j, 2] = val1;
-            //    }
-            //}
+                }
+            }
+            for (int i = 0; i <= Image.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j <= Image.GetUpperBound(1); j++)
+                {
+                    byte val1 = (byte)(255 * (Image[i, j] - min) / (max - min));
+                    ImageForUI[i, j, 0] = val1;
+                    ImageForUI[i, j, 1] = val1;
+                    ImageForUI[i, j, 2] = val1;
+                }
+            }
         }
         public void GetArrayFromMat(double[,] image)
         {
@@ -153,7 +154,6 @@ namespace RecorderCore
             status = SettingsContainer.ProcessingStep.Interferogramm;
             //GetArrayFromMat(image);
         }
-
         public virtual void CalculatePhaseImage()
         {
             if (status <= SettingsContainer.ProcessingStep.Interferogramm)
@@ -167,19 +167,22 @@ namespace RecorderCore
             try
             {
                 if (MaxProcessingStep < SettingsContainer.ProcessingStep.UnwrappedPhaseImage) return;
-                //double[,] matrix = new double[Image.GetUpperBound(0) + 1, Image.GetUpperBound(1) + 1];
+                double[,] matrix = new double[Image.GetUpperBound(0) + 1, Image.GetUpperBound(1) + 1];
                 byte[,] mask = new byte[Image.GetUpperBound(0) + 1, Image.GetUpperBound(1) + 1];
                 NativeMethods.unwrap(Marshal.UnsafeAddrOfPinnedArrayElement(Image, 0),
-                    Marshal.UnsafeAddrOfPinnedArrayElement(Image, 0),
+                    Marshal.UnsafeAddrOfPinnedArrayElement(matrix, 0),
                     Marshal.UnsafeAddrOfPinnedArrayElement(mask, 0), Image.GetUpperBound(1) + 1, Image.GetUpperBound(0) + 1, 0, 0, (char)0, (uint)1);
                 
-                //Image = matrix;
+                Image = matrix;
                 if (status <= SettingsContainer.ProcessingStep.WrappedPhaseImage)
                 {
                     status = SettingsContainer.ProcessingStep.UnwrappedPhaseImage;
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+
+            }
 
         }
         public virtual void Process()

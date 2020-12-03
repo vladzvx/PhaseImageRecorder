@@ -1,9 +1,83 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
+using RecorderCore;
 using System;
 
 namespace Benchmarks
 {
+    public class PhaseStepImageBenchmark
+    {
+        public static ImageSource source;
+        public static double[,] image;
+        public static void init()
+        {
+            source = new ImageSource(300, 300);
+            source.CreateImagesForStepMethod(1, 4);
+            //image = source.GetNextImage();
+        }
+        [Benchmark(Description = "init")]
+        public void Test0()
+        {
+            source = new ImageSource(1000, 2000);
+            source.CreateImagesForStepMethod(1, 4);
+            //StepPhaseImage phaseImage = new StepPhaseImage(source.GetNextImage());
+            //phaseImage.AddStep(source.GetNextImage());
+            //phaseImage.AddStep(source.GetNextImage());
+            //phaseImage.AddStep(source.GetNextImage());
+            //phaseImage.MaxProcessingStep = SettingsContainer.ProcessingStep.ProcessedImage;
+        }
+
+        [Benchmark(Description = "CreateNew")]//3.6//
+        public void Test1()
+        {
+            source = new ImageSource(1000, 2000);
+            source.CreateImagesForStepMethod(1, 4);
+            StepPhaseImage phaseImage = new StepPhaseImage(source.GetNextImage());
+            phaseImage.AddStep(source.GetNextImage());
+            phaseImage.AddStep(source.GetNextImage());
+            phaseImage.AddStep(source.GetNextImage());
+            phaseImage.MaxProcessingStep = SettingsContainer.ProcessingStep.ProcessedImage;
+        }
+
+        [Benchmark(Description = "Calculate")]//8,38//
+        public void Test2()
+        {
+            source = new ImageSource(1000, 2000);
+            source.CreateImagesForStepMethod(1, 4);
+            StepPhaseImage phaseImage = new StepPhaseImage(source.GetNextImage());
+            phaseImage.AddStep(source.GetNextImage());
+            phaseImage.AddStep(source.GetNextImage());
+            phaseImage.AddStep(source.GetNextImage());
+            phaseImage.MaxProcessingStep = SettingsContainer.ProcessingStep.ProcessedImage;
+            phaseImage.CalculatePhaseImage();
+        }
+
+        [Benchmark(Description = "Unwrap")]//7,96
+        public void Test3()
+        {
+            source = new ImageSource(1000, 2000);
+            source.CreateImagesForStepMethod(1, 4);
+            StepPhaseImage phaseImage = new StepPhaseImage(source.GetNextImage());
+            phaseImage.AddStep(source.GetNextImage());
+            phaseImage.AddStep(source.GetNextImage());
+            phaseImage.AddStep(source.GetNextImage());
+            phaseImage.MaxProcessingStep = SettingsContainer.ProcessingStep.ProcessedImage;
+            phaseImage.CalculatePhaseImage();
+            phaseImage.Unwrap();
+        }
+        [Benchmark(Description = "CreateUI matrix")]//5.5
+        public void Test4()
+        {
+            source = new ImageSource(1000, 2000);
+            source.CreateImagesForStepMethod(1, 4);
+            StepPhaseImage phaseImage = new StepPhaseImage(source.GetNextImage());
+            phaseImage.AddStep(source.GetNextImage());
+            phaseImage.AddStep(source.GetNextImage());
+            phaseImage.AddStep(source.GetNextImage());
+            phaseImage.MaxProcessingStep = SettingsContainer.ProcessingStep.ProcessedImage;
+            phaseImage.Process();
+        }
+    }
     public class ArrayCopyBenchmark
     {
         public static int h = 1000;
@@ -65,7 +139,14 @@ namespace Benchmarks
     {
         static void Main(string[] args)
         {
-            BenchmarkRunner.Run<ArrayCopyBenchmark>();
+          //  PhaseStepImageBenchmark.init();
+           // PhaseStepImageBenchmark bm = new PhaseStepImageBenchmark();
+         //   bm.Test1();
+          //  bm.Test2();
+        //    bm.Test3();
+          //  bm.Test4();
+            BenchmarkRunner.Run<PhaseStepImageBenchmark>();
+            //BenchmarkRunner.Run<ArrayCopyBenchmark>();
         }
     }
 }
