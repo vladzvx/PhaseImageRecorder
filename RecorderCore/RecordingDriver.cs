@@ -1,8 +1,10 @@
 ﻿using Emgu.CV;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
+[assembly: InternalsVisibleTo("RecorderCoreTests")]
 
 namespace RecorderCore
 {
@@ -30,7 +32,7 @@ namespace RecorderCore
             imageCapture2 = new ModelImageCapture();
             imageProcessor = new ImageProcessor(processingThreadNumber);
             imageCapture.rec += AddImage;
-            imageCapture2.rec += AddImage;
+            imageCapture2.imageReciever += AddImage;
             imageCapture.action += ArduinoWorker.Action;
             imageCapture.Start();
             imageCapture2.Pause();

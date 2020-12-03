@@ -8,30 +8,87 @@ using System.Threading.Tasks;
 
 namespace RecorderCore
 {
-    public class ModelImageCapture
+    internal class ImageSource
     {
-        public ModelImageCapture()
+        public static bool AreEqual(double[,] arr1, double[,] arr2) 
         {
-            thread = new Thread(new ThreadStart(GetImage));
-            Recreate(4);
-        }
-
-        public void Recreate(int NSteps)
-        {
-            images = new List<double[,]>();
-            for (int i = 0; i < 10; i++)
+            int arr1_0size = arr1.GetUpperBound(0);
+            int arr2_0size = arr2.GetUpperBound(0);
+            int arr1_1size = arr1.GetUpperBound(1);
+            int arr2_1size = arr2.GetUpperBound(1);
+            if (arr1_0size != arr2_0size || arr1_1size != arr2_1size) return false;
+            else
             {
-                images.AddRange(get_image(i * Math.PI / 25, 4));
+                for (int i = 0; i < arr1_0size + 1; i++)
+                {
+                    for (int j = 0; j < arr1_1size + 1; j++)
+                    {
+                        if (arr1[i, j] != arr2[i, j]) return false;
+                    }
+                }
+                return true;
             }
         }
-        //private double FPS = 1;
+        public int Width = 1920;
+        public int Height = 1024;
+        private int CurrentIndex = 0;
+        private List<double[,]> images = new List<double[,]>();
         private object locker = new object();
-        private new List<double[,]> images = new List<double[,]>();
-        private int currentImage = 0;
-        private Thread thread;
-        private Random rnd = new Random();
-        private ReaderWriterLockSlim _lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-        private bool paused = false;
+        public ImageSource(int Height, int Width)
+        {
+            this.Height = Height;
+            this.Width = Width;
+        }
+        public IEnumerable<double[,]> InfIterImages()
+        {
+            while (true)
+            {
+                lock (locker)
+                {
+                    CurrentIndex = CurrentIndex < images.Count ? CurrentIndex : 0;
+                    double[,] buffer = (double[,])images[CurrentIndex].Clone();
+                    CurrentIndex++;
+                    yield return buffer;
+                }
+            }
+        }
+
+        public double[,] GetNextImage()
+        {
+            lock (locker)
+            {
+                CurrentIndex = CurrentIndex < images.Count ? CurrentIndex : 0;
+                double[,] buffer = (double[,])images[CurrentIndex].Clone();
+                CurrentIndex++;
+                return buffer;
+            }
+
+        }
+
+        public void CreateImagesForStepMethod(int PhaseImagesNumber, uint NSteps)
+        {
+            lock (locker)
+            {
+                CurrentIndex = 0;
+                images = new List<double[,]>();
+                for (int i = 0; i < PhaseImagesNumber; i++)
+                {
+                    images.AddRange(getStepImagesPack(2 * ((double)i) / PhaseImagesNumber, NSteps));
+                }
+            }
+        }
+        public void CreateImagesForHilbert(int PhaseImagesNumber)
+        {
+            lock (locker)
+            {
+                images = new List<double[,]>();
+                for (int i = 0; i < PhaseImagesNumber; i++)
+                {
+                    images.Add(getSingleImage(2*((double)i) / PhaseImagesNumber));
+                }
+            }
+        }
+
         #region image Generator
         private double[,] GetSphere(int x, int y, double x_size, double y_size, double R, double x_center_shift, double y_center_shift, double PhaseHeigh = 1)
         {
@@ -68,6 +125,209 @@ namespace RecorderCore
             }
             return matrix;
         }
+
+        private void AddPlane(double[,] matrix, int x, int y, double LineNums = 1)
+        {
+            double step = 2 * Math.PI * LineNums / y;
+            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
+                {
+                    matrix[i, j]+= (i * step);
+                }
+            }
+        }
+
+        private double max(double[,] matrix)
+        {
+            double maxValue = matrix[0, 0];
+            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
+                {
+                    if (matrix[i, j] > maxValue)
+                        maxValue = matrix[i, j];
+                }
+            }
+            return maxValue;
+        }
+
+        private double[,] SummMatrix(double[,] matrix1, double[,] matrix2)
+        {
+            double[,] ForRetirn = new double[matrix1.GetUpperBound(0) + 1, matrix1.GetUpperBound(1) + 1];
+            if (matrix1.GetUpperBound(0) != matrix2.GetUpperBound(0) ||
+                matrix1.GetUpperBound(1) != matrix2.GetUpperBound(1))
+                throw new ArgumentException("Incompatible matrix sizes!");
+            for (int i = 0; i <= matrix1.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j <= matrix1.GetUpperBound(1); j++)
+                {
+                    ForRetirn[i, j] = matrix1[i, j] + matrix2[i, j];
+                }
+            }
+            return ForRetirn;
+        }
+
+        private double[,] GetCos(double[,] matrix, double shift = 0, double mult = 1)
+        {
+            double[,] ForRetirn = new double[matrix.GetUpperBound(0) + 1, matrix.GetUpperBound(1) + 1];
+            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
+                {
+                    ForRetirn[i, j] = (1 + Math.Cos(matrix[i, j] + shift)) * mult * 0.5;
+                }
+            }
+            return ForRetirn;
+        }
+
+        private void SetCos(double[,] matrix, double shift = 0, double mult = 1)
+        {
+            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
+                {
+                    matrix[i, j] = (1 + Math.Cos(matrix[i, j] + shift)) * mult * 0.5;
+                }
+            }
+        }
+
+        private double min(double[,] matrix)
+        {
+            double minValue = matrix[0, 0];
+            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
+                {
+                    if (matrix[i, j] < minValue)
+                        minValue = matrix[i, j];
+                }
+            }
+            return minValue;
+        }
+
+        private List<double[,]> getStepImagesPack(double val, uint NSteps)
+        {
+            List<double[,]> temp = new List<double[,]>();
+            double[,] matrix1 = GetSphere(Width, Height, 500, 500, 150, 250, 250, Math.PI * 4 * (1.2 + Math.Cos(Math.PI * val)));
+            AddPlane(matrix1,Width, Height, 10);
+
+            temp.Add(GetCos(matrix1, mult: 255));
+            temp.Add(GetCos(matrix1, Math.PI / 2, mult: 255));
+            temp.Add(GetCos(matrix1, Math.PI, mult: 255));
+            if (NSteps >= 4) temp.Add(GetCos(matrix1, 3 * Math.PI / 2, mult: 255));
+            if (NSteps >= 5) temp.Add(GetCos(matrix1, 4 * Math.PI / 2, mult: 255));
+            return temp;
+        }
+
+        private double[,] getSingleImage(double val)
+        {
+            double[,] matrix1 = GetSphere(Width, Height, 500, 500, 150, 250, 250, Math.PI * 4 * (1.2 + Math.Cos(Math.PI * val)));
+            AddPlane(matrix1, Width, Height, 10);
+            SetCos(matrix1, mult: 255);
+            return matrix1;
+        }
+        #endregion
+    }
+
+    public class ModelImageCapture:BaseCapture
+    {
+        private ImageSource imageSource = new ImageSource(1000, 2000);
+        
+        public ModelImageCapture(): base()
+        {
+            imageSource.CreateImagesForStepMethod(10, 4);
+        }
+        internal override double[,] GetImage()
+        {
+            return imageSource.GetNextImage();
+        }
+    }
+
+
+    /*
+    public class ModelImageCapture2
+    {
+        public delegate void ImageReciever(double[,] image);
+
+        public event ImageReciever rec;
+
+        public double FPS = 25;
+        public int Height = 1920;
+        public int Width = 1024;
+
+        private object locker = new object();
+        private new List<double[,]> images = new List<double[,]>();
+        private Thread thread;
+        private ReaderWriterLockSlim _lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+        private bool paused = false;
+
+        public ModelImageCapture2()
+        {
+            thread = new Thread(new ThreadStart(GetImage));
+            Recreate(4);
+        }
+
+        public void Recreate(int NSteps)
+        {
+            images = new List<double[,]>();
+            for (int i = 0; i < 10; i++)
+            {
+                images.AddRange(get_image(i * Math.PI / 25, 4));
+            }
+        }
+        //private double FPS = 1;
+
+
+        #region image Generator
+        private double[,] GetSphere(int x, int y, double x_size, double y_size, double R, double x_center_shift, double y_center_shift, double PhaseHeigh = 1)
+        {
+
+            double x_step = x_size / x;
+            double MaxValue = 0;
+            double y_step = y_size / y;
+            double[,] matrix = new double[y, x];
+            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
+                {
+                    double _x = (i * x_step - x_center_shift);
+                    double _y = (j * y_step - y_center_shift);
+                    double value = R * R - (_x * _x + _y * _y);
+                    value = value > 0 ? 2 * Math.Sqrt(value) : 0;
+                    MaxValue = value > MaxValue ? value : MaxValue;
+                    matrix[i, j] = value / R / 2 * PhaseHeigh;
+                }
+            }
+            return matrix;
+        }
+
+        private double[,] GetPlane(int x, int y, double LineNums = 1)
+        {
+            double[,] matrix = new double[y, x];
+            double step = 2 * Math.PI * LineNums / y;
+            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
+                {
+                    matrix[i, j] = (i * step);
+                }
+            }
+            return matrix;
+        }
+
+        private void AddPlane(double[,] matrix, int x, int y, double LineNums = 1)
+        {
+            double step = 2 * Math.PI * LineNums / y;
+            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
+                {
+                    matrix[i, j] = (i * step);
+                }
+            }
+        }
+
         private double max(double[,] matrix)
         {
             double maxValue = matrix[0, 0];
@@ -138,31 +398,10 @@ namespace RecorderCore
             return minValue;
         }
 
-        public void Start()
-        {
-            thread.Start();
-        }
-        public void Stop()
-        {
-            thread.Start();
-        }
-        public void Pause()
-        {
-            _lock.EnterWriteLock();
-            paused = true;
-            _lock.ExitWriteLock();
-        }
 
-        public void PauseRelease()
-        {
-            _lock.EnterWriteLock();
-            paused = false;
-            _lock.ExitWriteLock();
-        }
-        private List<double[,]> get_image(double val,uint NSteps)
+        private List<double[,]> getStepImages(double val,uint NSteps)
         {
             List<double[,]> temp = new List<double[,]>();
-            //Bitmap bitmap = new Bitmap(pictureBox1.Height, pictureBox1.Width);
             double[,] matrix1 = GetSphere(Height, Width, 500, 500, 150, 250, 250, Math.PI * 4 * (1.2 + Math.Cos(Math.PI * val)));
             double[,] matrix2 = GetPlane(Height, Width, 10);
             double[,] matrix3 = SummMatrix(matrix1, matrix2);
@@ -176,6 +415,7 @@ namespace RecorderCore
             return temp;
         }
 
+        #endregion
         public void GetImage()
         {
             while (true)
@@ -198,236 +438,28 @@ namespace RecorderCore
             }
 
         }
-        #endregion
-
-        public delegate void ImageReciever(double[,] image);
-
-        public event ImageReciever rec;
-
-        public double FPS = 25;
-        public int Height = 1920;
-        public int Width = 1024;
-
-    }
-    /*
-    class PhaseImageModeling
-    {
-        #region fields
-        public int Height;
-        public int Width;
-        public double x_size;
-        public double y_size;
-        #endregion
-
-        public PhaseImageModeling(int Height, int Width, double x_size, double y_size)
-        {
-            this.Height = Height;
-            this.Width = Width;
-            this.y_size = y_size;
-            this.x_size = x_size;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="Height">pixels</param>
-        /// <param name="Width">pixels</param>
-        /// <param name="x_size">um</param>
-        /// <param name="y_size">um</param>
-        /// <param name="R">um</param>
-        /// <param name="x_center_shift">um</param>
-        /// <param name="y_center_shift">um</param>
-        /// <param name="PhaseHeigh">radians</param>
-        /// <returns></returns>
-        private double[,] GetSphere(double R, double x_center_shift, double y_center_shift, double PhaseHeigh = 1)
-        {
-
-            double x_step = x_size / Width;
-            double MaxValue = 0;
-            double y_step = y_size / Height;
-            double[,] matrix = new double[Height, Width];
-            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
-            {
-                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
-                {
-                    double _x = (i * x_step - x_center_shift);
-                    double _y = (j * y_step - y_center_shift);
-                    double value = R * R - (_x * _x + _y * _y);
-                    value = value > 0 ? 2 * Math.Sqrt(value) : 0;
-                    MaxValue = value > MaxValue ? value : MaxValue;
-                    matrix[i, j] = value / R / 2 * PhaseHeigh;
-                }
-            }
-            return matrix;
-        }
-
-        /// <summary>
-        /// creates plane in matrix
-        /// </summary>
-        /// <param name="Height">pixels</param>
-        /// <param name="Width">pixels</param>
-        /// <param name="LineNums">Number of interfierence lines, number of 2Pi in max value of plane</param>
-        /// <returns></returns>
-        private double[,] GetPlane(double LineNums = 1)
-        {
-            double[,] matrix = new double[Height, Width];
-            double step = 2 * Math.PI * LineNums / Height;
-            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
-            {
-                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
-                {
-                    matrix[i, j] = (i * step);
-                }
-            }
-            return matrix;
-        }
-
-        private double max(double[,] matrix)
-        {
-            double maxValue = matrix[0, 0];
-            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
-            {
-                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
-                {
-                    if (matrix[i, j] > maxValue)
-                        maxValue = matrix[i, j];
-                }
-            }
-            return maxValue;
-        }
-
-        private double min(double[,] matrix)
-        {
-            double minValue = matrix[0, 0];
-            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
-            {
-                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
-                {
-                    if (matrix[i, j] < minValue)
-                        minValue = matrix[i, j];
-                }
-            }
-            return minValue;
-        }
-
-        private double[,] SummMatrix(double[,] matrix1, double[,] matrix2)
-        {
-            double[,] ForRetirn = new double[matrix1.GetUpperBound(0) + 1, matrix1.GetUpperBound(1) + 1];
-            if (matrix1.GetUpperBound(0) != matrix2.GetUpperBound(0) ||
-                matrix1.GetUpperBound(1) != matrix2.GetUpperBound(1))
-                throw new ArgumentException("Incompatible matrix sizes!");
-            for (int i = 0; i <= matrix1.GetUpperBound(0); i++)
-            {
-                for (int j = 0; j <= matrix1.GetUpperBound(1); j++)
-                {
-                    ForRetirn[i, j] = matrix1[i, j] + matrix2[i, j];
-                }
-            }
-            return ForRetirn;
-        }
-
-
-        private double[,] MultipleMatrix(double[,] matrix, double Multiplicator)
-        {
-            double[,] ForRetirn = new double[matrix.GetUpperBound(0) + 1, matrix.GetUpperBound(1) + 1];
-            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
-            {
-                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
-                {
-                    ForRetirn[i, j] = matrix[i, j]* Multiplicator;
-                }
-            }
-            return ForRetirn;
-        }
-        /*
-        public Bitmap GetBitmap(double[,] matrix)
-        {
-            if (matrix.Rank != 2) throw new ArgumentException("Uncorrect matrix dimensions");
-            Bitmap bitmap = new Bitmap(matrix.GetUpperBound(0)+1, matrix.GetUpperBound(1) + 1);
-            double max = this.max(matrix);
-            double min = this.min(matrix);
-            double amlp = max - min;
-
-            for (int i = 0; i < bitmap.Width; i++)
-            {
-                for (int j = 0; j < bitmap.Height; j++)
-                {
-                    double t = matrix[j, i];
-                    double value = max != min && t != 0 ? 255 * (matrix[j, i] - min) / amlp : 0;
-                    bitmap.SetPixel(i, j, Color.FromArgb((int)(value), (int)(value), (int)(value)));
-                }
-            }
-            return bitmap;
-        }
-
-        public double[,] GetInterferogramm(double[,] matrix, double MaxValue = 255, double MinValue = 0)
-        {
-            double[,] ForRetirn = new double[matrix.GetUpperBound(0) + 1, matrix.GetUpperBound(1) + 1];
-            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
-            {
-                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
-                {
-                    ForRetirn[i, j] = (Math.Cos(matrix[i, j]) + 1) * (MaxValue - MinValue);
-                }
-            }
-            return ForRetirn;
-        }
         
-        public double[,] GetSpherePhaseImage(double R, double x_center_shift, double y_center_shift, double PhaseHeigh, double LineNums)
+
+        public void Start()
         {
-            double[,] matrix1 = GetSphere(R, x_center_shift, y_center_shift, PhaseHeigh);
-            double[,] matrix2 = GetPlane(LineNums);
-            double[,] matrix3 = SummMatrix(matrix1, matrix2);
-            return matrix3;
+            thread.Start();
         }
-        public double[,] WrapPhaseImage(double[,] PhaseImage)
+        public void Stop()
         {
-            double[,] ForRetirn = new double[PhaseImage.GetUpperBound(0) + 1, PhaseImage.GetUpperBound(1) + 1];
-            for (int i = 0; i <= PhaseImage.GetUpperBound(0); i++)
-            {
-                for (int j = 0; j <= PhaseImage.GetUpperBound(1); j++)
-                {
-                    double phase_steps = Math.Floor(PhaseImage[i, j] / Math.PI) * Math.PI;
-                    ForRetirn[i, j] = PhaseImage[i, j]- phase_steps;
-                }
-            }
-            return ForRetirn;
+            thread.Start();
+        }
+        public void Pause()
+        {
+            _lock.EnterWriteLock();
+            paused = true;
+            _lock.ExitWriteLock();
         }
 
-        public double[,] UnwrapPhaseImage(double[,] PhaseImage, double level=0.8)
+        public void PauseRelease()
         {
-            double[,] ForRetirn = new double[PhaseImage.GetUpperBound(0) + 1, PhaseImage.GetUpperBound(1) + 1];
-            for (int i = 0; i <= PhaseImage.GetUpperBound(0); i++)
-            {
-                for (int j = 0; j <= PhaseImage.GetUpperBound(1); j++)
-                {
-                    ForRetirn[i, j] = PhaseImage[i, j];
-                }
-            }
-
-            for (int i = 0; i <= ForRetirn.GetUpperBound(0); i++)
-            {
-                double diff = 0;
-                for (int j = 0; j < ForRetirn.GetUpperBound(1); j++)
-                {
-                    double currentDiff = ForRetirn[i, j] - ForRetirn[i, j + 1];
-                    diff += Math.Abs(currentDiff) > level * Math.PI ? Math.Abs(currentDiff) / currentDiff * Math.PI : 0;
-                    ForRetirn[i, j+1]+= ForRetirn[i, j]+ diff;
-                }
-            }
-
-            for (int j = 0; j <= ForRetirn.GetUpperBound(1); j++)
-            {
-                double diff = 0;
-                for (int i = 0; i < ForRetirn.GetUpperBound(0); i++)
-                {
-                    double currentDiff = ForRetirn[i, j] - ForRetirn[i, j + 1];
-                    diff += Math.Abs(currentDiff) >  level * Math.PI ? Math.Abs(currentDiff)/ currentDiff*Math.PI : 0;
-                    ForRetirn[i, j + 1] += ForRetirn[i, j] + diff;
-                }
-            }
-
-            return ForRetirn;
+            _lock.EnterWriteLock();
+            paused = false;
+            _lock.ExitWriteLock();
         }
 
     }

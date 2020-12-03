@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecorderCoreTests", "RecorderCoreTests\RecorderCoreTests.csproj", "{3DCA6F18-C0D3-4009-AD71-3DBF366B5B0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecorderCoreTests", "RecorderCoreTests\RecorderCoreTests.csproj", "{3DCA6F18-C0D3-4009-AD71-3DBF366B5B0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhaseImageRecorder", "PhaseImageRecorder\PhaseImageRecorder.csproj", "{45227231-C5B8-4987-8433-CCAA5EBF6B33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhaseImageRecorder", "PhaseImageRecorder\PhaseImageRecorder.csproj", "{45227231-C5B8-4987-8433-CCAA5EBF6B33}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecorderCore", "RecorderCore\RecorderCore.csproj", "{EE58BA2C-BE7F-4B7E-9946-67078CD5DB46}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecorderCore", "RecorderCore\RecorderCore.csproj", "{EE58BA2C-BE7F-4B7E-9946-67078CD5DB46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmarks", "Benchmarks\Benchmarks.csproj", "{324323F8-7FE1-4427-A265-7D6D7BA229C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,18 @@ Global
 		{EE58BA2C-BE7F-4B7E-9946-67078CD5DB46}.Release|x64.Build.0 = Release|Any CPU
 		{EE58BA2C-BE7F-4B7E-9946-67078CD5DB46}.Release|x86.ActiveCfg = Release|Any CPU
 		{EE58BA2C-BE7F-4B7E-9946-67078CD5DB46}.Release|x86.Build.0 = Release|Any CPU
+		{324323F8-7FE1-4427-A265-7D6D7BA229C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{324323F8-7FE1-4427-A265-7D6D7BA229C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{324323F8-7FE1-4427-A265-7D6D7BA229C6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{324323F8-7FE1-4427-A265-7D6D7BA229C6}.Debug|x64.Build.0 = Debug|Any CPU
+		{324323F8-7FE1-4427-A265-7D6D7BA229C6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{324323F8-7FE1-4427-A265-7D6D7BA229C6}.Debug|x86.Build.0 = Debug|Any CPU
+		{324323F8-7FE1-4427-A265-7D6D7BA229C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{324323F8-7FE1-4427-A265-7D6D7BA229C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{324323F8-7FE1-4427-A265-7D6D7BA229C6}.Release|x64.ActiveCfg = Release|Any CPU
+		{324323F8-7FE1-4427-A265-7D6D7BA229C6}.Release|x64.Build.0 = Release|Any CPU
+		{324323F8-7FE1-4427-A265-7D6D7BA229C6}.Release|x86.ActiveCfg = Release|Any CPU
+		{324323F8-7FE1-4427-A265-7D6D7BA229C6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

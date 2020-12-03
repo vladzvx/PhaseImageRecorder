@@ -15,34 +15,34 @@ namespace RecorderCore
         public delegate void ExternalAction(int count);
         public event ImageReciever rec;
         public event ExternalAction action;
+
+        protected Thread thread;
+        protected object ReadSettingsLocker = new object();
+
+
         private int CameraNumber = 0;
         private int FramePause = 0;
         private double MaxFrameCounter = 0;
 
-        private Emgu.CV.VideoCapture capture;
-        private Thread thread;
-        private object locker = new object();
-        private CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
-        private CancellationTokenSource PauseTokenSource = new CancellationTokenSource();
-        private ReaderWriterLockSlim _lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+        protected Emgu.CV.VideoCapture capture;
+        protected CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
+        protected ReaderWriterLockSlim _lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+
         public bool paused = false;
         #endregion
 
         #region constructors
         public ImageCapture()
         {
-            lock (locker)
+            lock (ReadSettingsLocker)
             {
                 capture = new VideoCapture(0);
                 thread = new Thread(new ParameterizedThreadStart(grab));
-                
             }
-
         }
 
         public void Start()
         {
-            //thread.Start(new CancellationToken[2] { CancellationTokenSource.Token, PauseTokenSource.Token });
             thread.Start(CancellationTokenSource.Token);
         }
 
@@ -80,7 +80,7 @@ namespace RecorderCore
                     _lock.ExitReadLock();
                     if (!local_pause)
                     {
-                        lock (locker)
+                        lock (ReadSettingsLocker)
                         {
                             if (action != null) action.Invoke(frameCounter);
                             Thread.Sleep(FramePause);
@@ -103,7 +103,7 @@ namespace RecorderCore
                     _lock.ExitReadLock();
                     if (!local_pause)
                     {
-                        lock (locker)
+                        lock (ReadSettingsLocker)
                         {
                             if (action != null) action.Invoke(frameCounter);
                             Thread.Sleep(FramePause);
@@ -133,7 +133,7 @@ namespace RecorderCore
         #region external ruling
         public void UpdateCamera(int CameraNumber)
         {
-            lock (locker)
+            lock (ReadSettingsLocker)
             {
                 if (this.CameraNumber!= CameraNumber)
                     capture = new VideoCapture(CameraNumber);
@@ -142,7 +142,7 @@ namespace RecorderCore
 
         public void UpdateMaxFrameCounter(int MaxFrameCounter)
         {
-            lock (locker)
+            lock (ReadSettingsLocker)
             {
                 this.MaxFrameCounter = MaxFrameCounter;
             }
@@ -150,7 +150,7 @@ namespace RecorderCore
 
         public void UpdateFramePause(int FramePause)
         {
-            lock (locker)
+            lock (ReadSettingsLocker)
             {
                 this.FramePause = FramePause;
             }

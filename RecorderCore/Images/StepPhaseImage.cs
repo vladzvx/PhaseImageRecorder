@@ -51,9 +51,9 @@ namespace RecorderCore
                     {
                         double val1 = Math.Atan((Image[i, j] - 2 * images[0][i, j] + images[1][i, j]) / (Image[i, j] - images[1][i, j]));
                         Image[i, j] = val1;
-                        ImageForUI[i, j, 0] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
-                        ImageForUI[i, j, 1] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
-                        ImageForUI[i, j, 2] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
+                        //ImageForUI[i, j, 0] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
+                        //ImageForUI[i, j, 1] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
+                       // ImageForUI[i, j, 2] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
                     }
                 }
                 images = new List<double[,]>();
@@ -67,9 +67,9 @@ namespace RecorderCore
                     {
                         double val1 = Math.Atan((images[2][i, j] - images[0][i, j]) / (Image[i, j] - images[1][i, j]));
                         Image[i, j] = val1;
-                        ImageForUI[i, j, 0] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
-                        ImageForUI[i, j, 1] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
-                        ImageForUI[i, j, 2] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
+                        //ImageForUI[i, j, 0] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
+                        //ImageForUI[i, j, 1] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
+                        //ImageForUI[i, j, 2] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
                     }
                 }
                // images = new List<double[,]>();

@@ -62,35 +62,48 @@ namespace RecorderCore
                 PhaseImage result = null;
                 while (MainProcessingQuenue.TryDequeue(out result))
                 {
-                    logger.Debug(string.Format("Decuenue image (rec. time: {1}) from processing queue. Total {0} images in queue.", MainProcessingQuenue.Count, result.RecordingTime));
-                    if (!MainProcessingQuenue.IsEmpty)
+                    if (result != null)
                     {
-                        logger.Debug("Using additional threads");
-                        if (SecondaryImageProcessors!=null)
-                            SecondaryProcessingQuenue.Enqueue(result);
+                        logger.Debug(string.Format("Processing image (recorded at {0})", result.RecordingTime));
+                        result.CalculatePhaseImage();
+                        result.Unwrap();
+                        result.Process();
+                        if (PhaseImageInterfaceSender != null)
+                            PhaseImageInterfaceSender.Invoke(result);
+                        //if (PhaseImageSender != null)
+                        //    PhaseImageSender.Invoke(result);
                     }
-                    else
-                    {
-                        logger.Debug("Processing image in main thread additional threads");
-                        if (result != null)
-                        {
-                            logger.Debug(string.Format("Processing image (recorded at {0})", result.RecordingTime));
-                            result.CalculatePhaseImage();
-                            result.Unwrap();
-                            result.Process();
-                            if (PhaseImageInterfaceSender != null)
-                                PhaseImageInterfaceSender.Invoke(result);
-                            if (PhaseImageSender != null)
-                                PhaseImageSender.Invoke(result);
-                        }
-                        else
-                        {
-                            logger.Debug("No images in queue");
-                        }
-                    }
+                    while (MainProcessingQuenue.TryDequeue(out result) && !MainProcessingQuenue.IsEmpty) ;
+
+                    //logger.Debug(string.Format("Decuenue image (rec. time: {1}) from processing queue. Total {0} images in queue.", MainProcessingQuenue.Count, result.RecordingTime));
+                    //if (!MainProcessingQuenue.IsEmpty)
+                    //{
+                    //    logger.Debug("Using additional threads");
+                    //    if (SecondaryImageProcessors!=null)
+                    //        SecondaryProcessingQuenue.Enqueue(result);
+                    //}
+                    //else
+                    //{
+                    //    logger.Debug("Processing image in main thread additional threads");
+                    //    if (result != null)
+                    //    {
+                    //        logger.Debug(string.Format("Processing image (recorded at {0})", result.RecordingTime));
+                    //        result.CalculatePhaseImage();
+                    //        result.Unwrap();
+                    //        result.Process();
+                    //        if (PhaseImageInterfaceSender != null)
+                    //            PhaseImageInterfaceSender.Invoke(result);
+                    //        if (PhaseImageSender != null)
+                    //            PhaseImageSender.Invoke(result);
+                    //    }
+                    //    else
+                    //    {
+                    //        logger.Debug("No images in queue");
+                    //    }
+                    //}
                 }
 
-                Thread.Sleep(50);
+                //Thread.Sleep(50);
             }
 
         }
