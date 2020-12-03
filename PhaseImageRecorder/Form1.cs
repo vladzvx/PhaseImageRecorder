@@ -19,6 +19,7 @@ namespace PhaseImageRecorder
 {
     public partial class Form1 : Form
     {
+        private byte[,] ui = new byte[1024, 1920];
         DateTime StartDt;
         double FrameCounter = 0;
         private System.Timers.Timer timer;
@@ -102,7 +103,7 @@ namespace PhaseImageRecorder
         {
             this.timer = new System.Timers.Timer();
             this.timer.Elapsed += action;
-            this.timer.Enabled = true;
+
             this.timer.Interval = 10;
             this.timer.SynchronizingObject = this;
             InitializeComponent();
@@ -110,6 +111,7 @@ namespace PhaseImageRecorder
             this.Text = "Phase image recorder";
             UpdateSettings();
             this.recordingDriver.AddImageReciever(this.UpdateImage);
+            this.timer.Enabled = true;
         }
         private void action(object sender, ElapsedEventArgs e)
         {
@@ -119,13 +121,22 @@ namespace PhaseImageRecorder
             {
                 try
                 {
-                    if (imagePlotted || phaseImage == null) return;
+                    if (imagePlotted || phaseImage == null)
+                    {
+                        return;
+                    }
 
                     try
                     {
-
-                        pictureBox1.Image = new Bitmap(phaseImage.ImageForUI.GetUpperBound(1) + 1, phaseImage.ImageForUI.GetUpperBound(0) + 1, 3 * (phaseImage.ImageForUI.GetUpperBound(1) + 1),
+                 
+                                                  pictureBox1.Image = new Bitmap(phaseImage.ImageForUI.GetUpperBound(1) + 1, phaseImage.ImageForUI.GetUpperBound(0) + 1, 3 * (phaseImage.ImageForUI.GetUpperBound(1) + 1),
                             System.Drawing.Imaging.PixelFormat.Format24bppRgb, Marshal.UnsafeAddrOfPinnedArrayElement(phaseImage.ImageForUI, 0));
+                       // pictureBox1.Image = new Bitmap(ui.GetUpperBound(1) + 1, ui.GetUpperBound(0) + 1, 1 * (ui.GetUpperBound(1) + 1),
+                            //System.Drawing.Imaging.PixelFormat.Format8bppIndexed, Marshal.UnsafeAddrOfPinnedArrayElement(ui, 0));
+                       
+ 
+
+
                         pictureBox1.Update();
                         imagePlotted = true;
                         FrameCounter++;
@@ -155,8 +166,8 @@ namespace PhaseImageRecorder
                     pictureBox1.Image = bitmap;
 
                     pictureBox1.Update();*/
-                }
-                catch
+                    }
+                    catch
                 {
 
                 }
