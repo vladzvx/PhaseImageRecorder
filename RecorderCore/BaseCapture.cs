@@ -7,21 +7,64 @@ using System.Threading.Tasks;
 
 namespace RecorderCore
 {
+
     public abstract class BaseCapture
     {
         public delegate void ImageReciever(double[,] image);
         public event ImageReciever imageReciever;
+        public event Action externalAction;
+
+        private event Action actionStarted;
+        private event Action actionEnded;
+        private event Action cycleEnded;
 
         protected object ReadSettingsLocker = new object();
         protected Thread WorkingThread;
         protected CancellationTokenSource CancellationTokenSource;
         protected bool paused;
         protected double FPS;
+        protected int AfterCaptureSleeping=0;
 
-        public void SetFPS(double FPS)
+        #region diagnostic
+        protected object DiagnosticLocker = new object();
+        public double ActionAverageTimespan = 0;
+        public double CycleAverageTimespan = 0;
+        internal DateTime WorkingStartedTime;
+        internal DateTime ActionStartedTime;
+        List<double> ActionsTimespans = new List<double>();
+        List<double> CycleTimespans = new List<double>();
+        internal virtual void ActionStarted()
+        {
+            lock (DiagnosticLocker)
+                ActionStartedTime = DateTime.UtcNow;
+        }
+
+        internal virtual void ActionEnded()
+        {
+            lock (DiagnosticLocker)
+            {
+                if (ActionsTimespans.Count > 50) ActionsTimespans.RemoveAt(0);
+                ActionsTimespans.Add(DateTime.UtcNow.Subtract(ActionStartedTime).TotalMilliseconds);
+                ActionAverageTimespan = ActionsTimespans.Sum() / ActionsTimespans.Count;
+            }
+
+        }
+     
+        internal virtual void CycleEnded()
+        {
+            lock (DiagnosticLocker)
+            {
+                if (CycleTimespans.Count > 50) CycleTimespans.RemoveAt(0);
+                CycleTimespans.Add(DateTime.UtcNow.Subtract(ActionStartedTime).TotalMilliseconds);
+                CycleAverageTimespan = CycleTimespans.Sum() / ActionsTimespans.Count;
+            }
+
+        }
+        #endregion
+        public void SetAfterCaptureSleeping(int SleepingTime)
         {
             lock(ReadSettingsLocker)
-                this.FPS = FPS;
+                this.AfterCaptureSleeping = SleepingTime;
         }
         public BaseCapture()
         {
@@ -30,12 +73,15 @@ namespace RecorderCore
                 CancellationTokenSource = new CancellationTokenSource();
                 WorkingThread = new Thread(new ParameterizedThreadStart(work));
                 paused = false;
-                FPS = 25;
+                actionStarted += ActionStarted;
+                actionEnded += ActionEnded;
+                cycleEnded += CycleEnded;
             }
         }
 
         public void Start()
         {
+            WorkingStartedTime = DateTime.UtcNow;
             WorkingThread.Start(CancellationTokenSource.Token);
         }
         public void Stop()
@@ -49,6 +95,7 @@ namespace RecorderCore
         }
         public void PauseRelease()
         {
+            WorkingStartedTime = DateTime.UtcNow;
             lock (ReadSettingsLocker)
                 paused = false;
         }
@@ -63,21 +110,21 @@ namespace RecorderCore
             while (!ct.IsCancellationRequested)
             {
                 bool local_pause;
-                double local_FPS;
+                int local_SleepingTime;
                 lock (ReadSettingsLocker)
                 {
-                    local_FPS = FPS;
+                    local_SleepingTime = AfterCaptureSleeping;
                     local_pause = paused;
                 }
                 if (!local_pause)
                 {
-                    DateTime dt1 = DateTime.UtcNow;
+                    if (actionStarted != null) actionStarted.Invoke();
                     double[,] buffer = GetImage();
-                    double CreatingTimespan = DateTime.UtcNow.Subtract(dt1).TotalMilliseconds;
                     if (imageReciever != null) imageReciever.Invoke(buffer);
-                    double temp = 1000 / local_FPS - CreatingTimespan;
-                    int sleepingTime = temp > 0 ? (int)temp : 0;
-                    Thread.Sleep(sleepingTime);
+                    if (externalAction != null) externalAction.Invoke();
+                    if (actionEnded != null) actionEnded.Invoke();
+                    Thread.Sleep(local_SleepingTime);
+                    if (cycleEnded != null) cycleEnded.Invoke();
                 }
                 else Thread.Sleep(100);
             }

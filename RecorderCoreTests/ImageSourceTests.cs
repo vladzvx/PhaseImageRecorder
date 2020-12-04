@@ -2,15 +2,20 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 
-namespace RecorderCore.Models.Tests
+namespace RecorderCore.Modeling
 {
-   
+
+
     [TestClass]
     public class ImageSourceTests
     {
         static ImageSource imageSource = new ImageSource(300, 300);
         static int imageNumber = 10;
+
+
+
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
@@ -64,26 +69,8 @@ namespace RecorderCore.Models.Tests
 
     }
 
-    [TestClass]
-    public class ModelCaptureTests
-    {
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
-        {
-            //imageSource.CreateImagesForHilbert(imageNumber);
-        }
-        [ClassCleanup]
-        public static void ClassCleanup()
-        {
-        }
 
-        [TestMethod]
-        public void FPS_test1()
-        {
-
-        }
-    }
-
+/*
     [TestClass]
     public class StepMethod
     {
@@ -108,4 +95,6 @@ namespace RecorderCore.Models.Tests
 
         }
     }
+
+    */
 }
