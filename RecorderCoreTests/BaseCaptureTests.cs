@@ -177,7 +177,8 @@ namespace RecorderCore
             capt.SetAfterCaptureSleeping(AfterCaptureSleepTime);
             Thread.Sleep(10000);
             capt.Stop();
-            Assert.IsTrue(capt.CycleAverageTimespan <= AfterCaptureSleepTime + ActionTimespan + SleepingTolerance*2 && capt.CycleAverageTimespan > AfterCaptureSleepTime + ActionTimespan);
+            Assert.IsTrue(capt.CycleAverageTimespan <= AfterCaptureSleepTime + ActionTimespan + SleepingTolerance*2 && 
+                Math.Abs(capt.CycleAverageTimespan - (AfterCaptureSleepTime + ActionTimespan) )/ (AfterCaptureSleepTime + ActionTimespan) <0.1 );
             capt.imageReciever -= testReciever1;
         }
 

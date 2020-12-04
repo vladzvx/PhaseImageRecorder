@@ -13,17 +13,17 @@ namespace RecorderCore
         public delegate void ImageReciever(double[,] image);
         public event ImageReciever imageReciever;
         public event Action externalAction;
-
+        public bool useSpin { get; private set; } = false;
         private event Action actionStarted;
         private event Action actionEnded;
         private event Action cycleEnded;
+        private bool DiagnosticEnable;
 
         protected object ReadSettingsLocker = new object();
         protected Thread WorkingThread;
         protected CancellationTokenSource CancellationTokenSource;
         protected bool paused;
-        protected double FPS;
-        protected int AfterCaptureSleeping=0;
+        protected double AfterCaptureSleeping=0;
 
         #region diagnostic
         protected object DiagnosticLocker = new object();
@@ -31,8 +31,8 @@ namespace RecorderCore
         public double CycleAverageTimespan = 0;
         internal DateTime WorkingStartedTime;
         internal DateTime ActionStartedTime;
-        List<double> ActionsTimespans = new List<double>();
-        List<double> CycleTimespans = new List<double>();
+        internal List<double> ActionsTimespans = new List<double>();
+        internal List<double> CycleTimespans = new List<double>();
         internal virtual void ActionStarted()
         {
             lock (DiagnosticLocker)
@@ -56,7 +56,7 @@ namespace RecorderCore
             {
                 if (CycleTimespans.Count > 50) CycleTimespans.RemoveAt(0);
                 CycleTimespans.Add(DateTime.UtcNow.Subtract(ActionStartedTime).TotalMilliseconds);
-                CycleAverageTimespan = CycleTimespans.Sum() / ActionsTimespans.Count;
+                CycleAverageTimespan = CycleTimespans.Sum() / CycleTimespans.Count;
             }
 
         }
@@ -66,16 +66,20 @@ namespace RecorderCore
             lock(ReadSettingsLocker)
                 this.AfterCaptureSleeping = SleepingTime;
         }
-        public BaseCapture()
+        public BaseCapture(bool DiagnosticEnable=true)
         {
             lock (ReadSettingsLocker)
             {
                 CancellationTokenSource = new CancellationTokenSource();
                 WorkingThread = new Thread(new ParameterizedThreadStart(work));
                 paused = false;
-                actionStarted += ActionStarted;
-                actionEnded += ActionEnded;
-                cycleEnded += CycleEnded;
+                this.DiagnosticEnable = DiagnosticEnable;
+                if (this.DiagnosticEnable)
+                {
+                    actionStarted += ActionStarted;
+                    actionEnded += ActionEnded;
+                    cycleEnded += CycleEnded;
+                }
             }
         }
 
@@ -100,6 +104,10 @@ namespace RecorderCore
                 paused = false;
         }
 
+        internal virtual void sleep(double sleep)
+        {
+            Thread.Sleep(sleep>=1?(int)sleep:0);
+        }
         internal virtual double[,] GetImage()
         {
             return null;
@@ -110,7 +118,7 @@ namespace RecorderCore
             while (!ct.IsCancellationRequested)
             {
                 bool local_pause;
-                int local_SleepingTime;
+                double local_SleepingTime;
                 lock (ReadSettingsLocker)
                 {
                     local_SleepingTime = AfterCaptureSleeping;
@@ -118,13 +126,13 @@ namespace RecorderCore
                 }
                 if (!local_pause)
                 {
-                    if (actionStarted != null) actionStarted.Invoke();
+                    if (DiagnosticEnable&&actionStarted != null) actionStarted.Invoke();
                     double[,] buffer = GetImage();
                     if (imageReciever != null) imageReciever.Invoke(buffer);
                     if (externalAction != null) externalAction.Invoke();
-                    if (actionEnded != null) actionEnded.Invoke();
-                    Thread.Sleep(local_SleepingTime);
-                    if (cycleEnded != null) cycleEnded.Invoke();
+                    if (DiagnosticEnable && actionEnded != null) actionEnded.Invoke();
+                    sleep(local_SleepingTime);
+                    if (DiagnosticEnable&&cycleEnded != null) cycleEnded.Invoke();
                 }
                 else Thread.Sleep(100);
             }

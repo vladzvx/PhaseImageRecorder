@@ -129,14 +129,8 @@ namespace PhaseImageRecorder
                     try
                     {
                  
-                                                  pictureBox1.Image = new Bitmap(phaseImage.ImageForUI.GetUpperBound(1) + 1, phaseImage.ImageForUI.GetUpperBound(0) + 1, 3 * (phaseImage.ImageForUI.GetUpperBound(1) + 1),
+                        pictureBox1.Image = new Bitmap(phaseImage.ImageForUI.GetUpperBound(1) + 1, phaseImage.ImageForUI.GetUpperBound(0) + 1, 3 * (phaseImage.ImageForUI.GetUpperBound(1) + 1),
                             System.Drawing.Imaging.PixelFormat.Format24bppRgb, Marshal.UnsafeAddrOfPinnedArrayElement(phaseImage.ImageForUI, 0));
-                       // pictureBox1.Image = new Bitmap(ui.GetUpperBound(1) + 1, ui.GetUpperBound(0) + 1, 1 * (ui.GetUpperBound(1) + 1),
-                            //System.Drawing.Imaging.PixelFormat.Format8bppIndexed, Marshal.UnsafeAddrOfPinnedArrayElement(ui, 0));
-                       
- 
-
-
                         pictureBox1.Update();
                         imagePlotted = true;
                         FrameCounter++;
@@ -165,7 +159,8 @@ namespace PhaseImageRecorder
                     }
                     pictureBox1.Image = bitmap;
 
-                    pictureBox1.Update();*/
+                    pictureBox1.Update();
+                    */
                     }
                     catch
                 {

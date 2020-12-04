@@ -15,8 +15,6 @@ namespace RecorderCore.Modeling
         static int imageNumber = 10;
 
 
-
-
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
@@ -31,8 +29,9 @@ namespace RecorderCore.Modeling
         public void ImageInfIterNumberTest1()
         {
             double count = 0;
-            foreach (var im in imageSource.InfIterImages())
+            while (true)
             {
+                var im = imageSource.GetNextImage();
                 Assert.IsNotNull(im);
                 count++;
                 if (count > 2* imageNumber)
@@ -46,8 +45,9 @@ namespace RecorderCore.Modeling
             double count = 0;
             List<double[,]> images1 = new List<double[,]>();
             List<double[,]> images2 = new List<double[,]>();
-            foreach (var im in imageSource.InfIterImages())
+            while (true)
             {
+                var im = imageSource.GetNextImage();
                 Assert.IsNotNull(im);
                 images1.Add(im);
                 images2.Add(im);

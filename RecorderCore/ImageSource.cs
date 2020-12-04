@@ -38,19 +38,6 @@ namespace RecorderCore
             this.Height = Height;
             this.Width = Width;
         }
-        public IEnumerable<double[,]> InfIterImages()
-        {
-            while (true)
-            {
-                lock (locker)
-                {
-                    CurrentIndex = CurrentIndex < images.Count ? CurrentIndex : 0;
-                    double[,] buffer = (double[,])images[CurrentIndex].Clone();
-                    CurrentIndex++;
-                    yield return buffer;
-                }
-            }
-        }
 
         public double[,] GetNextImage()
         {
