@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RecorderCore
@@ -55,7 +56,6 @@ namespace RecorderCore
         {
             lock (locker)
             {
-                Thread.Sleep(20);
                 CurrentIndex = CurrentIndex < images.Count ? CurrentIndex : 0;
                 double[,] buffer = (double[,])images[CurrentIndex].Clone();
                 CurrentIndex++;
