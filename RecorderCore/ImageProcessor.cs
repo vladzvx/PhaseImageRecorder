@@ -70,8 +70,6 @@ namespace RecorderCore
                         result.Process();
                         if (PhaseImageInterfaceSender != null)
                             PhaseImageInterfaceSender.Invoke(result);
-                        //if (PhaseImageSender != null)
-                        //    PhaseImageSender.Invoke(result);
                     }
                     while (MainProcessingQuenue.TryDequeue(out result) && !MainProcessingQuenue.IsEmpty) ;
 

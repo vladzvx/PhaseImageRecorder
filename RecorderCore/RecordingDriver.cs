@@ -1,5 +1,6 @@
 ﻿using Emgu.CV;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -19,7 +20,7 @@ namespace RecorderCore
         private ImageProcessor imageProcessor;
         private object locker = new object();
         private PhaseImage BufferPhaseImage;
-
+        private ConcurrentQueue<double[,]> q = new ConcurrentQueue<double[,]>(); 
         public void AddImageReciever(PhaseImageReciever phaseImageReciever)
         {
             this.imageProcessor.PhaseImageInterfaceSender += phaseImageReciever;
@@ -110,6 +111,46 @@ namespace RecorderCore
             }
         }
 
+        private void AddImage2(double[,] image)
+        {
+            q.Enqueue(image);
+        }
+
+        private void AddImage3(double[,] image)
+        {
+            lock (locker)
+            {
+                if (settings.recordingType == SettingsContainer.RecordingType.Step)
+                {
+                    StepPhaseImage stepPhaseImage = BufferPhaseImage as StepPhaseImage;
+                    if (stepPhaseImage != null)
+                    {
+                        if (stepPhaseImage.StepNumber < settings.MaximumSteps)
+                            stepPhaseImage.AddStep(image);
+                        else
+                        {
+                            imageProcessor.PutImage(BufferPhaseImage);
+                            BufferPhaseImage = new StepPhaseImage(image) { MaxProcessingStep = settings.maxProcessingStep }; ;
+                        }
+                    }
+                    else
+                    {
+                        BufferPhaseImage = new StepPhaseImage(image) { MaxProcessingStep = settings.maxProcessingStep }; ;
+                    }
+                }
+                else if (settings.recordingType == SettingsContainer.RecordingType.Camera)
+                {
+                    BufferPhaseImage = new CameraImage(image);
+                    imageProcessor.PutImage(BufferPhaseImage);
+                }
+                else if (settings.recordingType == SettingsContainer.RecordingType.Hilbert)
+                {
+                    BufferPhaseImage = new HilbertPhaseImage(image);
+                    imageProcessor.PutImage(BufferPhaseImage);
+                }
+
+            }
+        }
         private void AddImage(double[,] image)
         {
             lock (locker)

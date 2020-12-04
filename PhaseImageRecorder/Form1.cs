@@ -27,7 +27,6 @@ namespace PhaseImageRecorder
         PhaseImage phaseImage;
         private SettingsContainer SettingsContainer = new SettingsContainer();
         object locker = new object();
-        Bitmap bitmap;
         bool imagePlotted = false;
         int SaveCount = 0;
         private void SetStepSettings()
@@ -117,11 +116,15 @@ namespace PhaseImageRecorder
         {
             // bool is_is_locked = false;
             //Monitor.Enter(locker, ref is_is_locked);
+            PhaseImage ph;
             lock (locker)
             {
+                ph = phaseImage;
+               // phaseImage = null;
+            }
                 try
                 {
-                    if (imagePlotted || phaseImage == null)
+                    if (imagePlotted || ph == null)
                     {
                         return;
                     }
@@ -129,16 +132,16 @@ namespace PhaseImageRecorder
                     try
                     {
                  
-                        pictureBox1.Image = new Bitmap(phaseImage.ImageForUI.GetUpperBound(1) + 1, phaseImage.ImageForUI.GetUpperBound(0) + 1, 3 * (phaseImage.ImageForUI.GetUpperBound(1) + 1),
-                            System.Drawing.Imaging.PixelFormat.Format24bppRgb, Marshal.UnsafeAddrOfPinnedArrayElement(phaseImage.ImageForUI, 0));
+                        pictureBox1.Image = new Bitmap(ph.ImageForUI.GetUpperBound(1) + 1, ph.ImageForUI.GetUpperBound(0) + 1, 3 * (ph.ImageForUI.GetUpperBound(1) + 1),
+                            System.Drawing.Imaging.PixelFormat.Format24bppRgb, Marshal.UnsafeAddrOfPinnedArrayElement(ph.ImageForUI, 0));
                         pictureBox1.Update();
-                        imagePlotted = true;
+                        //imagePlotted = true;
                         FrameCounter++;
                         TimeSpan timeSpan = DateTime.UtcNow.Subtract(StartDt);
 
                         label4.Text = Math.Round(FrameCounter / timeSpan.TotalSeconds, 2).ToString();
                         label4.Update();
-                        if (timeSpan.TotalMinutes > 1)
+                        if (timeSpan.TotalMinutes > 0.5)
                         {
                             StartDt = DateTime.UtcNow;
                             FrameCounter = 0;
@@ -167,7 +170,7 @@ namespace PhaseImageRecorder
 
                 }
 
-            }
+           // }
             //  Monitor.Exit(locker);
 
 
