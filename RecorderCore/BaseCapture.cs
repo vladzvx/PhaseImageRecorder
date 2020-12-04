@@ -14,14 +14,23 @@ namespace RecorderCore
 
         protected object ReadSettingsLocker = new object();
         protected Thread WorkingThread;
-        protected CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
-        protected bool paused = false;
+        protected CancellationTokenSource CancellationTokenSource;
+        protected bool paused;
+        protected double FPS;
 
+        public void SetFPS(double FPS)
+        {
+            lock(ReadSettingsLocker)
+                this.FPS = FPS;
+        }
         public BaseCapture()
         {
             lock (ReadSettingsLocker)
             {
+                CancellationTokenSource = new CancellationTokenSource();
                 WorkingThread = new Thread(new ParameterizedThreadStart(work));
+                paused = false;
+                FPS = 25;
             }
         }
 
@@ -29,12 +38,10 @@ namespace RecorderCore
         {
             WorkingThread.Start(CancellationTokenSource.Token);
         }
-
         public void Stop()
         {
             CancellationTokenSource.Cancel();
         }
-
         public void Pause()
         {
             lock (ReadSettingsLocker)
@@ -56,13 +63,21 @@ namespace RecorderCore
             while (!ct.IsCancellationRequested)
             {
                 bool local_pause;
+                double local_FPS;
                 lock (ReadSettingsLocker)
                 {
+                    local_FPS = FPS;
                     local_pause = paused;
                 }
                 if (!local_pause)
                 {
-                    if (imageReciever != null) imageReciever.Invoke(GetImage());
+                    DateTime dt1 = DateTime.UtcNow;
+                    double[,] buffer = GetImage();
+                    double CreatingTimespan = DateTime.UtcNow.Subtract(dt1).TotalMilliseconds;
+                    if (imageReciever != null) imageReciever.Invoke(buffer);
+                    double temp = 1000 / local_FPS - CreatingTimespan;
+                    int sleepingTime = temp > 0 ? (int)temp : 0;
+                    Thread.Sleep(sleepingTime);
                 }
                 else Thread.Sleep(100);
             }
