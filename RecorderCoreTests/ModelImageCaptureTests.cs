@@ -132,7 +132,7 @@ namespace RecorderCore
             ActionTimespan = 10;
             capt = new ModelImageCapture(10, 20);
             capt.imageReciever += testReciever1;
-            double FPS = 50;
+            double FPS = 10;
             capt.SetMaxFPS(FPS);
             capt.Start();
             DateTime dt1 = DateTime.UtcNow;
