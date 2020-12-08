@@ -124,6 +124,58 @@ namespace RecorderCore
             }
         }
 
+        public double std(double[,] matrix1, double[,] matrix2)
+        {
+            double d = 0;
+            if (matrix1.GetUpperBound(0) != matrix2.GetUpperBound(0) ||
+                matrix1.GetUpperBound(1) != matrix2.GetUpperBound(1))
+                throw new ArgumentException("Incompatible matrix sizes!");
+            for (int i = 0; i <= matrix1.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j <= matrix1.GetUpperBound(1); j++)
+                {
+                   // ForRetirn[i, j] = matrix1[i, j] + matrix2[i, j];
+                }
+            }
+            return d;
+        }
+
+        public double[,] diff(double[,] matrix1, double[,] matrix2)
+        {
+            
+            if (matrix1.GetUpperBound(0) != matrix2.GetUpperBound(0) ||
+                matrix1.GetUpperBound(1) != matrix2.GetUpperBound(1))
+                throw new ArgumentException("Incompatible matrix sizes!");
+            double[,] ForRetirn = new double[matrix1.GetUpperBound(0) + 1, matrix1.GetUpperBound(1) + 1];
+            for (int i = 0; i <= matrix1.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j <= matrix1.GetUpperBound(1); j++)
+                {
+                    ForRetirn[i, j] = matrix1[i, j] - matrix2[i, j];
+                }
+            }
+            return ForRetirn;
+        }
+
+        public double sum(double[,] matrix)
+        {
+            double d = 0;
+            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
+                {
+                    d += matrix[i, j];
+                }
+            }
+            return d;
+        }
+
+        public double mean(double[,] matrix)
+        {
+            double s = sum(matrix);
+            return s / (matrix.GetUpperBound(0) + 1) / (matrix.GetUpperBound(1) + 1);
+        }
+
         private double max(double[,] matrix)
         {
             double maxValue = matrix[0, 0];
