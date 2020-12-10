@@ -263,7 +263,7 @@ namespace PhaseImageRecorder
 
         private void button3_Click_1(object sender, EventArgs e)
         {
-            var t =TestImageGenerator.GetTestPair(1000, 1000);
+          //  var t =TestImageGenerator.GetTestPair(1000, 1000,);
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)

@@ -62,13 +62,13 @@ namespace TestProject
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var t = TestImageGenerator.GetTestPair(400, 400);
+            var t = TestImageGenerator.GetTestPair(400, 400,4*Math.PI);
             plot(GetUIMatrix(t.Item2));
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            var t = TestImageGenerator.GetTestPair(400, 400);
+            var t = TestImageGenerator.GetTestPair(400, 400, 4 * Math.PI);
             t.Item1.CalculatePhaseImage();
             t.Item1.Unwrap();
 
