@@ -144,6 +144,7 @@ namespace RecorderCore
         public PhaseImage(Mat image)
         {
             RecordingTime = DateTime.UtcNow;
+            MaxProcessingStep = SettingsContainer.ProcessingStep.ProcessedImage;
             status = SettingsContainer.ProcessingStep.Interferogramm;
             GetArrayFromMat(image, true);
         }
@@ -151,6 +152,7 @@ namespace RecorderCore
         {
             Image = image;
             RecordingTime = DateTime.UtcNow;
+            MaxProcessingStep = SettingsContainer.ProcessingStep.ProcessedImage;
             status = SettingsContainer.ProcessingStep.Interferogramm;
             //GetArrayFromMat(image);
         }

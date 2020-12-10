@@ -19,7 +19,6 @@ namespace PhaseImageRecorder
 {
     public partial class Form1 : Form
     {
-        private byte[,] ui = new byte[1024, 1920];
         DateTime StartDt;
         double FrameCounter = 0;
         private System.Timers.Timer timer;
@@ -112,6 +111,13 @@ namespace PhaseImageRecorder
             this.recordingDriver.AddImageReciever(this.UpdateImage);
             this.timer.Enabled = true;
         }
+
+        private void plot(byte[,,] im)
+        {
+            pictureBox1.Image = new Bitmap(im.GetUpperBound(1) + 1, im.GetUpperBound(0) + 1, 3 * (im.GetUpperBound(1) + 1),
+                System.Drawing.Imaging.PixelFormat.Format24bppRgb, Marshal.UnsafeAddrOfPinnedArrayElement(im, 0));
+            pictureBox1.Update();
+        }
         private void action(object sender, ElapsedEventArgs e)
         {
             // bool is_is_locked = false;
@@ -131,12 +137,10 @@ namespace PhaseImageRecorder
 
                     try
                     {
-                 
-                        pictureBox1.Image = new Bitmap(ph.ImageForUI.GetUpperBound(1) + 1, ph.ImageForUI.GetUpperBound(0) + 1, 3 * (ph.ImageForUI.GetUpperBound(1) + 1),
-                            System.Drawing.Imaging.PixelFormat.Format24bppRgb, Marshal.UnsafeAddrOfPinnedArrayElement(ph.ImageForUI, 0));
-                        pictureBox1.Update();
-                        //imagePlotted = true;
-                        FrameCounter++;
+                    plot(phaseImage.ImageForUI);
+
+                           //imagePlotted = true;
+                           FrameCounter++;
                         TimeSpan timeSpan = DateTime.UtcNow.Subtract(StartDt);
 
                         label4.Text = Math.Round(FrameCounter / timeSpan.TotalSeconds, 2).ToString();
@@ -250,6 +254,21 @@ namespace PhaseImageRecorder
                 //phaseImage.Save(path);
                 SaveCount++;
             }
+        }
+
+        private void tab_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+            var t =TestImageGenerator.GetTestPair(1000, 1000);
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

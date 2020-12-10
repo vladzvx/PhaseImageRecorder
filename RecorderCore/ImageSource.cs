@@ -32,6 +32,7 @@ namespace RecorderCore
         public int Height = 1024;
         private int CurrentIndex = 0;
         private List<double[,]> images = new List<double[,]>();
+        private List<double[,]> phaseImages = new List<double[,]>();
         private object locker = new object();
         public ImageSource(int Height, int Width)
         {
@@ -48,7 +49,6 @@ namespace RecorderCore
                 CurrentIndex++;
                 return buffer;
             }
-
         }
 
         public void CreateImagesForStepMethod(int PhaseImagesNumber, uint NSteps)
@@ -59,7 +59,9 @@ namespace RecorderCore
                 images = new List<double[,]>();
                 for (int i = 0; i < PhaseImagesNumber; i++)
                 {
-                    images.AddRange(getStepImagesPack(2 * ((double)i) / PhaseImagesNumber, NSteps));
+                    var t = getStepImagesPack(2 * ((double)i) / PhaseImagesNumber, NSteps);
+                    images.AddRange(t.Item1);
+                    phaseImages.Add(t.Item2);
                 }
             }
         }
@@ -76,7 +78,7 @@ namespace RecorderCore
         }
 
         #region image Generator
-        private double[,] GetSphere(int x, int y, double x_size, double y_size, double R, double x_center_shift, double y_center_shift, double PhaseHeigh = 1)
+        public static double[,] GetSphere(int x, int y, double x_size, double y_size, double R, double x_center_shift, double y_center_shift, double PhaseHeigh = 1)
         {
 
             double x_step = x_size / x;
@@ -112,7 +114,7 @@ namespace RecorderCore
             return matrix;
         }
 
-        private void AddPlane(double[,] matrix, int x, int y, double LineNums = 1)
+        public static void AddPlane(double[,] matrix, int x, int y, double LineNums = 1)
         {
             double step = 2 * Math.PI * LineNums / y;
             for (int i = 0; i <= matrix.GetUpperBound(0); i++)
@@ -124,23 +126,19 @@ namespace RecorderCore
             }
         }
 
-        public double std(double[,] matrix1, double[,] matrix2)
+        public static double std(double[,] matrix1, double[,] matrix2)
         {
             double d = 0;
             if (matrix1.GetUpperBound(0) != matrix2.GetUpperBound(0) ||
                 matrix1.GetUpperBound(1) != matrix2.GetUpperBound(1))
                 throw new ArgumentException("Incompatible matrix sizes!");
-            for (int i = 0; i <= matrix1.GetUpperBound(0); i++)
-            {
-                for (int j = 0; j <= matrix1.GetUpperBound(1); j++)
-                {
-                   // ForRetirn[i, j] = matrix1[i, j] + matrix2[i, j];
-                }
-            }
-            return d;
+            double[,] difference = diff(matrix1, matrix2);
+            pow(difference, 2);
+            double meanValue = mean(difference);
+            return Math.Sqrt(meanValue);
         }
 
-        public double[,] diff(double[,] matrix1, double[,] matrix2)
+        public static double[,] diff(double[,] matrix1, double[,] matrix2)
         {
             
             if (matrix1.GetUpperBound(0) != matrix2.GetUpperBound(0) ||
@@ -157,7 +155,18 @@ namespace RecorderCore
             return ForRetirn;
         }
 
-        public double sum(double[,] matrix)
+        public static void subtract_min(double[,] matrix)
+        {
+            double val = min(matrix);
+            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
+                {
+                    matrix[i, j] = matrix[i, j] - val;
+                }
+            }
+        }
+        public static double sum(double[,] matrix)
         {
             double d = 0;
             for (int i = 0; i <= matrix.GetUpperBound(0); i++)
@@ -170,13 +179,23 @@ namespace RecorderCore
             return d;
         }
 
-        public double mean(double[,] matrix)
+        public static double mean(double[,] matrix)
         {
             double s = sum(matrix);
             return s / (matrix.GetUpperBound(0) + 1) / (matrix.GetUpperBound(1) + 1);
         }
 
-        private double max(double[,] matrix)
+        public static void pow(double[,] matrix, double exp)
+        {
+            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
+                {
+                    matrix[i, j] = Math.Pow(matrix[i, j], exp);
+                }
+            }
+        }
+        public static double max(double[,] matrix)
         {
             double maxValue = matrix[0, 0];
             for (int i = 0; i <= matrix.GetUpperBound(0); i++)
@@ -190,7 +209,7 @@ namespace RecorderCore
             return maxValue;
         }
 
-        private double[,] SummMatrix(double[,] matrix1, double[,] matrix2)
+        public double[,] SummMatrix(double[,] matrix1, double[,] matrix2)
         {
             double[,] ForRetirn = new double[matrix1.GetUpperBound(0) + 1, matrix1.GetUpperBound(1) + 1];
             if (matrix1.GetUpperBound(0) != matrix2.GetUpperBound(0) ||
@@ -206,7 +225,7 @@ namespace RecorderCore
             return ForRetirn;
         }
 
-        private double[,] GetCos(double[,] matrix, double shift = 0, double mult = 1)
+        public static double[,] GetCos(double[,] matrix, double shift = 0, double mult = 1)
         {
             double[,] ForRetirn = new double[matrix.GetUpperBound(0) + 1, matrix.GetUpperBound(1) + 1];
             for (int i = 0; i <= matrix.GetUpperBound(0); i++)
@@ -230,7 +249,7 @@ namespace RecorderCore
             }
         }
 
-        private double min(double[,] matrix)
+        public static double min(double[,] matrix)
         {
             double minValue = matrix[0, 0];
             for (int i = 0; i <= matrix.GetUpperBound(0); i++)
@@ -244,7 +263,13 @@ namespace RecorderCore
             return minValue;
         }
 
-        private List<double[,]> getStepImagesPack(double val, uint NSteps)
+        public double[,] GetPhaseImage(double val=0)
+        {
+            double[,] matrix1 = GetSphere(Width, Height, 500, 500, 150, 250, 250, Math.PI * 4 * (1.2 + Math.Cos(Math.PI * val)));
+            AddPlane(matrix1, Width, Height, 10);
+            return matrix1;
+        }
+        private Tuple<List<double[,]>, double[,]> getStepImagesPack(double val, uint NSteps)
         {
             List<double[,]> temp = new List<double[,]>();
             double[,] matrix1 = GetSphere(Width, Height, 500, 500, 150, 250, 250, Math.PI * 4 * (1.2 + Math.Cos(Math.PI * val)));
@@ -255,7 +280,7 @@ namespace RecorderCore
             temp.Add(GetCos(matrix1, Math.PI, mult: 255));
             if (NSteps >= 4) temp.Add(GetCos(matrix1, 3 * Math.PI / 2, mult: 255));
             if (NSteps >= 5) temp.Add(GetCos(matrix1, 4 * Math.PI / 2, mult: 255));
-            return temp;
+            return Tuple.Create(temp,matrix1);
         }
 
         private double[,] getSingleImage(double val)

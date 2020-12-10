@@ -57,7 +57,12 @@ namespace RecorderCore
         public ModelImageCapture(int Height, int Width, bool DiagnosticEnable = true) : base(DiagnosticEnable)
         {
             imageSource = new ImageSource(Height, Width);
-            imageSource.CreateImagesForStepMethod(1, 4);
+            //imageSource.CreateImagesForStepMethod(1, 4);
+        }
+
+        public void CreateImagesForStepMethod(int number, uint StepsNumber)
+        {
+            imageSource.CreateImagesForStepMethod(number, StepsNumber);
         }
         internal override double[,] GetImage()
         {

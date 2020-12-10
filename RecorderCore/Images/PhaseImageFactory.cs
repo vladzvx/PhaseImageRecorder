@@ -55,7 +55,7 @@ namespace RecorderCore
             {
                 PhaseImage phaseIm = phaseImages.Dequeue();
                 phaseIm.CalculatePhaseImage();
-                //phaseIm.Unwrap();
+                phaseIm.Unwrap();
                 //phaseIm.Process();
             }
         }

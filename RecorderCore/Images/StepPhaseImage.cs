@@ -25,6 +25,13 @@ namespace RecorderCore
             StepNumber++;
         }
 
+        public StepPhaseImage(List<double[,]> _images) : base(_images[0])
+        {
+            _images.RemoveAt(0);
+            images = _images;
+            times = new List<DateTime>() { };
+            StepNumber++;
+        }
 
         public void AddStep(Mat image)
         {
@@ -72,7 +79,7 @@ namespace RecorderCore
                         //ImageForUI[i, j, 2] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
                     }
                 }
-               // images = new List<double[,]>();
+               images = new List<double[,]>();
 
             }
         }

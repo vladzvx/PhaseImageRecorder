@@ -54,6 +54,7 @@ namespace RecorderCore
         {
             count = 0;
             capt = new ModelImageCapture(5,5);
+            capt.CreateImagesForStepMethod(1, 4);
             //capt.EnableSpins();
             capt.imageReciever += testReciever1;
             double FPS = 2;
@@ -74,6 +75,7 @@ namespace RecorderCore
         {
             count = 0;
             capt = new ModelImageCapture(5, 5);
+            capt.CreateImagesForStepMethod(1, 4);
             capt.imageReciever += testReciever1;
             double FPS = 5;
             capt.SetMaxFPS(FPS);
@@ -93,6 +95,7 @@ namespace RecorderCore
         {
             count = 0;
             capt = new ModelImageCapture(5, 5);
+            capt.CreateImagesForStepMethod(1, 4);
             capt.imageReciever += testReciever1;
             double FPS = 50;
             capt.SetMaxFPS(FPS);
@@ -111,6 +114,7 @@ namespace RecorderCore
         {
             count = 0;
             capt = new ModelImageCapture(10, 20);
+            capt.CreateImagesForStepMethod(1, 4);
             capt.imageReciever += testReciever1;
             double FPS = 80;
             capt.SetMaxFPS(FPS);
@@ -131,6 +135,7 @@ namespace RecorderCore
             count = 0;
             ActionTimespan = 10;
             capt = new ModelImageCapture(10, 20);
+            capt.CreateImagesForStepMethod(1, 4);
             capt.imageReciever += testReciever1;
             double FPS = 10;
             capt.SetMaxFPS(FPS);
@@ -152,6 +157,7 @@ namespace RecorderCore
             count = 0;
             ActionTimespan = 0;
             capt = new ModelImageCapture(1000, 2000,true);
+            capt.CreateImagesForStepMethod(1, 4);
             capt.imageReciever += testReciever1;
             
             double FPS = 1200;
