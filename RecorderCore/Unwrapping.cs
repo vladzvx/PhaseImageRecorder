@@ -46,11 +46,11 @@ namespace RecorderCore
             {
                 if (x.reaibility < y.reaibility)
                 {
-                    return 1;
+                    return -1;
                 }
                 else if (x.reaibility > y.reaibility)
                 {
-                    return -1;
+                    return 1;
                 }
                 else
                 {
@@ -81,7 +81,7 @@ namespace RecorderCore
 
             if (difference > PI)
                 wrap_value = -1;
-            else if (difference < PI)
+            else if (difference < -PI)
                 wrap_value = 1;
             else
                 wrap_value = 0;
@@ -105,7 +105,8 @@ namespace RecorderCore
                     double V = gamma(image[i, j-1] - image[i, j]) - gamma(image[i, j] - image[i , j+1]); 
                     double D1 = gamma(image[i-1, j-1] - image[i, j]) - gamma(image[i, j] - image[i+1 , j+1]); 
                     double D2 = gamma(image[i-1, j+1] - image[i, j]) - gamma(image[i, j] - image[i+1 , j-1]);
-                    double R = 1 / Math.Sqrt(H * H + V * V + D1 * D1 + D2 * D2);
+                    //double R = 1 / Math.Sqrt(H * H + V * V + D1 * D1 + D2 * D2);
+                    double R = (H * H + V * V + D1 * D1 + D2 * D2);
                     //result[i, j] = R;
                     pixel temp = new pixel() { reliability = R, image = image, i = i, j = j };
                     pixels[i-1, j-1] = temp;
