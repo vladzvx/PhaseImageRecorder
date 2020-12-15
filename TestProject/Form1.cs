@@ -63,6 +63,10 @@ namespace TestProject
         private void button1_Click(object sender, EventArgs e)
         {
             var t = TestImageGenerator.GetTestPair(400, 400,4*Math.PI);
+            this.label1.Text = Math.Round(ImageSource.max(t.Item1.Image), 2).ToString();
+            label1.Update();
+            this.label2.Text = Math.Round(ImageSource.min(t.Item1.Image), 2).ToString();
+            label2.Update();
             plot(GetUIMatrix(t.Item2));
         }
 
@@ -71,8 +75,29 @@ namespace TestProject
             var t = TestImageGenerator.GetTestPair(400, 400, 4 * Math.PI);
             t.Item1.CalculatePhaseImage();
             t.Item1.Unwrap();
-
+            this.label1.Text = Math.Round(ImageSource.max(t.Item1.Image), 2).ToString();
+            label1.Update();
+            this.label2.Text = Math.Round(ImageSource.min(t.Item1.Image), 2).ToString();
+            label2.Update();
             plot(GetUIMatrix(t.Item1.Image));
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            var t = TestImageGenerator.GetTestPair(400, 400, 4 * Math.PI);
+            t.Item1.CalculatePhaseImage();
+            Unwrapping.Unwrap(t.Item1.Image);
+
+            this.label1.Text =Math.Round( ImageSource.max(t.Item1.Image),2).ToString();
+            label1.Update();
+            this.label2.Text =Math.Round( ImageSource.min(t.Item1.Image),2).ToString();
+            label2.Update();
+            plot(GetUIMatrix(t.Item1.Image));
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
