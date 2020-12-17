@@ -84,7 +84,7 @@ namespace TestProject
 
         private void button3_Click(object sender, EventArgs e)
         {
-            var t = TestImageGenerator.GetTestPair(400, 400, 4 * Math.PI);
+            var t = TestImageGenerator.GetTestPair(4, 4, 4 * Math.PI);
             t.Item1.CalculatePhaseImage();
             Unwrapping.Unwrap(t.Item1.Image);
 

@@ -94,12 +94,11 @@ namespace RecorderCore
         {
             int size0 = image.GetUpperBound(0);
             int size1 = image.GetUpperBound(1);
-            //double[,] result = new double[size0-1,size1-1];
-            pixel[,] pixels = new pixel[size0 - 2, size1 - 2];
+            pixel[,] pixels = new pixel[size0+1, size1+1];
             List<edge> edges = new List<edge>();
-            for (int i = 1; i < size0-1; i++)
+            for (int i = 1; i < size0; i++)
             {
-                for (int j = 1; j < size1-1; j++)
+                for (int j = 1; j < size1; j++)
                 {
                     double H = gamma(image[i - 1, j] - image[i, j]) - gamma(image[i, j] - image[i + 1, j]); 
                     double V = gamma(image[i, j-1] - image[i, j]) - gamma(image[i, j] - image[i , j+1]); 
@@ -109,51 +108,84 @@ namespace RecorderCore
                     double R = (H * H + V * V + D1 * D1 + D2 * D2);
                     //result[i, j] = R;
                     pixel temp = new pixel() { reliability = R, image = image, i = i, j = j };
-                    pixels[i-1, j-1] = temp;
+                    pixels[i, j] = temp;
                 }
             }
 
-            for (int i = 1; i < size0 - 2; i++)
+            for (int i = 0; i <= size0 ; i++)
             {
-                for (int j = 1; j < size1 - 2; j++)
+                int j1 = 0;
+                pixel temp1 = new pixel() { reliability = 0, image = image, i = i, j = j1 };
+                pixels[i, j1] = temp1;
+                int j2 = size1;
+                pixel temp2 = new pixel() { reliability = 0, image = image, i = i, j = j2 };
+                pixels[i, j2] = temp2;
+            }
+
+            for (int j = 0; j <= size1; j++)
+            {
+                int i1 = 0;
+                pixel temp1 = new pixel() { reliability = 0, image = image, i = i1, j = j };
+                pixels[i1, j] = temp1;
+                int i2 = size0;
+                pixel temp2 = new pixel() { reliability = 0, image = image, i = i2, j = j };
+                pixels[i2, j] = temp2;
+            }
+
+
+            for (int i = 1; i <= size0; i++)
+            {
+                for (int j = 1; j <= size1; j++)
                 {
                     {
                         pixel pixel1 = pixels[i - 1, j];
                         pixel pixel2 = pixels[i, j];
-                        edge edge = new edge()
+                        int _increment = find_wrap(pixel1.image[pixel1.i, pixel1.j], pixel2.image[pixel2.i, pixel2.j]);
+                        double r = pixel1.reliability + pixel2.reliability;
+                      //  if (r > 0)
                         {
-                            pixel1 = pixel1,
-                            pixel2 = pixel2,
-                            reaibility = pixel1.reliability + pixel2.reliability,
-                            increment = find_wrap(pixel1.image[pixel1.i, pixel1.j], pixel2.image[pixel2.i, pixel2.j])
-                        };
-                        edges.Add(edge);
+                            edge edge = new edge()
+                            {
+                                pixel1 = pixel1,
+                                pixel2 = pixel2,
+                                reaibility = r,
+                                increment = _increment
+                            };
+                            edges.Add(edge);
+                        }
+
                     }
 
                     {
 
                         pixel pixel1 = pixels[i, j - 1];
                         pixel pixel2 = pixels[i, j];
-                        edge edge = new edge()
+                        int _increment = find_wrap(pixel1.image[pixel1.i, pixel1.j], pixel2.image[pixel2.i, pixel2.j]);
+                        double r = pixel1.reliability + pixel2.reliability;
+                       // if (r > 0)
                         {
+                            edge edge = new edge()
+                            {
 
-                            pixel1 = pixel1,
-                            pixel2 = pixel2,
-                            reaibility = pixel1.reliability + pixel2.reliability,
-                            increment = find_wrap(pixel1.image[pixel1.i, pixel1.j], pixel2.image[pixel2.i, pixel2.j])
-                        };
-                        edges.Add(edge);
+                                pixel1 = pixel1,
+                                pixel2 = pixel2,
+                                reaibility = r,
+                                increment = _increment
+                            };
+                            edges.Add(edge);
+                        }
+
                     }
 
 
                 }
             }
 
+
+            double val = ((double)edges.Count) / ((double)pixels.Length);
             edges.Sort(new edgeComparer());
             foreach (edge _edge in edges)
             {
-
-              
                 pixel PIXEL1 = _edge.pixel1;
                 pixel PIXEL2 = _edge.pixel2;
                 pixel group1;
@@ -250,16 +282,7 @@ namespace RecorderCore
 
             foreach (pixel pixel in pixels)
             {
-                double val = TWOPI * ((double)pixel.increment);
-                if (val > 0)
-                {
-                    int q = 0;
-                }
-                else if (val == 0)
-                {
-                    int q = 0;
-                }
-                pixel.image[pixel.i,pixel.j] += val;
+                pixel.image[pixel.i,pixel.j] += TWOPI * ((double)pixel.increment);
             }
             //return result;
         }

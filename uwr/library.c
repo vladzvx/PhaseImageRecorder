@@ -359,6 +359,9 @@ void calculate_reliability(double *wrappedImage, PIXELM *pixel, int image_width,
         for (i = 1; i < image_height - 1; ++i) {
             if (pixel_pointer->extended_mask == NOMASK) {
                 H = wrap(*(WIP + image_width - 1) - *WIP) - wrap(*WIP - *(WIP + 1));
+				
+				
+				
                 V = wrap(*(WIP - image_width) - *WIP) -
                     wrap(*WIP - *(WIP + image_width));
                 D1 = wrap(*(WIP - 1) - *WIP) -
