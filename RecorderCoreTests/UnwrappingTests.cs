@@ -13,7 +13,7 @@ namespace RecorderCore
     [TestClass]
     public class UnwrappingTests
     {
-        public bool sortingCheck(List<edge>  edges)
+        internal bool sortingCheck(List<edge>  edges)
         {
             for (int i = 1; i < edges.Count; i++)
             {

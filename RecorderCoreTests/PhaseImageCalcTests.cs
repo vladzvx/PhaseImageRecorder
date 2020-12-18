@@ -99,5 +99,40 @@ namespace RecorderCoreTests
             double res = count / DateTime.UtcNow.Subtract(dt1).TotalSeconds;
 
         }
+
+
+        [TestMethod]
+        public void PreclisionTest3()
+        {
+            Unwrapping2.SetParamsByImage(TestImageGenerator.GetTestPair(100, 100, Math.PI / 2 * 1, 10).Item2);
+            DateTime dt1 = DateTime.UtcNow;
+            double count = 0;
+            List<double> temp = new List<double>();
+            List<double> temp2 = new List<double>();
+
+            for (double i = -5; i < 5; i++)
+            {
+                for (int l = 10; l < 15; l++)
+                {
+                    var for_test = TestImageGenerator.GetTestPair(100, 100, Math.PI / 2 * i, l);
+
+                    for_test.Item1.CalculatePhaseImage();
+                    DateTime dt2 = DateTime.UtcNow;
+                    Unwrapping2.Unwrap(for_test.Item1.Image);
+                    //for_test.Item1.Unwrap();
+                    double time = DateTime.UtcNow.Subtract(dt2).TotalSeconds;
+                    temp.Add(time);
+                    ImageSource.subtract_min(for_test.Item1.Image);
+                    ImageSource.subtract_min(for_test.Item2);
+                    double res1 = ImageSource.std(for_test.Item1.Image, for_test.Item2);
+                    temp2.Add(res1);
+                    //Assert.IsTrue(res1 < Math.PI / 100);
+                    count++;
+                }
+
+            }
+            double res = count / DateTime.UtcNow.Subtract(dt1).TotalSeconds;
+
+        }
     }
 }

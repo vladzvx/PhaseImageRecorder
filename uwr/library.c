@@ -335,13 +335,13 @@ void calculate_reliability(double *wrappedImage, PIXELM *pixel, int image_width,
     for (i = 1; i < image_height - 1; ++i) {
         for (j = 1; j < image_width - 1; ++j) {
             if (pixel_pointer->extended_mask == NOMASK) {
-                H = wrap(*(WIP - 1) - *WIP) - wrap(*WIP - *(WIP + 1));
-                V = wrap(*(WIP - image_width) - *WIP) -
-                    wrap(*WIP - *(WIP + image_width));
-                D1 = wrap(*(WIP - image_width_plus_one) - *WIP) -
-                     wrap(*WIP - *(WIP + image_width_plus_one));
-                D2 = wrap(*(WIP - image_width_minus_one) - *WIP) -
-                     wrap(*WIP - *(WIP + image_width_minus_one));
+                H = wrap(*(WIP - 1) - *WIP) - wrap(*WIP - *(WIP + 1));//wrap(image[i,j-1]-image[i,j])-wrap(image[i,j]-image[i,j+1])	//wrap(image[i - 1, j] - image[i, j]) - wrap(image[i, j] - image[i + 1, j]); 
+                V = wrap(*(WIP - image_width) - *WIP) -//wrap(image[i-1,j]-image[i,j])-    //wrap(image[i, j-1] - image[i, j]) -
+                    wrap(*WIP - *(WIP + image_width));//wrap(image[i,j]-image[i+1,j])//wrap(image[i, j] - image[i , j+1]); 
+                D1 = wrap(*(WIP - image_width_plus_one) - *WIP) -//wrap(image[i-1,j-1]-image[i,j])//wrap(image[i-1, j-1] - image[i, j])
+                     wrap(*WIP - *(WIP + image_width_plus_one));//wrap(image[i, j] - image[i+1 , j+1])
+                D2 = wrap(*(WIP - image_width_minus_one) - *WIP) -//wrap(image[i-1, j+1] - image[i, j])
+                     wrap(*WIP - *(WIP + image_width_minus_one));//wrap(image[i, j] - image[i+1 , j-1])
                 pixel_pointer->reliability = H * H + V * V + D1 * D1 + D2 * D2;
             }
             pixel_pointer++;
@@ -358,16 +358,13 @@ void calculate_reliability(double *wrappedImage, PIXELM *pixel, int image_width,
 
         for (i = 1; i < image_height - 1; ++i) {
             if (pixel_pointer->extended_mask == NOMASK) {
-                H = wrap(*(WIP + image_width - 1) - *WIP) - wrap(*WIP - *(WIP + 1));
-				
-				
-				
-                V = wrap(*(WIP - image_width) - *WIP) -
-                    wrap(*WIP - *(WIP + image_width));
-                D1 = wrap(*(WIP - 1) - *WIP) -
-                     wrap(*WIP - *(WIP + image_width_plus_one));
-                D2 = wrap(*(WIP - image_width_minus_one) - *WIP) -
-                     wrap(*WIP - *(WIP + 2 * image_width - 1));
+                H = wrap(*(WIP + image_width - 1) - *WIP) - wrap(*WIP - *(WIP + 1));//wrap(image[i,image_width-1]-image[i,0]) - wrap(image[i,0]-image[i,1])
+                V = wrap(*(WIP - image_width) - *WIP) -//wrap(image[i-1,0]-image[i,j])-
+                    wrap(*WIP - *(WIP + image_width));//wrap(image[i,0]-image[i+1,0])
+                D1 = wrap(*(WIP - 1) - *WIP) -//wrap(image[i-1,image_width-1]-image[i,0])-
+                     wrap(*WIP - *(WIP + image_width_plus_one));//wrap(image[i,0]-image[i+1,1])
+                D2 = wrap(*(WIP - image_width_minus_one) - *WIP) -//wrap(image[i-1,1]-image[i,0])-
+                     wrap(*WIP - *(WIP + 2 * image_width - 1));//wrap(image[i,0]-image[i+1,image_width-1])
                 pixel_pointer->reliability = H * H + V * V + D1 * D1 + D2 * D2;
             }
             pixel_pointer += image_width;
@@ -380,14 +377,14 @@ void calculate_reliability(double *wrappedImage, PIXELM *pixel, int image_width,
 
         for (i = 1; i < image_height - 1; ++i) {
             if (pixel_pointer->extended_mask == NOMASK) {
-                H = wrap(*(WIP - 1) - *WIP) -
-                    wrap(*WIP - *(WIP - image_width_minus_one));
-                V = wrap(*(WIP - image_width) - *WIP) -
-                    wrap(*WIP - *(WIP + image_width));
-                D1 = wrap(*(WIP - image_width_plus_one) - *WIP) -
-                     wrap(*WIP - *(WIP + 1));
-                D2 = wrap(*(WIP - 2 * image_width - 1) - *WIP) -
-                     wrap(*WIP - *(WIP + image_width_minus_one));
+                H = wrap(*(WIP - 1) - *WIP) -//wrap(image[i,image_width-2]-image[i,image_width-1])-
+                    wrap(*WIP - *(WIP - image_width_minus_one));//wrap(image[i,image_width-1]-image[i,0])
+                V = wrap(*(WIP - image_width) - *WIP) -//wrap(image[i-1,image_width-1]-image[i,image_width-1])-
+                    wrap(*WIP - *(WIP + image_width));//wrap(image[i,image_width-1]-image[i+1,image_width-1])-
+                D1 = wrap(*(WIP - image_width_plus_one) - *WIP) -//wrap(image[i-1,image_width-2]-image[i,image_width-1])-
+                     wrap(*WIP - *(WIP + 1));//wrap(image[i,image_width-1]-image[i+1,1])-
+                D2 = wrap(*(WIP - 2 * image_width - 1) - *WIP) -//wrap(image[i-1,0]-image[i,image_width-1])-
+                     wrap(*WIP - *(WIP + image_width_minus_one));//wrap(image[i,image_width-1]-image[i+1,image_width-2])-
                 pixel_pointer->reliability = H * H + V * V + D1 * D1 + D2 * D2;
             }
             pixel_pointer += image_width;
@@ -402,7 +399,7 @@ void calculate_reliability(double *wrappedImage, PIXELM *pixel, int image_width,
 
         for (i = 1; i < image_width - 1; ++i) {
             if (pixel_pointer->extended_mask == NOMASK) {
-                H = wrap(*(WIP - 1) - *WIP) - wrap(*WIP - *(WIP + 1));
+                H = wrap(*(WIP - 1) - *WIP) - wrap(*WIP - *(WIP + 1));//без изменений
                 V = wrap(*(WIP + image_width * (image_height - 1)) - *WIP) -
                     wrap(*WIP - *(WIP + image_width));
                 D1 = wrap(*(WIP + image_width * (image_height - 1) - 1) - *WIP) -
@@ -421,7 +418,7 @@ void calculate_reliability(double *wrappedImage, PIXELM *pixel, int image_width,
 
         for (i = 1; i < image_width - 1; ++i) {
             if (pixel_pointer->extended_mask == NOMASK) {
-                H = wrap(*(WIP - 1) - *WIP) - wrap(*WIP - *(WIP + 1));
+                H = wrap(*(WIP - 1) - *WIP) - wrap(*WIP - *(WIP + 1));//без изменений
                 V = wrap(*(WIP - image_width) - *WIP) -
                     wrap(*WIP - *(WIP - (image_height - 1) * (image_width)));
                 D1 = wrap(*(WIP - image_width_plus_one) - *WIP) -
