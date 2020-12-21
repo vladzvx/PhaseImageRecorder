@@ -51,6 +51,22 @@ namespace RecorderCore
             }
         }
 
+        public static List<Tuple<int,int,double>> GetNoZero(double[,] matrix,int dim)
+        {
+            List<Tuple<int, int, double>> res = new List<Tuple<int, int, double>>();
+            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
+                {
+                    if (Math.Round(matrix[i, j],dim)!=0)
+                    {
+                        res.Add(Tuple.Create(i,j,matrix[i,j]));
+                    }
+                }
+            }
+            return res;
+
+        }
         public void CreateImagesForStepMethod(int PhaseImagesNumber, uint NSteps)
         {
             lock (locker)
@@ -256,7 +272,7 @@ namespace RecorderCore
             {
                 for (int j = 0; j <= matrix.GetUpperBound(1); j++)
                 {
-                    if (matrix[i, j] < minValue)
+                    if (matrix[i, j] <= minValue)
                         minValue = matrix[i, j];
                 }
             }

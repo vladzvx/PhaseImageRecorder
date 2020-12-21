@@ -14,6 +14,8 @@ namespace TestProject
 {
     public partial class Form1 : Form
     {
+        Random rnd = new Random();
+        Unwrapping2 unwrapper;
         public byte[,,] GetUIMatrix(double[,] Image)
         {
             int Dim0 = Image.GetUpperBound(0) + 1;
@@ -62,29 +64,35 @@ namespace TestProject
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var t = TestImageGenerator.GetTestPair(400, 400,4*Math.PI);
+            var t = TestImageGenerator.GetTestPair(400, 400, rnd.NextDouble() * 5 * Math.PI, 2+rnd.NextDouble() * 20);
             this.label1.Text = Math.Round(ImageSource.max(t.Item1.Image), 2).ToString();
             label1.Update();
             this.label2.Text = Math.Round(ImageSource.min(t.Item1.Image), 2).ToString();
             label2.Update();
+
+
+
+
             plot(GetUIMatrix(t.Item2));
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            var t = TestImageGenerator.GetTestPair(400, 400, 4 * Math.PI);
+            var t = TestImageGenerator.GetTestPair(400, 400, rnd.NextDouble()* 5 * Math.PI, 2 + rnd.NextDouble() * 20);
             t.Item1.CalculatePhaseImage();
             t.Item1.Unwrap();
-            this.label1.Text = Math.Round(ImageSource.max(t.Item1.Image), 2).ToString();
+            double[,] dif = ImageSource.diff(t.Item1.Image, t.Item2);
+            this.label1.Text = Math.Round(ImageSource.max(dif), 2).ToString();
             label1.Update();
-            this.label2.Text = Math.Round(ImageSource.min(t.Item1.Image), 2).ToString();
+            this.label2.Text = Math.Round(ImageSource.min(dif), 2).ToString();
             label2.Update();
-            plot(GetUIMatrix(t.Item1.Image));
+            //plot(GetUIMatrix(t.Item1.Image));
+            plot(GetUIMatrix(dif));
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            var t = TestImageGenerator.GetTestPair(400, 400, 4 * Math.PI);
+            var t = TestImageGenerator.GetTestPair(400, 400, rnd.NextDouble() * 5 * Math.PI, 2 + rnd.NextDouble() * 20);
             t.Item1.CalculatePhaseImage();
             Unwrapping.Unwrap(t.Item1.Image);
 
@@ -102,16 +110,19 @@ namespace TestProject
 
         private void button4_Click(object sender, EventArgs e)
         {
-            var t = TestImageGenerator.GetTestPair(400, 400, 4 * Math.PI);
+
+            var t = TestImageGenerator.GetTestPair(400, 400, rnd.NextDouble() * 5 * Math.PI,2 + rnd.NextDouble() * 20);
             t.Item1.CalculatePhaseImage();
-            Unwrapping2.SetParamsByImage(t.Item1.Image);
-            Unwrapping2.Unwrap(t.Item1.Image);
-            
-            this.label1.Text = Math.Round(ImageSource.max(t.Item1.Image), 2).ToString();
+            if (unwrapper == null) unwrapper = new Unwrapping2(t.Item1.Image);
+
+            unwrapper.Unwrap(t.Item1.Image);
+            double[,] dif = ImageSource.diff(t.Item1.Image, t.Item2);
+            this.label1.Text = Math.Round(ImageSource.max(dif), 2).ToString();
             label1.Update();
-            this.label2.Text = Math.Round(ImageSource.min(t.Item1.Image), 2).ToString();
+            this.label2.Text = Math.Round(ImageSource.min(dif), 2).ToString();
             label2.Update();
-            plot(GetUIMatrix(t.Item1.Image));
+            //plot(GetUIMatrix(t.Item1.Image));
+            plot(GetUIMatrix(dif));
         }
     }
 }

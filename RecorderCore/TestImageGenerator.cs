@@ -9,7 +9,7 @@ namespace RecorderCore
 {
     public static class TestImageGenerator
     {
-        public static Tuple<StepPhaseImage,double[,]> GetTestPair(int Width, int Height,double MaxValue,int NumLines=10)
+        public static Tuple<StepPhaseImage,double[,]> GetTestPair(int Width, int Height,double MaxValue, double NumLines =10)
         {
             double[,] matrix1 = ImageSource.GetSphere(Width, Height, 500, 500, 150, 250, 250, MaxValue);
             ImageSource.AddPlane(matrix1, Width, Height, NumLines);
