@@ -7,16 +7,7 @@ using System.Threading.Tasks;
 
 namespace RecorderCore
 {
-    public class UwrReport
-    {
-        public double GammasCalc;
-        public double EdgesCalc;
-        public double Sorting;
-        public double PathFinding;
-        public double Unwrap;
-        public double Refresh;
-    }
-    public class Unwrapping2
+    public class UnwrappingGPU
     {
         double PI = Math.PI / 2;
         double TWOPI;
@@ -26,7 +17,7 @@ namespace RecorderCore
         static edge[] _edges;
 
 
-        public Unwrapping2(double[,] image)
+        public UnwrappingGPU(double[,] image)
         {
             TWOPI = 2 * PI;
             UpdateParams(image);

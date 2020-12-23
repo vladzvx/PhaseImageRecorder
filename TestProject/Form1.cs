@@ -115,7 +115,7 @@ namespace TestProject
             t.Item1.CalculatePhaseImage();
             if (unwrapper == null) unwrapper = new Unwrapping2(t.Item1.Image);
 
-            unwrapper.Unwrap(t.Item1.Image);
+            unwrapper.Unwrap(t.Item1.Image, out UwrReport s);
             double[,] dif = ImageSource.diff(t.Item1.Image, t.Item2);
             this.label1.Text = Math.Round(ImageSource.max(dif), 2).ToString();
             label1.Update();

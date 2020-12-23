@@ -120,6 +120,7 @@ namespace RecorderCore
             double count = 0;
             List<double> temp = new List<double>();
             List<double> temp2 = new List<double>();
+            List<UwrReport> temp3 = new List<UwrReport>();
             //Unwrapping2.SetParamsByImage(for_test.Item1.Image);
             for (double i = -5; i < 5; i++)
             {
@@ -130,7 +131,8 @@ namespace RecorderCore
                     for_test.Item1.CalculatePhaseImage();
                     DateTime dt2 = DateTime.UtcNow;
 
-                    uwr.Unwrap(for_test.Item1.Image);
+                    uwr.Unwrap(for_test.Item1.Image, out UwrReport s);
+                    temp3.Add(s);
                     //for_test.Item1.Unwrap();
                     double time = DateTime.UtcNow.Subtract(dt2).TotalSeconds;
                     temp.Add(time);
