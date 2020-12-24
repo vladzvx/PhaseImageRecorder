@@ -60,6 +60,7 @@ namespace ConsoleAppForTesting
 
     static class Sortings
     {
+        static Element[] tempArray = new Element[4000000];
         static Random rnd = new Random();
         public static void InsertionSort(Element[] array)
         {
@@ -192,6 +193,22 @@ namespace ConsoleAppForTesting
         public static void MergeSort(Element[] array)
         {
             MergeSort(array, 0, array.Length - 1);
+        }
+
+
+        public static void HibridSort(Element[] array)
+        {
+            int sorting1 = array.Length / 2;
+
+            Task t1 = Task.Factory.StartNew(() => { Array.Sort(array, 0, sorting1 + 1, new ElementComparer()); });
+            Task t2 = Task.Factory.StartNew(() => { Array.Sort(array, sorting1 + 1, array.Length - 1 - sorting1, new ElementComparer()); });
+
+            Task.WaitAll(t1,t2);
+            
+            //Array.Sort(array, 1000001, 2000000, new ElementComparer());
+            //Array.Sort(array, 2000001, 3000000, new ElementComparer());
+            
+            Merge(array, 0, sorting1, array.Length-1 );
         }
 
         #endregion
