@@ -196,19 +196,34 @@ namespace ConsoleAppForTesting
         }
 
 
-        public static void HibridSort(Element[] array)
+        public static void HibridSort(Element[] array, int ThreadsNumber)
         {
-            int sorting1 = array.Length / 2;
+            int SortingWindowWidth = array.Length / ThreadsNumber;
 
-            Task t1 = Task.Factory.StartNew(() => { Array.Sort(array, 0, sorting1 + 1, new ElementComparer()); });
-            Task t2 = Task.Factory.StartNew(() => { Array.Sort(array, sorting1 + 1, array.Length - 1 - sorting1, new ElementComparer()); });
-
-            Task.WaitAll(t1,t2);
+            List<Task> tasks = new List<Task>();
+            List<int> Bounds = new List<int>() {0 };
+            int edge = SortingWindowWidth;
+            int StartElement = 0;
+            while (edge< array.Length)
+            {
+                tasks.Add(Task.Factory.StartNew(() => { Array.Sort(array, StartElement, SortingWindowWidth + 1, new ElementComparer()); }));
+                StartElement += SortingWindowWidth + 1;
+                Bounds.Add(StartElement);
+                edge = StartElement + SortingWindowWidth + 1;
+            }
+            Bounds.Add(array.Length);
+            Task.WaitAll(tasks.ToArray());
+            List<int> Bounds2 = new List<int>(Bounds);
+            while (Bounds.Count >= 3)
+            {
+                for (int i = 1; i < Bounds.Count-1; i++)
+                {
+                    Merge(array, Bounds[i-1], Bounds[i], Bounds[i + 1]);
+                    Bounds2.Remove(Bounds[i]);
+                }
+                Bounds = Bounds2;
+            }
             
-            //Array.Sort(array, 1000001, 2000000, new ElementComparer());
-            //Array.Sort(array, 2000001, 3000000, new ElementComparer());
-            
-            Merge(array, 0, sorting1, array.Length-1 );
         }
 
         #endregion

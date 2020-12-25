@@ -18,7 +18,7 @@ namespace ConsoleAppForTesting
                 DateTime dt1 = DateTime.UtcNow;
                 //Array.Sort(elements, new ElementComparer());
                 //Sortings.InsertionSort(elements);
-                Sortings.HibridSort(elements);
+                Sortings.HibridSort(elements,2);
                 //Sortings.QuickSort(elements);
                 //Sortings.MergeSort(elements);
                 forResults.Add(DateTime.UtcNow.Subtract(dt1).TotalSeconds);
