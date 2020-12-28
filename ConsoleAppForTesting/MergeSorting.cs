@@ -11,20 +11,26 @@ namespace ConsoleAppForTesting
     class Element
     {
         private static Random rnd = new Random();
-        public static void Refresh(IEnumerable<Element> elements)
+        public static void Refresh(Element[] elements,double[] keys)
         {
-            foreach (Element el in elements)
-                el.Refresh();
+            for (int i = 0; i < elements.Length; i++)
+            {
+                elements[i].Refresh();
+                keys[i] = elements[i].ValueToSort;
+            }
+                
         }
 
-        public static Element[] CreateArray(int size)
+        public static Tuple<Element[],double[]> CreateArray(int size)
         {
             Element[] elements = new Element[size];
+            double[] doubles = new double[size];
             for (int i = 0; i < size; i++)
             {
                 elements[i] = new Element();
+                doubles[i] = elements[i].ValueToSort;
             }
-            return elements;
+            return Tuple.Create(elements,doubles);
         }
 
         public static double[] CreateDouble(int size)
@@ -71,8 +77,19 @@ namespace ConsoleAppForTesting
         }
     }
 
+
     internal static class Sortings
     {
+        internal static bool SortingChecker(Element[] elements)
+        {
+            for (int i = 0; i < elements.Length - 1; i++)
+            {
+                if (elements[i].ValueToSort > elements[i + 1].ValueToSort)
+                    return false;
+            }
+            return true;
+        }
+
         static Element[] tempArray = new Element[4000000];
         static Random rnd = new Random();
         public static void InsertionSort(Element[] array)
