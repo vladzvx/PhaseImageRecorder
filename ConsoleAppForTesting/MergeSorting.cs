@@ -129,10 +129,42 @@ namespace ConsoleAppForTesting
             array[end] = temp;
             return marker;
         }
+        private static int partition(double[] keys,Element[] array, int start, int end)
+        {
+            Element temp;
+            double temp1;
+            int marker = start;
+            for (int i = start; i < end; i++)
+            {
+                if (keys[i] < keys[end])
+                {
+                    temp1 = keys[marker];
+                    temp = array[marker];
+                    array[marker] = array[i];
+                    keys[marker] = keys[i];
+                    array[i] = temp;
+                    keys[i] = temp1;
+                    marker += 1;
+                }
+            }
+
+            temp = array[marker];
+            temp1 = keys[marker];
+            array[marker] = array[end];
+            keys[marker] = keys[end];
+            array[end] = temp;
+            keys[end] = temp1;
+            return marker;
+        }
 
         public static void QuickSort(Element[] array)
         {
             QuickSort(array, 0, array.Length-1);
+        }
+
+        public static void QuickSort( double[] keys,Element[] array)
+        {
+            QuickSort(keys,array, 0, array.Length - 1);
         }
 
         private static void QuickSort(Element[] array, int start, int end)
@@ -146,10 +178,21 @@ namespace ConsoleAppForTesting
             QuickSort(array, pivot + 1, end);
         }
 
+        private static void QuickSort(double[] keys, Element[] array, int start, int end)
+        {
+            if (start >= end)
+            {
+                return;
+            }
+            int pivot = partition(keys,array, start, end);
+            QuickSort(keys,array, start, pivot - 1);
+            QuickSort(keys,array, pivot + 1, end);
+        }
+
         #endregion
 
 
-        
+
 
         #region сортировка слиянием
 
@@ -217,6 +260,12 @@ namespace ConsoleAppForTesting
             public int width;
             public int start;
         }
+
+        public class Report
+        {
+            public double Sorting;
+            public double Merge;
+        }
         public static void HibridSort(Element[] array, int ThreadsNumber)
         {
             int SortingWindowWidth = array.Length / ThreadsNumber;
@@ -253,6 +302,91 @@ namespace ConsoleAppForTesting
                 Bounds = Bounds2;
             }
             
+        }
+
+        public static void HibridSort2(double[] keys,Element[] array, int ThreadsNumber,out Report report)
+        {
+            report = new Report();
+            DateTime dt1 = DateTime.UtcNow;
+            int SortingWindowWidth = array.Length / ThreadsNumber;
+
+            List<Task> tasks = new List<Task>();
+            List<int> Bounds = new List<int>() { 0 };
+            int edge = SortingWindowWidth;
+            int StartElement = 0;
+            while (edge < array.Length)
+            {
+                edge = StartElement + SortingWindowWidth;
+                int width = edge <= array.Length ? SortingWindowWidth : array.Length - StartElement;
+                int start = StartElement;
+
+                Task t = Task.Factory.StartNew(() => {
+                    Array.Sort(keys,array, start, width);
+                });
+               // t.Wait();
+                tasks.Add(t);
+                StartElement += SortingWindowWidth;
+                Bounds.Add(StartElement);
+            }
+            Bounds[Bounds.Count - 1] = array.Length;
+            Task.WaitAll(tasks.ToArray());
+
+            report.Sorting = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
+            dt1 = DateTime.UtcNow;
+            List<int> Bounds2 = new List<int>(Bounds);
+            while (Bounds.Count >= 3)
+            {
+                for (int i = 1; i < Bounds.Count - 1; i++)
+                {
+                    Merge(array, 0, Bounds[i] - 1, Bounds[i + 1] - 1);
+                    Bounds2.Remove(Bounds[i]);
+                }
+                Bounds = Bounds2;
+            }
+            report.Merge = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
+        }
+
+        public static void HibridSort3(double[] keys, Element[] array, int ThreadsNumber, out Report report)
+        {
+            report = new Report();
+            DateTime dt1 = DateTime.UtcNow;
+            int SortingWindowWidth = array.Length / ThreadsNumber;
+
+            List<Task> tasks = new List<Task>();
+            List<int> Bounds = new List<int>() { 0 };
+            int edge = SortingWindowWidth;
+            int StartElement = 0;
+            while (edge < array.Length)
+            {
+                edge = StartElement + SortingWindowWidth;
+                int width = edge <= array.Length ? SortingWindowWidth : array.Length - StartElement;
+                int start = StartElement;
+
+                Task t = Task.Factory.StartNew(() => {
+                    Array.Sort(keys, array, start, width);
+                });
+                // t.Wait();
+                tasks.Add(t);
+                StartElement += SortingWindowWidth;
+                Bounds.Add(StartElement);
+            }
+
+            Bounds[Bounds.Count - 1] = array.Length;
+            Task.WaitAll(tasks.ToArray());
+            
+            report.Sorting = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
+            dt1 = DateTime.UtcNow;
+            List<int> Bounds2 = new List<int>(Bounds);
+            while (Bounds.Count >= 3)
+            {
+                for (int i = 1; i < Bounds.Count - 1; i++)
+                {
+                    Merge(array, 0, Bounds[i] - 1, Bounds[i + 1] - 1);
+                    Bounds2.Remove(Bounds[i]);
+                }
+                Bounds = Bounds2;
+            }
+            report.Merge = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
         }
 
         #endregion

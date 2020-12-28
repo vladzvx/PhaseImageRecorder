@@ -11,24 +11,25 @@ namespace ConsoleAppForTesting
         {
              var q = Element.CreateArray(4000000);
             Element[] elements = q.Item1;
-            double[] d = Element.CreateDouble(4000000);// q.Item2;
+            double[] d = q.Item2;
             //Element[] elements = Element.CreateArray(21);
             int NIters = 30;
             List<double> forResults = new List<double>(NIters);
+            List<Sortings.Report> reports = new List<Sortings.Report>(NIters);
             for (int i = 0; i < NIters; i++)
             {
                 DateTime dt1 = DateTime.UtcNow;
                 //Array.Sort(d, elements);
-                Array.Sort(d);
+                //Array.Sort(d);
                 //Array.Sort(elements, new ElementComparer());
                 //Sortings.InsertionSort(elements);
-                //Sortings.HibridSort(elements,4);
-                //Sortings.QuickSort(elements);
+                Sortings.HibridSort2(d,elements,2,out Sortings.Report report);
+                reports.Add(report);
+                //Sortings.QuickSort(d,elements);
                 //Sortings.MergeSort(elements);
                 forResults.Add(DateTime.UtcNow.Subtract(dt1).TotalSeconds);
-                d= Element.CreateDouble(4000000);
-                //if (!Sortings.SortingChecker(elements)) throw new Exception();
-                //Element.Refresh(elements,d);
+                if (!Sortings.SortingChecker(elements)) throw new Exception();
+                Element.Refresh(elements,d);
             }
             double mean = forResults.Sum() / (double)forResults.Count;
         }
