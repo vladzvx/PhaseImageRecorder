@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+[assembly: InternalsVisibleTo("RecorderCoreTests")]
 
 namespace ConsoleAppForTesting
 {
@@ -24,6 +26,17 @@ namespace ConsoleAppForTesting
             }
             return elements;
         }
+
+        public static double[] CreateDouble(int size)
+        {
+            double[] elements = new double[size];
+            for (int i = 0; i < size; i++)
+            {
+                elements[i] = rnd.NextDouble() ;
+            }
+            return elements;
+        }
+
 
         public double ValueToSort;
 
@@ -58,7 +71,7 @@ namespace ConsoleAppForTesting
         }
     }
 
-    static class Sortings
+    internal static class Sortings
     {
         static Element[] tempArray = new Element[4000000];
         static Random rnd = new Random();
@@ -119,20 +132,7 @@ namespace ConsoleAppForTesting
         #endregion
 
 
-        /// <summary>
-        /// Метод для проверки корректности сортировки
-        /// </summary>
-        /// <param name="elements"></param>
-        /// <returns></returns>
-        public static bool SortingChecker(Element[] elements)
-        {
-            for (int i = 0; i < elements.Length-1; i++)
-            {
-                if (elements[i].ValueToSort > elements[i + 1].ValueToSort)
-                    return false;
-            }
-            return true;
-        }
+        
 
         #region сортировка слиянием
 
@@ -195,7 +195,11 @@ namespace ConsoleAppForTesting
             MergeSort(array, 0, array.Length - 1);
         }
 
-
+        class str
+        {
+            public int width;
+            public int start;
+        }
         public static void HibridSort(Element[] array, int ThreadsNumber)
         {
             int SortingWindowWidth = array.Length / ThreadsNumber;
@@ -206,19 +210,27 @@ namespace ConsoleAppForTesting
             int StartElement = 0;
             while (edge< array.Length)
             {
-                tasks.Add(Task.Factory.StartNew(() => { Array.Sort(array, StartElement, SortingWindowWidth + 1, new ElementComparer()); }));
-                StartElement += SortingWindowWidth + 1;
+                edge = StartElement + SortingWindowWidth;
+                int width = edge <= array.Length ? SortingWindowWidth : array.Length - StartElement;
+                int start = StartElement;
+
+                Task t = Task.Factory.StartNew(() => {
+                    Array.Sort(array, start, width, new ElementComparer()); 
+                });
+                //t.Wait();
+                tasks.Add(t);
+                StartElement += SortingWindowWidth ;
                 Bounds.Add(StartElement);
-                edge = StartElement + SortingWindowWidth + 1;
             }
-            Bounds.Add(array.Length);
+            Bounds[Bounds.Count - 1] = array.Length;
+            //Bounds.Add(array.Length-1);
             Task.WaitAll(tasks.ToArray());
             List<int> Bounds2 = new List<int>(Bounds);
             while (Bounds.Count >= 3)
             {
                 for (int i = 1; i < Bounds.Count-1; i++)
                 {
-                    Merge(array, Bounds[i-1], Bounds[i], Bounds[i + 1]);
+                    Merge(array, 0, Bounds[i]-1, Bounds[i + 1]-1);
                     Bounds2.Remove(Bounds[i]);
                 }
                 Bounds = Bounds2;

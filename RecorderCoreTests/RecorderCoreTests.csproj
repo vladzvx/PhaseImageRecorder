@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ConsoleAppForTesting\ConsoleAppForTesting.csproj" />
     <ProjectReference Include="..\RecorderCore\RecorderCore.csproj" />
   </ItemGroup>
 
