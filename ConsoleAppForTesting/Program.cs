@@ -11,7 +11,7 @@ namespace ConsoleAppForTesting
         {
              var q = Element.CreateArray(4000000);
             Element[] elements = q.Item1;
-            double[] d = q.Item2;
+            double[] d = Element.CreateDouble(4000000);// q.Item2;
             //Element[] elements = Element.CreateArray(21);
             int NIters = 30;
             List<double> forResults = new List<double>(NIters);
@@ -26,8 +26,9 @@ namespace ConsoleAppForTesting
                 //Sortings.QuickSort(elements);
                 //Sortings.MergeSort(elements);
                 forResults.Add(DateTime.UtcNow.Subtract(dt1).TotalSeconds);
+                d= Element.CreateDouble(4000000);
                 //if (!Sortings.SortingChecker(elements)) throw new Exception();
-                Element.Refresh(elements,d);
+                //Element.Refresh(elements,d);
             }
             double mean = forResults.Sum() / (double)forResults.Count;
         }
