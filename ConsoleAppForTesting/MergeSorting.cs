@@ -314,6 +314,7 @@ namespace ConsoleAppForTesting
             List<int> Bounds = new List<int>() { 0 };
             int edge = SortingWindowWidth;
             int StartElement = 0;
+            int c = 0;
             while (edge < array.Length)
             {
                 edge = StartElement + SortingWindowWidth;
@@ -321,12 +322,33 @@ namespace ConsoleAppForTesting
                 int start = StartElement;
 
                 Task t = Task.Factory.StartNew(() => {
-                    Array.Sort(keys,array, start, width);
+                    int _start = start;
+                    int _width = width;
+                    Array.Sort(keys,array, _start, _width);
                 });
-               // t.Wait();
-                tasks.Add(t);
+                c++;
                 StartElement += SortingWindowWidth;
                 Bounds.Add(StartElement);
+                tasks.Add(t);
+                //if (c == 2)
+                //{
+                //    Task t2 = Task.WhenAll(tasks[tasks.Count - 1], tasks[tasks.Count - 2]).ContinueWith((t) =>
+                //      {
+                //          int _start = start - 1;
+                //          int end = _start + width-1;
+                //          Merge(array, 0, _start, end);
+                //      });
+                //    //tasks = new List<Task>() { t2 };
+                //    tasks.Add(t2);
+                //    c = 0;
+                //    
+                //}
+                //else
+                //{
+                    
+                //}
+                
+                
             }
             Bounds[Bounds.Count - 1] = array.Length;
             Task.WaitAll(tasks.ToArray());
@@ -346,48 +368,169 @@ namespace ConsoleAppForTesting
             report.Merge = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
         }
 
-        public static void HibridSort3(double[] keys, Element[] array, int ThreadsNumber, out Report report)
+
+
+
+        public static void Sort3(double[] keys, int left, int right) 
         {
-            report = new Report();
-            DateTime dt1 = DateTime.UtcNow;
-            int SortingWindowWidth = array.Length / ThreadsNumber;
-
-            List<Task> tasks = new List<Task>();
-            List<int> Bounds = new List<int>() { 0 };
-            int edge = SortingWindowWidth;
-            int StartElement = 0;
-            while (edge < array.Length)
+           // while (depthLimit != 0)
             {
-                edge = StartElement + SortingWindowWidth;
-                int width = edge <= array.Length ? SortingWindowWidth : array.Length - StartElement;
-                int start = StartElement;
-
-                Task t = Task.Factory.StartNew(() => {
-                    Array.Sort(keys, array, start, width);
-                });
-                // t.Wait();
-                tasks.Add(t);
-                StartElement += SortingWindowWidth;
-                Bounds.Add(StartElement);
-            }
-
-            Bounds[Bounds.Count - 1] = array.Length;
-            Task.WaitAll(tasks.ToArray());
-            
-            report.Sorting = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
-            dt1 = DateTime.UtcNow;
-            List<int> Bounds2 = new List<int>(Bounds);
-            while (Bounds.Count >= 3)
-            {
-                for (int i = 1; i < Bounds.Count - 1; i++)
+                int index1 = left;
+                int index2 = right;
+                int index3 = index1 + (index2 - index1 >> 1);
+                //ArraySortHelper<double>.SwapIfGreater(keys, comparer, index1, index3);
+                //ArraySortHelper<double>.SwapIfGreater(keys, comparer, index1, index2);
+                //ArraySortHelper<double>.SwapIfGreater(keys, comparer, index3, index2);
+                double obj1 = keys[index3];
+                do
                 {
-                    Merge(array, 0, Bounds[i] - 1, Bounds[i + 1] - 1);
-                    Bounds2.Remove(Bounds[i]);
+                    while (keys[index1]< obj1)
+                        ++index1;
+                    while (obj1 < keys[index2])
+                        --index2;
+                    if (index1 <= index2)
+                    {
+                        if (index1 < index2)
+                        {
+                            double obj2 = keys[index1];
+                            keys[index1] = keys[index2];
+                            keys[index2] = obj2;
+                        }
+                        ++index1;
+                        --index2;
+                    }
+                    else
+                        break;
                 }
-                Bounds = Bounds2;
+                while (index1 <= index2);
+
+
+                // --depthLimit;
+                if (index2 - left <= right - index1)
+                {
+                    if (left < index2)
+                        Sort3(keys, left, index2);
+                    left = index1;
+                }
+                //else
+                //{
+                //    if (index1 < right)
+                //        ArraySortHelper<T>.DepthLimitedQuickSort(keys, index1, right, comparer, depthLimit);
+                //    right = index2;
+                //}
+                if (left >= right)
+                    return;
             }
-            report.Merge = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
+            //ArraySortHelper<T>.Heapsort(keys, left, right, comparer);
         }
+
+        #region Parallel Sort
+
+        public static class Sort
+        {
+            public static int Threshold = 150; // array length to use InsertionSort instead of SequentialQuickSort
+
+            public static void InsertionSort<T>(T[] array, int from, int to) where T : IComparable<T>
+            {
+                for (int i = from + 1; i < to; i++)
+                {
+                    var a = array[i];
+                    int j = i - 1;
+
+                    //while (j >= from && array[j] > a)
+                    while (j >= from && array[j].CompareTo(a) == -1)
+                    {
+                        array[j + 1] = array[j];
+                        j--;
+                    }
+                    array[j + 1] = a;
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static void Swap<T>(T[] array, int i, int j) where T : IComparable<T>
+            {
+                var temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+
+            //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static int Partition<T>(T[] array, int from, int to, int pivot) where T : IComparable<T>
+            {
+                // Pre: from <= pivot < to (other than that, pivot is arbitrary)
+                var arrayPivot = array[pivot];  // pivot value
+                Swap(array, pivot, to - 1); // move pivot value to end for now, after this pivot not used
+                var newPivot = from; // new pivot 
+                for (int i = from; i < to - 1; i++) // be careful to leave pivot value at the end
+                {
+                    // Invariant: from <= newpivot <= i < to - 1 && 
+                    // forall from <= j <= newpivot, array[j] <= arrayPivot && forall newpivot < j <= i, array[j] > arrayPivot
+                    //if (array[i] <= arrayPivot)
+                    if (array[i].CompareTo(arrayPivot) != -1)
+                    {
+                        Swap(array, newPivot, i);  // move value smaller than arrayPivot down to newpivot
+                        newPivot++;
+                    }
+                }
+                Swap(array, newPivot, to - 1); // move pivot value to its final place
+                return newPivot; // new pivot
+                                 // Post: forall i <= newpivot, array[i] <= array[newpivot]  && forall i > ...
+            }
+
+            public static void SequentialQuickSort<T>(T[] array) where T : IComparable<T>
+            {
+                SequentialQuickSort(array, 0, array.Length);
+            }
+
+            static void SequentialQuickSort<T>(T[] array, int from, int to) where T : IComparable<T>
+            {
+                if (to - from <= Threshold)
+                {
+                    InsertionSort<T>(array, from, to);
+                }
+                else
+                {
+                    int pivot = from + (to - from) / 2; // could be anything, use middle
+                    pivot = Partition<T>(array, from, to, pivot);
+                    // Assert: forall i < pivot, array[i] <= array[pivot]  && forall i > ...
+                    SequentialQuickSort(array, from, pivot);
+                    SequentialQuickSort(array, pivot + 1, to);
+                }
+            }
+
+            public static void ParallelQuickSort<T>(T[] array) where T : IComparable<T>
+            {
+                ParallelQuickSort(array,  0, array.Length,
+                     (int)Math.Log(Environment.ProcessorCount, 2) + 4);
+            }
+
+            static void ParallelQuickSort<T>(T[] array,int from, int to, int depthRemaining) where T : IComparable<T>
+            {
+                if (to - from <= Threshold)
+                {
+                    InsertionSort<T>(array, from, to);
+                }
+                else
+                {
+                    int pivot = from + (to - from) / 2; // could be anything, use middle
+                    pivot = Partition<T>(array, from, to, pivot);
+                    if (depthRemaining > 0)
+                    {
+                        Parallel.Invoke(
+                            () => ParallelQuickSort(array, from, pivot, depthRemaining - 1),
+                            () => ParallelQuickSort(array,  pivot + 1, to, depthRemaining - 1));
+                    }
+                    else
+                    {
+                        ParallelQuickSort(array,  from, pivot, 0);
+                        ParallelQuickSort(array,  pivot + 1, to, 0);
+                    }
+                }
+            }
+        }
+
+        #endregion
 
         #endregion
     }
