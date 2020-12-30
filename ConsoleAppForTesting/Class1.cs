@@ -4,9 +4,20 @@ using System.Runtime.CompilerServices;
 using System.Diagnostics.Contracts;
 using System.Runtime.Versioning;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace ConsoleAppForTesting
 {
+
+    class Report2
+    {
+        public int? left1;
+        public int? left2;
+        public int? Right1;
+        public int? Right2;
+
+    }
     #region ArraySortHelper for single arrays
 
     static class BinaryCompatibility
@@ -44,6 +55,7 @@ namespace ConsoleAppForTesting
         }
     }
 #endif // CONTRACTS_FULL
+
 
     internal static class IntrospectiveSortUtilities
     {
@@ -242,30 +254,42 @@ namespace ConsoleAppForTesting
                 a[j] = t;
             }
         }
+
+        //public static void DepthLimitedQuickSort2(double[] keys,Element[] elements, int left, int right,ConcurrentBag<Report2> res)
         public static void DepthLimitedQuickSort2(double[] keys,Element[] elements, int left, int right)
         {
+           
             do
             {
                 int i = left;
                 int j = right;
-
-                // pre-sort the low, middle (pivot), and high values in place.
-                // this improves performance in the face of already sorted data, or 
-                // data that is made up of multiple sorted runs appended together.
+                //Console.WriteLine();
+                //Console.WriteLine(string.Format("Sorting iteration started. left: {0}; right: {1};",left,right));
+                //Console.WriteLine("Sorting iteration started. Array: ");
+                //foreach (double d in keys)
+                //{
+                //    Console.Write(string.Format("{0}; ",d));
+                //}
+                //Console.WriteLine();
+                //Перед началом работы сортируем опорные элементы: левый, центральный и правый
                 int middle = i + ((j - i) >> 1);
-                SwapIfGreater2(keys, elements,  i, middle);  // swap the low with the mid point
-                SwapIfGreater2(keys, elements,  i, j);   // swap the low with the high
-                SwapIfGreater2(keys, elements,  middle, j); // swap the middle with the high
+                SwapIfGreater2(keys, elements,  i, middle); 
+                SwapIfGreater2(keys, elements,  i, j);  
+                SwapIfGreater2(keys, elements,  middle, j); 
 
                 //Element el1 = elements[middle];
                 double x = keys[middle];
                 do
                 {
-                    while (keys[i]< x) i++;
-                    while (x < keys[j]) j--;
-                   // Contract.Assert(i >= left && j <= right, "(i>=left && j<=right)  Sort failed - Is your IComparer bogus?");
-                    if (i > j) break;
-                    if (i < j)
+                    while (keys[i]< x) i++;//Пока элементы слева меньше x, т.е. опорного элемента - отползаем от края
+                    //т.е. мы доползаем до первого удовлетворяющего условию меньшести относительно опорного элемента слева
+                    while (x < keys[j]) j--;//Пока элементы справа больше опорного элемента х - отползаем от края.
+                    //Также дползаем до первого, удолветворяющего уловию большести относительно опорного справа. 
+                    if (i > j)//если доотползались до смены левой и правой границ местами - значит массив сортирован или нам больше нечего делать, завершаем работу
+                    {
+                        break;
+                    } 
+                    if (i < j)//Если между левой и правой границами (уже сужеными) остается зазор - меняем местами левый и правый элементы
                     {
                         Element el  = elements[i];
                         double key = keys[i];
@@ -273,23 +297,45 @@ namespace ConsoleAppForTesting
                         keys[j] = key;
                         elements[i] = elements[j];
                         elements[j] = el;
+                        //foreach (double d in keys)
+                        //{
+                        //    Console.Write(string.Format("{0}; ", d));
+                        //}
+                        //Console.WriteLine();
                     }
-                    i++;
-                    j--;
-                } while (i <= j);
+                    i++;//Делаем шаг дальше вправо
+                    j--;//Делае дальше влево
+                } while (i <= j);//И так пока i<=j. Если нет - значит число пригодных для обмена пар исчерпано, нужно переходить к рекурсивным кусочкам
 
-                // The next iteration of the while loop is to "recursively" sort the larger half of the array and the
-                // following calls recrusively sort the smaller half.  So we subtrack one from depthLimit here so
-                // both sorts see the new value.
+                //Report2 report = new Report2();
+                //res.Add(report);
 
-                if (j - left <= right - i)
+                 if (j - left <= right - i)//Если расстояние от последней правой границы до изначальной. Даёт небольшой выигрыш по скорости
+                //левой меньше или равно расстоянию от изначальной правой границы до последней левой границы
                 {
-                    if (left < j) DepthLimitedQuickSort2(keys, elements, left, j);
-                    left = i;
+                    if (left < j)//И если изначальная левая граница левее последней правой границы, 
+                    {
+                        //report.left1 = left;
+                        //report.Right1 = j;
+                        //DepthLimitedQuickSort2(keys, elements, left, j, res);
+                        DepthLimitedQuickSort2(keys, elements, left, j);
+
+                        //Parallel.Invoke(() => DepthLimitedQuickSort2(keys, elements, left, j) );
+                        
+                        //то запускаем сортировку от исходной левой границы до последней правой
+                    }
+                    left = i;//Перемещаем исходную левую границу в последнюю левую 
                 }
                 else
                 {
-                    if (i < right) DepthLimitedQuickSort2(keys, elements, i, right);
+                    if (i < right)
+                    {
+                        //report.left2 = i;
+                        //report.Right2 = right;
+                        //DepthLimitedQuickSort2(keys, elements, i, right, res);
+                        DepthLimitedQuickSort2(keys, elements, i, right);
+                        //Parallel.Invoke(() => DepthLimitedQuickSort2(keys, elements, i, right));
+                    }
                     right = j;
                 }
             } while (left < right);

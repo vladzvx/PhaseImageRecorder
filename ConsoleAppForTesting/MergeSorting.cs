@@ -49,10 +49,12 @@ namespace ConsoleAppForTesting
         public Element()
         {
             ValueToSort = rnd.NextDouble();
+            //ValueToSort = Math.Round(rnd.NextDouble(),3);
         }
         public void Refresh()
         {
             ValueToSort = rnd.NextDouble();
+            //ValueToSort = Math.Round(rnd.NextDouble(), 3);
         }
        
     }
@@ -80,6 +82,88 @@ namespace ConsoleAppForTesting
 
     internal static class Sortings
     {
+        public static void MyQuickSort(double[] keys,Element[] array,int start,int end)
+        {
+            //double start_value = keys[start];
+            //double end_value = keys[end];
+            //while (start< end && keys[start]>= start_value)
+            //{
+            //    start++;
+            //}
+            //while (end> start && keys[end] <= end_value)
+            //{
+            //    end--;
+            //}
+            if (end - start < 1)
+            {
+                return;
+            }
+            double[] support_array = new double[end - start + 1];
+            Element[] support_array2 = new Element[end - start + 1];
+            int support = (start + end) / 2;
+
+            List<int> lower = new List<int>();
+            List<int> higher = new List<int>();
+            List<int> equals = new List<int>();
+            
+            double support_value = keys[support];
+            //foreach (Element el in array)
+            //{
+            //    Console.Write(el.ValueToSort);
+            //    Console.Write("; ");
+            //}
+
+            //Console.WriteLine();
+            //Console.WriteLine(string.Format("support index: {0}; value: {1}; start: {2}; end: {3}", support, support_value.ValueToSort, start, end));
+            for (int i = start; i <= end; i++)
+            {
+                if (keys[i]< support_value)
+                {
+                    lower.Add(i);
+                }
+                else if (keys[i] > support_value)
+                {
+                    higher.Add(i);
+                }
+                else
+                {
+                    equals.Add(i);
+                }
+            }
+            int k_l = 0;
+            foreach(int l in lower)
+            {
+                support_array[k_l] = keys[l];
+                support_array2[k_l] = array[l];
+                k_l ++;
+            }
+            int k_e = lower.Count; 
+            foreach (int e in equals)
+            {
+                support_array[k_e] = keys[e];
+                support_array2[k_e] = array[e];
+                k_e++;
+            }
+            //support_array[lower.Count] = keys[support];
+            int k_h = lower.Count+equals.Count;
+            foreach (int h in higher)
+            {
+                support_array[k_h] = keys[h];
+                support_array2[k_h] = array[h];
+                k_h++;
+            }
+
+            for (int i = 0; i < support_array.Length; i++) 
+            {
+                keys[start + i] = support_array[i];
+                array[start + i] = support_array2[i];
+            }
+            Parallel.Invoke(
+                ()=> MyQuickSort(keys,array, start, start+lower.Count-1),
+                ()=>MyQuickSort(keys,array, start+lower.Count + equals.Count, end));
+
+        }
+
         internal static bool SortingChecker(Element[] elements)
         {
             for (int i = 0; i < elements.Length - 1; i++)
@@ -304,7 +388,7 @@ namespace ConsoleAppForTesting
             
         }
 
-        public static void HibridSort2(double[] keys,Element[] array, int ThreadsNumber,out Report report)
+        public static void HibridSort2(double[] keys, Element[] array, int ThreadsNumber,out Report report)
         {
             report = new Report();
             DateTime dt1 = DateTime.UtcNow;
@@ -335,20 +419,18 @@ namespace ConsoleAppForTesting
                 //    Task t2 = Task.WhenAll(tasks[tasks.Count - 1], tasks[tasks.Count - 2]).ContinueWith((t) =>
                 //      {
                 //          int _start = start - 1;
-                //          int end = _start + width-1;
+                //          int end = _start + width - 1;
                 //          Merge(array, 0, _start, end);
                 //      });
                 //    //tasks = new List<Task>() { t2 };
                 //    tasks.Add(t2);
                 //    c = 0;
-                //    
+                    
                 //}
                 //else
                 //{
-                    
+
                 //}
-                
-                
             }
             Bounds[Bounds.Count - 1] = array.Length;
             Task.WaitAll(tasks.ToArray());
