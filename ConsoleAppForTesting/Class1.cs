@@ -342,6 +342,83 @@ namespace ConsoleAppForTesting
         }
 
 
+        public static void DepthLimitedQuickSort3(double[] keys, Element[] elements, int left, int right)
+        {
+
+            do
+            {
+                int i = left;
+                int j = right;
+                //Console.WriteLine();
+                //Console.WriteLine(string.Format("Sorting iteration started. left: {0}; right: {1};",left,right));
+                //Console.WriteLine("Sorting iteration started. Array: ");
+                //foreach (double d in keys)
+                //{
+                //    Console.Write(string.Format("{0}; ",d));
+                //}
+                //Console.WriteLine();
+                //Перед началом работы сортируем опорные элементы: левый, центральный и правый
+                int middle = i + ((j - i) >> 1);
+                SwapIfGreater2(keys, elements, i, middle);
+                SwapIfGreater2(keys, elements, i, j);
+                SwapIfGreater2(keys, elements, middle, j);
+
+                //Element el1 = elements[middle];
+                double x = keys[middle];
+                do
+                {
+                    while (keys[i] < x) i++;//Пока элементы слева меньше x, т.е. опорного элемента - отползаем от края
+                    //т.е. мы доползаем до первого удовлетворяющего условию меньшести относительно опорного элемента слева
+                    while (x < keys[j]) j--;//Пока элементы справа больше опорного элемента х - отползаем от края.
+                    //Также дползаем до первого, удолветворяющего уловию большести относительно опорного справа. 
+                    if (i > j)//если доотползались до смены левой и правой границ местами - значит массив сортирован или нам больше нечего делать, завершаем работу
+                    {
+                        break;
+                    }
+                    if (i < j)//Если между левой и правой границами (уже сужеными) остается зазор - меняем местами левый и правый элементы
+                    {
+                        Element el = elements[i];
+                        double key = keys[i];
+                        keys[i] = keys[j];
+                        keys[j] = key;
+                        elements[i] = elements[j];
+                        elements[j] = el;
+                        //foreach (double d in keys)
+                        //{
+                        //    Console.Write(string.Format("{0}; ", d));
+                        //}
+                        //Console.WriteLine();
+                    }
+                    i++;//Делаем шаг дальше вправо
+                    j--;//Делае дальше влево
+                } while (i <= j);//И так пока i<=j. Если нет - значит число пригодных для обмена пар исчерпано, нужно переходить к рекурсивным кусочкам
+
+                if (left < j&& i < right)
+                {
+                    if (j - left > 40 || right - i > 40)
+                    {
+                        Parallel.Invoke(() => DepthLimitedQuickSort3(keys, elements, left, j), () => DepthLimitedQuickSort3(keys, elements, i, right));
+                    }
+                    else
+                    {
+                        DepthLimitedQuickSort2(keys, elements, left, j);
+                        DepthLimitedQuickSort2(keys, elements, i, right);
+                    }
+                }
+                else if (left < j)
+                {
+                    DepthLimitedQuickSort2(keys, elements, left, j);
+                }
+                else if (i < right)
+                {
+                    DepthLimitedQuickSort2(keys, elements, i, right);
+                }
+                left = i;
+                right = j;
+
+            } while (left < right);
+        }
+
         public static void DepthLimitedQuickSort(T[] keys, int left, int right, IComparer<T> comparer, int depthLimit)
         {
             do

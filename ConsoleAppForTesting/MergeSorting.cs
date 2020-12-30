@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -82,6 +83,114 @@ namespace ConsoleAppForTesting
 
     internal static class Sortings
     {
+        public static void MyQuickSort2(double[] keys, Element[] array, int start, int end)
+        {
+            //double start_value = keys[start];
+            //double end_value = keys[end];
+            //while (start< end && keys[start]>= start_value)
+            //{
+            //    start++;
+            //}
+            //while (end> start && keys[end] <= end_value)
+            //{
+            //    end--;
+            //}
+            if (end - start < 1)
+            {
+                return;
+            }
+            double[] support_array = new double[end - start + 1];
+            Element[] support_array2 = new Element[end - start + 1];
+            int support = (start + end) / 2;
+
+            SwapIfGreater2(keys, array, start, support);
+            SwapIfGreater2(keys, array, start, end);
+            SwapIfGreater2(keys, array, support, end);
+
+
+            //ConcurrentBag<int> lower = new ConcurrentBag<int>();
+            List<int> lower = new List<int>();
+            List<int> higher = new List<int>();
+            List<int> equals = new List<int>();
+
+            double support_value = keys[support];
+            //foreach (Element el in array)
+            //{
+            //    Console.Write(el.ValueToSort);
+            //    Console.Write("; ");
+            //}
+
+            //Console.WriteLine();
+            //Console.WriteLine(string.Format("support index: {0}; value: {1}; start: {2}; end: {3}", support, support_value.ValueToSort, start, end));
+            for (int i = start; i < end; i++)
+            {
+                if (keys[i] < support_value)
+                {
+                    lower.Add(i);
+                }
+                else if (keys[i] > support_value)
+                {
+                    higher.Add(i);
+                }
+                else
+                {
+                    equals.Add(i);
+                }
+            }
+            //Parallel.For(start, end+1, (i) =>
+            //{
+            //    if (keys[i] < support_value)
+            //    {
+            //        lower.Add(i);
+            //    }
+            //    else if (keys[i] > support_value)
+            //    {
+            //        higher.Add(i);
+            //    }
+            //    else
+            //    {
+            //        equals.Add(i);
+            //    }
+            //});
+
+            int k_l = 0;
+            //Parallel.ForEach(lower,(l)=> { })
+            foreach (int l in lower)
+            {
+                support_array[k_l] = keys[l];
+                support_array2[k_l] = array[l];
+                k_l++;
+            }
+            int k_e = lower.Count;
+            foreach (int e in equals)
+            {
+                support_array[k_e] = keys[e];
+                support_array2[k_e] = array[e];
+                k_e++;
+            }
+            //support_array[lower.Count] = keys[support];
+            int k_h = lower.Count + equals.Count;
+            foreach (int h in higher)
+            {
+                support_array[k_h] = keys[h];
+                support_array2[k_h] = array[h];
+                k_h++;
+            }
+
+            for (int i = 0; i < support_array.Length; i++)
+            {
+                keys[start + i] = support_array[i];
+                array[start + i] = support_array2[i];
+            }
+            /*
+            Parallel.Invoke(
+                ()=> MyQuickSort(keys,array, start, start+lower.Count-1),
+                ()=>MyQuickSort(keys,array, start+lower.Count + equals.Count, end));
+            */
+            MyQuickSort2(keys, array, start, start + lower.Count - 1);
+            MyQuickSort2(keys, array, start + lower.Count + equals.Count, end);
+        }
+
         public static void MyQuickSort(double[] keys,Element[] array,int start,int end)
         {
             //double start_value = keys[start];
@@ -101,6 +210,11 @@ namespace ConsoleAppForTesting
             double[] support_array = new double[end - start + 1];
             Element[] support_array2 = new Element[end - start + 1];
             int support = (start + end) / 2;
+
+            SwapIfGreater2(keys, array, start, support);
+            SwapIfGreater2(keys, array, start, end);
+            SwapIfGreater2(keys, array, support, end);
+
 
             List<int> lower = new List<int>();
             List<int> higher = new List<int>();
@@ -158,9 +272,62 @@ namespace ConsoleAppForTesting
                 keys[start + i] = support_array[i];
                 array[start + i] = support_array2[i];
             }
+            /*
             Parallel.Invoke(
                 ()=> MyQuickSort(keys,array, start, start+lower.Count-1),
                 ()=>MyQuickSort(keys,array, start+lower.Count + equals.Count, end));
+            */
+            MyQuickSort(keys, array, start, start + lower.Count - 1);
+            MyQuickSort(keys, array, start + lower.Count + equals.Count, end);
+        }
+        private static void SwapIfGreater2(double[] keys, Element[] elements, int a, int b)
+        {
+            if (a != b)
+            {
+                if (keys[a] > keys[b])
+                {
+                    Element el = elements[a];
+                    double key = keys[a];
+                    keys[a] = keys[b];
+                    keys[b] = key;
+                    elements[a] = elements[b];
+                    elements[b] = el;
+
+                }
+            }
+        }
+        public static void MyQuickSort3(double[] keys, Element[] array, int start, int end)
+        {
+            int i = start;
+            int j = end;
+            int middle = i + ((j - i) >> 1);
+            SwapIfGreater2(keys, array, i, middle);
+            SwapIfGreater2(keys, array, i, j);
+            SwapIfGreater2(keys, array, middle, j);
+            double support_value = keys[middle];
+
+            do
+            {
+                while (keys[i] < support_value) i++;
+                while (support_value < keys[j]) j--;
+
+                if (i < j)//Если между левой и правой границами (уже сужеными) остается зазор - меняем местами левый и правый элементы
+                {
+                    Element el = array[i];
+                    double key = keys[i];
+                    keys[i] = keys[j];
+                    keys[j] = key;
+                    array[i] = array[j];
+                    array[j] = el;
+                }
+                i++;//Делаем шаг дальше вправо
+                j--;//Делае дальше влево
+            }
+            while (i <= j);
+
+
+            MyQuickSort3(keys, array, start, middle - 1);
+            MyQuickSort3(keys, array, middle,end);
 
         }
 
