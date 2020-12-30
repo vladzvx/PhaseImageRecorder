@@ -1170,6 +1170,22 @@ namespace ConsoleAppForTesting
             }
         }
 
+        private static void Swap2(double[] keys, Element[] values, int i, int j)
+        {
+            if (i != j)
+            {
+                double k = keys[i];
+                keys[i] = keys[j];
+                keys[j] = k;
+                if (values != null)
+                {
+                    Element v = values[i];
+                    values[i] = values[j];
+                    values[j] = v;
+                }
+            }
+        }
+
         internal static void DepthLimitedQuickSort(TKey[] keys, TValue[] values, int left, int right, IComparer<TKey> comparer, int depthLimit)
         {
             do
@@ -1335,7 +1351,7 @@ namespace ConsoleAppForTesting
             return left;
         }
 
-        private static void Heapsort(TKey[] keys, TValue[] values, int lo, int hi, IComparer<TKey> comparer)
+        internal static void Heapsort(TKey[] keys, TValue[] values, int lo, int hi, IComparer<TKey> comparer)
         {
             Contract.Requires(keys != null);
             Contract.Requires(values != null);
@@ -1354,6 +1370,46 @@ namespace ConsoleAppForTesting
                 Swap(keys, values, lo, lo + i - 1);
                 DownHeap(keys, values, 1, i - 1, lo, comparer);
             }
+        }
+
+        public static void Heapsort2(double[] keys, Element[] values, int lo, int hi)
+        {
+
+            int n = hi - lo + 1;
+            for (int i = n / 2; i >= 1; i = i - 1)
+            {
+                DownHeap2(keys, values, i, n, lo);
+            }
+            for (int i = n; i > 1; i = i - 1)
+            {
+                Swap2(keys, values, lo, lo + i - 1);
+                DownHeap2(keys, values, 1, i - 1, lo);
+            }
+        }
+
+        private static void DownHeap2(double[] keys, Element[] values, int i, int n, int lo)
+        {
+
+            double d = keys[lo + i - 1];
+            Element dValue = values[lo + i - 1];
+            int child;
+            while (i <= n / 2)
+            {
+                child = 2 * i;
+                if (child < n && (keys[lo + child - 1]<keys[lo + child]))
+                {
+                    child++;
+                }
+                if (!((d< keys[lo + child - 1])))
+                    break;
+                keys[lo + i - 1] = keys[lo + child - 1];
+                if (values != null)
+                    values[lo + i - 1] = values[lo + child - 1];
+                i = child;
+            }
+            keys[lo + i - 1] = d;
+            if (values != null)
+                values[lo + i - 1] = dValue;
         }
 
         private static void DownHeap(TKey[] keys, TValue[] values, int i, int n, int lo, IComparer<TKey> comparer)
@@ -1384,7 +1440,32 @@ namespace ConsoleAppForTesting
             if (values != null)
                 values[lo + i - 1] = dValue;
         }
+        /*
+        private static void DownHeap2(double[] keys, Element[] values, int i, int n, int lo)
+        {
+            double d = keys[lo + i - 1];
+            Element dValue =  values[lo + i - 1];
+            int child;
+            while (i <= n / 2)
+            {
+                child = 2 * i;
+                if (child < n && (keys[lo + child - 1]< keys[lo + child]))
+                {
+                    child++;
+                }
+                if (!((d<keys[lo + child - 1]) ))
+                    break;
+                keys[lo + i - 1] = keys[lo + child - 1];
+                if (values != null)
+                    values[lo + i - 1] = values[lo + child - 1];
+                i = child;
+            }
+            keys[lo + i - 1] = d;
+            if (values != null)
+                values[lo + i - 1] = dValue;
+        }
 
+        */
         private static void InsertionSort(TKey[] keys, TValue[] values, int lo, int hi, IComparer<TKey> comparer)
         {
             Contract.Requires(keys != null);

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,12 +19,92 @@ namespace RecorderCore
     }
     public class Unwrapping2
     {
+        private static void Merge(edge[] array, int lowIndex, int middleIndex, int highIndex)
+        {
+            var left = lowIndex;
+            var right = middleIndex + 1;
+            edge[] tempArray = new edge[highIndex - lowIndex + 1];
+            var index = 0;
+
+            while ((left <= middleIndex) && (right <= highIndex))
+            {
+                if (array[left].reaibility < array[right].reaibility)
+                {
+                    tempArray[index] = array[left];
+                    left++;
+                }
+                else
+                {
+                    tempArray[index] = array[right];
+                    right++;
+                }
+
+                index++;
+            }
+
+            for (var i = left; i <= middleIndex; i++)
+            {
+                tempArray[index] = array[i];
+                index++;
+            }
+
+            for (var i = right; i <= highIndex; i++)
+            {
+                tempArray[index] = array[i];
+                index++;
+            }
+
+            for (var i = 0; i < tempArray.Length; i++)
+            {
+                array[lowIndex + i] = tempArray[i];
+            }
+        }
+
+
+        internal static void HibridSort2(double[] keys, edge[] array, int ThreadsNumber)
+        {
+            int SortingWindowWidth = array.Length / ThreadsNumber;
+            List<Task> tasks = new List<Task>();
+            List<int> Bounds = new List<int>() { 0 };
+            int edge = SortingWindowWidth;
+            int StartElement = 0;
+            while (edge < array.Length)
+            {
+                edge = StartElement + SortingWindowWidth;
+                int width = edge <= array.Length ? SortingWindowWidth : array.Length - StartElement;
+                int start = StartElement;
+
+                Task t = Task.Factory.StartNew(() => {
+                    int _start = start;
+                    int _width = width;
+                    Array.Sort(keys, array, _start, _width);
+                });
+                StartElement += SortingWindowWidth;
+                Bounds.Add(StartElement);
+                tasks.Add(t);
+            }
+            Bounds[Bounds.Count - 1] = array.Length;
+            Task.WaitAll(tasks.ToArray());
+            List<int> Bounds2 = new List<int>(Bounds);
+            while (Bounds.Count >= 3)
+            {
+                for (int i = 1; i < Bounds.Count - 1; i++)
+                {
+                    Merge(array, 0, Bounds[i] - 1, Bounds[i + 1] - 1);
+                    Bounds2.Remove(Bounds[i]);
+                }
+                Bounds = Bounds2;
+            }
+        }
+
+
         double PI = Math.PI / 2;
         double TWOPI;
         pixel[,] pixels;
         static int size0;
         static int size1;
         static edge[] _edges;
+        static double[] edges_reliabilities;
 
 
         public Unwrapping2(double[,] image)
@@ -54,8 +135,8 @@ namespace RecorderCore
                     edges.Add(new edge() { pixel1 = pixels[i, j - 1], pixel2 = pixels[i, j] });
                 }
             }
-
             _edges = edges.ToArray();
+            edges_reliabilities = (from e in _edges select e.reaibility).ToArray();
         }
         internal class pixel
         {
@@ -112,6 +193,7 @@ namespace RecorderCore
         }
 
         // gamma function in the paper
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private double gamma(double pixel_value)
         {
             double wrapped_pixel_value;
@@ -124,6 +206,7 @@ namespace RecorderCore
             return wrapped_pixel_value;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int find_wrap(double pixelL_value, double pixelR_value)
         {
             double difference = pixelL_value - pixelR_value;
@@ -191,15 +274,21 @@ namespace RecorderCore
 
             score.GammasCalc = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
             dt1 = DateTime.UtcNow;
-            foreach (edge _edge in _edges)
+            for (int i = 0; i < _edges.Length; i++)
             {
-                _edge.increment = find_wrap(image[_edge.pixel1.i, _edge.pixel1.j], image[_edge.pixel2.i, _edge.pixel2.j]);
-                _edge.reaibility = _edge.pixel1.reliability + _edge.pixel2.reliability;
+                _edges[i].increment = find_wrap(image[_edges[i].pixel1.i, _edges[i].pixel1.j], image[_edges[i].pixel2.i, _edges[i].pixel2.j]);
+                double val = Math.Round(_edges[i].pixel1.reliability + _edges[i].pixel2.reliability, 3);
+                _edges[i].reaibility = val;
+                edges_reliabilities[i] = val;
             }
             score.EdgesCalc = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
 
             dt1 = DateTime.UtcNow;
-            Array.Sort(_edges, new edgeComparer());
+            //Array.Sort(_edges, new edgeComparer());
+            Array.Sort(edges_reliabilities,_edges);
+            //HibridSort2(edges_reliabilities, _edges, 2);
+
+
             score.Sorting = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
 
             dt1 = DateTime.UtcNow;

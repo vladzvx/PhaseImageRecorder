@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ConsoleAppForTesting\ConsoleAppForTesting.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="uwr.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

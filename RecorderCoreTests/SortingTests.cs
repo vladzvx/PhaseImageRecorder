@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RecorderCoreTests
-{
+{/*
     [TestClass]
     public class SortingTests
     {
@@ -139,4 +139,6 @@ namespace RecorderCoreTests
         }
 
     }
+
+    */
 }

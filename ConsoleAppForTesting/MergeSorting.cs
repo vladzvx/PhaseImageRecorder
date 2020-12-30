@@ -49,13 +49,13 @@ namespace ConsoleAppForTesting
 
         public Element()
         {
-            ValueToSort = rnd.NextDouble();
-            //ValueToSort = Math.Round(rnd.NextDouble(),3);
+            //ValueToSort = rnd.NextDouble();
+            ValueToSort = Math.Round(rnd.NextDouble(),3);
         }
         public void Refresh()
         {
-            ValueToSort = rnd.NextDouble();
-            //ValueToSort = Math.Round(rnd.NextDouble(), 3);
+            //ValueToSort = rnd.NextDouble();
+            ValueToSort = Math.Round(rnd.NextDouble(), 3);
         }
        
     }
@@ -447,7 +447,7 @@ namespace ConsoleAppForTesting
 
         #region сортировка слиянием
 
-
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void Merge(Element[] array, int lowIndex, int middleIndex, int highIndex)
         {
             var left = lowIndex;
@@ -488,6 +488,54 @@ namespace ConsoleAppForTesting
                 array[lowIndex + i] = tempArray[i];
             }
         }
+
+        private static void Merge2(double[] keys, Element[] array, int lowIndex, int middleIndex, int highIndex)
+        {
+            var left = lowIndex;
+            var right = middleIndex + 1;
+            Element[] tempArray = new Element[highIndex - lowIndex + 1];
+            double[] tempArray2 = new double[highIndex - lowIndex + 1];
+            var index = 0;
+
+            while ((left <= middleIndex) && (right <= highIndex))
+            {
+                if (keys[left] < keys[right])
+                {
+                    tempArray[index] = array[left];
+                    tempArray2[index] = keys[left];
+                    left++;
+                }
+                else
+                {
+                    tempArray[index] = array[right];
+                    tempArray2[index] = keys[right];
+                    right++;
+                }
+
+                index++;
+            }
+
+            for (var i = left; i <= middleIndex; i++)
+            {
+                tempArray[index] = array[i];
+                tempArray2[index] = keys[i];
+                index++;
+            }
+
+            for (var i = right; i <= highIndex; i++)
+            {
+                tempArray[index] = array[i];
+                tempArray2[index] = keys[i];
+                index++;
+            }
+
+            for (var i = 0; i < tempArray.Length; i++)
+            {
+                array[lowIndex + i] = tempArray[i];
+                keys[lowIndex + i] = tempArray2[i];
+            }
+        }
+
 
         //сортировка слиянием
         private static void MergeSort(Element[] array, int lowIndex, int highIndex)
@@ -555,17 +603,14 @@ namespace ConsoleAppForTesting
             
         }
 
-        public static void HibridSort2(double[] keys, Element[] array, int ThreadsNumber,out Report report)
-        {
-            report = new Report();
-            DateTime dt1 = DateTime.UtcNow;
-            int SortingWindowWidth = array.Length / ThreadsNumber;
 
+        public static void HibridSort2(double[] keys, Element[] array, int ThreadsNumber)
+        {
+            int SortingWindowWidth = array.Length / ThreadsNumber;
             List<Task> tasks = new List<Task>();
             List<int> Bounds = new List<int>() { 0 };
             int edge = SortingWindowWidth;
             int StartElement = 0;
-            int c = 0;
             while (edge < array.Length)
             {
                 edge = StartElement + SortingWindowWidth;
@@ -577,46 +622,24 @@ namespace ConsoleAppForTesting
                     int _width = width;
                     Array.Sort(keys,array, _start, _width);
                 });
-                c++;
                 StartElement += SortingWindowWidth;
                 Bounds.Add(StartElement);
                 tasks.Add(t);
-                //if (c == 2)
-                //{
-                //    Task t2 = Task.WhenAll(tasks[tasks.Count - 1], tasks[tasks.Count - 2]).ContinueWith((t) =>
-                //      {
-                //          int _start = start - 1;
-                //          int end = _start + width - 1;
-                //          Merge(array, 0, _start, end);
-                //      });
-                //    //tasks = new List<Task>() { t2 };
-                //    tasks.Add(t2);
-                //    c = 0;
-                    
-                //}
-                //else
-                //{
-
-                //}
             }
             Bounds[Bounds.Count - 1] = array.Length;
             Task.WaitAll(tasks.ToArray());
-
-            report.Sorting = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
-            dt1 = DateTime.UtcNow;
             List<int> Bounds2 = new List<int>(Bounds);
             while (Bounds.Count >= 3)
             {
                 for (int i = 1; i < Bounds.Count - 1; i++)
                 {
+                    //Merge2(keys,array, 0, Bounds[i] - 1, Bounds[i + 1] - 1);
                     Merge(array, 0, Bounds[i] - 1, Bounds[i + 1] - 1);
                     Bounds2.Remove(Bounds[i]);
                 }
                 Bounds = Bounds2;
             }
-            report.Merge = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
         }
-
 
 
 
