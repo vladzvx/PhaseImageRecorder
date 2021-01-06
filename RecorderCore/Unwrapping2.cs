@@ -60,7 +60,6 @@ namespace RecorderCore
             }
         }
 
-
         internal static void HibridSort2(double[] keys, edge[] array, int ThreadsNumber)
         {
             int SortingWindowWidth = array.Length / ThreadsNumber;
@@ -101,10 +100,11 @@ namespace RecorderCore
         double PI = Math.PI / 2;
         double TWOPI;
         pixel[,] pixels;
-        static int size0;
-        static int size1;
-        static edge[] _edges;
-        static double[] edges_reliabilities;
+
+        int size0;
+        int size1;
+        edge[] _edges;
+        double[] edges_reliabilities;
 
 
         public Unwrapping2(double[,] image)
