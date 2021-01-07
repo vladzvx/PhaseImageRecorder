@@ -138,7 +138,7 @@ namespace PhaseImageRecorder
                     try
                     {
                     plot(phaseImage.ImageForUI);
-
+                    imagePlotted = true;
                            //imagePlotted = true;
                            FrameCounter++;
                         TimeSpan timeSpan = DateTime.UtcNow.Subtract(StartDt);

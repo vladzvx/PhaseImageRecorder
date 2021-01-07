@@ -11,6 +11,8 @@ namespace RecorderCore
 {
     public abstract class PhaseImage
     {
+        public static Unwrapping3 unwrapping;
+
         List<string> lines = new List<string>();
         public void Save(object _path)
         {
@@ -169,6 +171,11 @@ namespace RecorderCore
             try
             {
                 if (MaxProcessingStep < SettingsContainer.ProcessingStep.UnwrappedPhaseImage) return;
+
+                if (unwrapping == null) unwrapping = new Unwrapping3(Image);
+                       
+                unwrapping.Unwrap(Image, out UwrReport rep);
+                /*
                 double[,] matrix = new double[Image.GetUpperBound(0) + 1, Image.GetUpperBound(1) + 1];
                 byte[,] mask = new byte[Image.GetUpperBound(0) + 1, Image.GetUpperBound(1) + 1];
                 NativeMethods.unwrap(Marshal.UnsafeAddrOfPinnedArrayElement(Image, 0),
@@ -176,6 +183,7 @@ namespace RecorderCore
                     Marshal.UnsafeAddrOfPinnedArrayElement(mask, 0), Image.GetUpperBound(1) + 1, Image.GetUpperBound(0) + 1, 0, 0, (char)0, (uint)1);
                 
                 Image = matrix;
+                */
                 if (status <= SettingsContainer.ProcessingStep.WrappedPhaseImage)
                 {
                     status = SettingsContainer.ProcessingStep.UnwrappedPhaseImage;

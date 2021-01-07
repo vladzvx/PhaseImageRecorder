@@ -2,22 +2,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace RecorderCore
 {
-    public class UnwrappingGPU
+    public class Unwrapping3
     {
         double PI = Math.PI / 2;
         double TWOPI;
         pixel[,] pixels;
-        static int size0;
-        static int size1;
-        static edge[] _edges;
+
+        int size0;
+        int size1;
+        edge[] _edges;
+        double[] edges_reliabilities;
 
 
-        public UnwrappingGPU(double[,] image)
+        public Unwrapping3(double[,] image)
         {
             TWOPI = 2 * PI;
             UpdateParams(image);
@@ -45,8 +48,8 @@ namespace RecorderCore
                     edges.Add(new edge() { pixel1 = pixels[i, j - 1], pixel2 = pixels[i, j] });
                 }
             }
-
             _edges = edges.ToArray();
+            edges_reliabilities = (from e in _edges select e.reaibility).ToArray();
         }
         internal class pixel
         {
@@ -66,7 +69,6 @@ namespace RecorderCore
             public pixel head;
             public pixel next;
             public pixel last;
-            //public double[,] image;
             public double reliability;
             public int i;
             public int j;
@@ -83,26 +85,8 @@ namespace RecorderCore
             public int increment;
         }
 
-        internal class edgeComparer : IComparer<edge>
-        {
-            public int Compare(edge x, edge y)
-            {
-                if (x.reaibility < y.reaibility)
-                {
-                    return -1;
-                }
-                else if (x.reaibility > y.reaibility)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-        }
-
         // gamma function in the paper
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private double gamma(double pixel_value)
         {
             double wrapped_pixel_value;
@@ -115,6 +99,7 @@ namespace RecorderCore
             return wrapped_pixel_value;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int find_wrap(double pixelL_value, double pixelR_value)
         {
             double difference = pixelL_value - pixelR_value;
@@ -182,15 +167,23 @@ namespace RecorderCore
 
             score.GammasCalc = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
             dt1 = DateTime.UtcNow;
-            foreach (edge _edge in _edges)
+            for (int i = 0; i < _edges.Length; i++)
             {
-                _edge.increment = find_wrap(image[_edge.pixel1.i, _edge.pixel1.j], image[_edge.pixel2.i, _edge.pixel2.j]);
-                _edge.reaibility = _edge.pixel1.reliability + _edge.pixel2.reliability;
+                _edges[i].increment = find_wrap(image[_edges[i].pixel1.i, _edges[i].pixel1.j], image[_edges[i].pixel2.i, _edges[i].pixel2.j]);
+                double val = Math.Round(_edges[i].pixel1.reliability + _edges[i].pixel2.reliability, 3);
+                _edges[i].reaibility = val;
+                edges_reliabilities[i] = val;
             }
             score.EdgesCalc = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
 
             dt1 = DateTime.UtcNow;
-            Array.Sort(_edges, new edgeComparer());
+            //Array.Sort(_edges, new edgeComparer());
+            Array.Sort(edges_reliabilities,_edges);
+
+            Sortings.ParallelQuickSort(edges_reliabilities, _edges);
+            //HibridSort2(edges_reliabilities, _edges, 2);
+
+
             score.Sorting = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
 
             dt1 = DateTime.UtcNow;
