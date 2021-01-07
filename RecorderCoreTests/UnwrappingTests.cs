@@ -42,7 +42,7 @@ namespace RecorderCore
         {
             //  capt.Stop();
         }
-
+        /*
         [TestMethod]
         public void PreclisionTest1()
         {
@@ -50,9 +50,9 @@ namespace RecorderCore
             double count = 0;
             List<double> temp = new List<double>();
             List<double> temp2 = new List<double>();
-            for (double i = -5; i < 5; i++)
+            for (double i = -1; i < 1; i++)
             {
-                for (int l = 10; l < 15; l++)
+                for (int l = 2; l < 4; l++)
                 {
                     var for_test = TestImageGenerator.GetTestPair(1000, 2000, Math.PI / 2 * i, l);
 
@@ -75,7 +75,7 @@ namespace RecorderCore
             double res = count / DateTime.UtcNow.Subtract(dt1).TotalSeconds;
 
         }
-
+        */
         [TestMethod]
         public void PreclisionTest2()
         {
@@ -83,9 +83,9 @@ namespace RecorderCore
             double count = 0;
             List<double> temp = new List<double>();
             List<double> temp2 = new List<double>();
-            for (double i = -5; i < 5; i++)
+            for (double i = -1; i < 1; i++)
             {
-                for (int l = 10; l < 15; l++)
+                for (int l = 1; l < 4; l++)
                 {
                     var for_test = TestImageGenerator.GetTestPair(1000, 2000, Math.PI / 2 * i, l);
 
@@ -122,9 +122,9 @@ namespace RecorderCore
             List<double> temp2 = new List<double>();
             List<UwrReport> temp3 = new List<UwrReport>();
             //Unwrapping2.SetParamsByImage(for_test.Item1.Image);
-            for (double i = -5; i < 5; i++)
+            for (double i = -1; i < 1; i++)
             {
-                for (int l = 10; l < 15; l++)
+                for (int l = 2; l < 3; l++)
                 {
                     var for_test = TestImageGenerator.GetTestPair(1000, 2000, Math.PI / 2 * i, l);
 
@@ -152,7 +152,7 @@ namespace RecorderCore
 
         }
     }
-
+    /*
     [TestClass]
     public class UnwrappingTests
     {
@@ -239,4 +239,6 @@ namespace RecorderCore
             Assert.IsTrue(sortingCheck(edges));
         }
     }
+
+    */
 }
