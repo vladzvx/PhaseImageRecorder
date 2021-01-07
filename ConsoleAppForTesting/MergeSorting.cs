@@ -11,8 +11,9 @@ namespace ConsoleAppForTesting
 {
     class Element
     {
+        #region static
         private static Random rnd = new Random();
-        public static void Refresh(Element[] elements,double[] keys)
+        public static void Refresh(Element[] elements, double[] keys)
         {
             for (int i = 0; i < elements.Length; i++)
             {
@@ -21,7 +22,6 @@ namespace ConsoleAppForTesting
             }
                 
         }
-
         public static Tuple<Element[],double[]> CreateArray(int size)
         {
             Element[] elements = new Element[size];
@@ -34,16 +34,7 @@ namespace ConsoleAppForTesting
             return Tuple.Create(elements,doubles);
         }
 
-        public static double[] CreateDouble(int size)
-        {
-            double[] elements = new double[size];
-            for (int i = 0; i < size; i++)
-            {
-                elements[i] = rnd.NextDouble() ;
-            }
-            return elements;
-        }
-
+        #endregion
 
         public double ValueToSort;
 

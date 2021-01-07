@@ -28,11 +28,11 @@ namespace ConsoleAppForTesting
                 //Array.Sort(d);
                 //Array.Sort(elements, new ElementComparer());
                 //Sortings.MyQuickSort(d,elements,0,elements.Length-1);
-                Sortings.HibridSort2(d,elements,2);
+                //Sortings.HibridSort2(d,elements,2);
                 
                 //
                 
-                //ArraySortHelper< double>.DepthLimitedQuickSort3(d,elements, 0, d.Length - 1);
+                ArraySortHelper< double>.DepthLimitedQuickSort2(d,elements, 0, d.Length - 1);
                 //ArraySortHelper< double,Element>.Heapsort2(d,elements, 0, d.Length - 1);
                 //ArraySortHelper< double>.Heapsort(d, 0, d.Length - 1,Comparer<double>.Default);
                // sh.De;

@@ -263,33 +263,20 @@ namespace ConsoleAppForTesting
             {
                 int i = left;
                 int j = right;
-                //Console.WriteLine();
-                //Console.WriteLine(string.Format("Sorting iteration started. left: {0}; right: {1};",left,right));
-                //Console.WriteLine("Sorting iteration started. Array: ");
-                //foreach (double d in keys)
-                //{
-                //    Console.Write(string.Format("{0}; ",d));
-                //}
-                //Console.WriteLine();
-                //Перед началом работы сортируем опорные элементы: левый, центральный и правый
                 int middle = i + ((j - i) >> 1);
                 SwapIfGreater2(keys, elements,  i, middle); 
                 SwapIfGreater2(keys, elements,  i, j);  
                 SwapIfGreater2(keys, elements,  middle, j); 
-
-                //Element el1 = elements[middle];
                 double x = keys[middle];
                 do
                 {
-                    while (keys[i]< x) i++;//Пока элементы слева меньше x, т.е. опорного элемента - отползаем от края
-                    //т.е. мы доползаем до первого удовлетворяющего условию меньшести относительно опорного элемента слева
-                    while (x < keys[j]) j--;//Пока элементы справа больше опорного элемента х - отползаем от края.
-                    //Также дползаем до первого, удолветворяющего уловию большести относительно опорного справа. 
-                    if (i > j)//если доотползались до смены левой и правой границ местами - значит массив сортирован или нам больше нечего делать, завершаем работу
+                    while (keys[i]< x) i++;
+                    while (x < keys[j]) j--;
+                    if (i > j)
                     {
                         break;
                     } 
-                    if (i < j)//Если между левой и правой границами (уже сужеными) остается зазор - меняем местами левый и правый элементы
+                    if (i < j)
                     {
                         Element el  = elements[i];
                         double key = keys[i];
@@ -297,44 +284,25 @@ namespace ConsoleAppForTesting
                         keys[j] = key;
                         elements[i] = elements[j];
                         elements[j] = el;
-                        //foreach (double d in keys)
-                        //{
-                        //    Console.Write(string.Format("{0}; ", d));
-                        //}
-                        //Console.WriteLine();
                     }
-                    i++;//Делаем шаг дальше вправо
-                    j--;//Делае дальше влево
-                } while (i <= j);//И так пока i<=j. Если нет - значит число пригодных для обмена пар исчерпано, нужно переходить к рекурсивным кусочкам
+                    i++;
+                    j--;
+                } while (i <= j);
 
-                //Report2 report = new Report2();
-                //res.Add(report);
 
-                 if (j - left <= right - i)//Если расстояние от последней правой границы до изначальной. Даёт небольшой выигрыш по скорости
-                //левой меньше или равно расстоянию от изначальной правой границы до последней левой границы
+                 if (j - left <= right - i)
                 {
-                    if (left < j)//И если изначальная левая граница левее последней правой границы, 
+                    if (left < j)
                     {
-                        //report.left1 = left;
-                        //report.Right1 = j;
-                        //DepthLimitedQuickSort2(keys, elements, left, j, res);
                         DepthLimitedQuickSort2(keys, elements, left, j);
-
-                        //Parallel.Invoke(() => DepthLimitedQuickSort2(keys, elements, left, j) );
-                        
-                        //то запускаем сортировку от исходной левой границы до последней правой
                     }
-                    left = i;//Перемещаем исходную левую границу в последнюю левую 
+                    left = i;
                 }
                 else
                 {
                     if (i < right)
                     {
-                        //report.left2 = i;
-                        //report.Right2 = right;
-                        //DepthLimitedQuickSort2(keys, elements, i, right, res);
                         DepthLimitedQuickSort2(keys, elements, i, right);
-                        //Parallel.Invoke(() => DepthLimitedQuickSort2(keys, elements, i, right));
                     }
                     right = j;
                 }
