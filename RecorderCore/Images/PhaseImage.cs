@@ -11,6 +11,12 @@ namespace RecorderCore
 {
     public abstract class PhaseImage
     {
+        public double Creation;
+        public double Calculating;
+        public double Unwrapping;
+        public double Processing;
+        public UwrReport report;
+
         public static Unwrapping3 unwrapping;
 
         List<string> lines = new List<string>();
@@ -152,10 +158,12 @@ namespace RecorderCore
         }
         public PhaseImage(double[,] image)
         {
-            Image = image;
             RecordingTime = DateTime.UtcNow;
+            Image = image;
+            
             MaxProcessingStep = SettingsContainer.ProcessingStep.ProcessedImage;
             status = SettingsContainer.ProcessingStep.Interferogramm;
+            Creation = DateTime.UtcNow.Subtract(RecordingTime).TotalSeconds;
             //GetArrayFromMat(image);
         }
         public virtual void CalculatePhaseImage()
@@ -168,6 +176,7 @@ namespace RecorderCore
         }
         public virtual void Unwrap()
         {
+            DateTime dt1 = DateTime.UtcNow;
             try
             {
                 if (MaxProcessingStep < SettingsContainer.ProcessingStep.UnwrappedPhaseImage) return;
@@ -175,6 +184,7 @@ namespace RecorderCore
                 if (unwrapping == null) unwrapping = new Unwrapping3(Image);
                        
                 unwrapping.Unwrap(Image, out UwrReport rep);
+                report = rep;
                 /*
                 double[,] matrix = new double[Image.GetUpperBound(0) + 1, Image.GetUpperBound(1) + 1];
                 byte[,] mask = new byte[Image.GetUpperBound(0) + 1, Image.GetUpperBound(1) + 1];
@@ -193,15 +203,18 @@ namespace RecorderCore
             {
 
             }
+            Unwrapping = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
 
         }
         public virtual void Process()
         {
+            DateTime dt1 = DateTime.UtcNow;
             SetUIMatrix();
             if (status <= SettingsContainer.ProcessingStep.UnwrappedPhaseImage)
             {
                 status = SettingsContainer.ProcessingStep.ProcessedImage;
             }
+            Processing = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
         }
     }
 

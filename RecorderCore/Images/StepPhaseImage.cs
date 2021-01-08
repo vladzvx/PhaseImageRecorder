@@ -49,6 +49,8 @@ namespace RecorderCore
 
         public override void CalculatePhaseImage()
         {
+            DateTime dt1 = DateTime.UtcNow;
+
             //np.arctan((image1-2*image2+image3)/(image1-image3))
             if (StepNumber == 3)
             {
@@ -82,6 +84,7 @@ namespace RecorderCore
                images = new List<double[,]>();
 
             }
+            Calculating = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
         }
     }
 

@@ -139,18 +139,44 @@ namespace PhaseImageRecorder
                     {
                     plot(phaseImage.ImageForUI);
                     imagePlotted = true;
-                           //imagePlotted = true;
-                           FrameCounter++;
-                        TimeSpan timeSpan = DateTime.UtcNow.Subtract(StartDt);
+                            //imagePlotted = true;
+                    FrameCounter++;
+                    TimeSpan timeSpan = DateTime.UtcNow.Subtract(StartDt);
 
-                        label4.Text = Math.Round(FrameCounter / timeSpan.TotalSeconds, 2).ToString();
-                        label4.Update();
-                        if (timeSpan.TotalMinutes > 0.5)
-                        {
-                            StartDt = DateTime.UtcNow;
-                            FrameCounter = 0;
-                        }
+                    label4.Text = Math.Round(FrameCounter / timeSpan.TotalSeconds, 2).ToString();
+                    label4.Update();
+                    if (timeSpan.TotalMinutes > 0.5)
+                    {
+                        StartDt = DateTime.UtcNow;
+                        FrameCounter = 0;
+                    }
 
+                    label9.Text = phaseImage.Creation.ToString();
+                    label10.Text = phaseImage.Calculating.ToString();
+                    label11.Text = phaseImage.Unwrapping.ToString();
+                    label12.Text = phaseImage.Processing.ToString();
+
+                    label9.Update();
+                    label10.Update();
+                    label11.Update();
+                    label12.Update();
+
+                    if (phaseImage.report != null)
+                    {
+                        label19.Text = phaseImage.report.GammasCalc.ToString();
+                        label20.Text = phaseImage.report.EdgesCalc.ToString();
+                        label21.Text = phaseImage.report.Sorting.ToString();
+                        label22.Text = phaseImage.report.PathFinding.ToString();
+                        label23.Text = phaseImage.report.Unwrap.ToString();
+                        label24.Text = phaseImage.report.Refresh.ToString();
+
+                        label19.Update();
+                        label20.Update();
+                        label21.Update();
+                        label22.Update();
+                        label23.Update();
+                        label24.Update();
+                    }
                     }
                     catch { }
 
@@ -267,6 +293,41 @@ namespace PhaseImageRecorder
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label8_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label13_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label15_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label16_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label17_Click(object sender, EventArgs e)
         {
 
         }

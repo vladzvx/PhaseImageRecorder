@@ -26,6 +26,7 @@ namespace RecorderCore
         
         public void PutImage(PhaseImage phaseImage)
         {
+            MainProcessingQuenue.TryDequeue(out var phaseImage1);
             MainProcessingQuenue.Enqueue(phaseImage);
         }
         public ImageProcessor(int ProcessingThreadsNumber)

@@ -170,19 +170,14 @@ namespace RecorderCore
             for (int i = 0; i < _edges.Length; i++)
             {
                 _edges[i].increment = find_wrap(image[_edges[i].pixel1.i, _edges[i].pixel1.j], image[_edges[i].pixel2.i, _edges[i].pixel2.j]);
-                double val = Math.Round(_edges[i].pixel1.reliability + _edges[i].pixel2.reliability, 3);
-                _edges[i].reaibility = val;
-                edges_reliabilities[i] = val;
+                edges_reliabilities[i] = Math.Round(_edges[i].pixel1.reliability + _edges[i].pixel2.reliability, 0);
             }
             score.EdgesCalc = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
 
             dt1 = DateTime.UtcNow;
             //Array.Sort(_edges, new edgeComparer());
-            Array.Sort(edges_reliabilities,_edges);
 
             Sortings.ParallelQuickSort(edges_reliabilities, _edges);
-            //HibridSort2(edges_reliabilities, _edges, 2);
-
 
             score.Sorting = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
 
@@ -285,10 +280,23 @@ namespace RecorderCore
 
             score.PathFinding = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
             dt1 = DateTime.UtcNow;
+
+
+
             foreach (pixel pixel in pixels)
             {
                 image[pixel.i, pixel.j] += TWOPI * ((double)pixel.increment);
             }
+
+            //Parallel.For(0, size0+1, (i) => 
+            //{ 
+            //    for (int j = 0; j <= size1; j++)
+            //    {
+            //        image[pixels[i, j].i, pixels[i, j].j] += TWOPI * ((double)pixels[i, j].increment);
+            //    }
+            //});
+
+
             score.Unwrap = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
             dt1 = DateTime.UtcNow;
             foreach (pixel pixel in pixels)
