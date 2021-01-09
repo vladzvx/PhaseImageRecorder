@@ -37,6 +37,12 @@ namespace PhaseImageRecorder
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.label24 = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.label22 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
@@ -63,12 +69,8 @@ namespace PhaseImageRecorder
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.label19 = new System.Windows.Forms.Label();
-            this.label20 = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
-            this.label22 = new System.Windows.Forms.Label();
-            this.label23 = new System.Windows.Forms.Label();
-            this.label24 = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
             this.tab.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -151,6 +153,8 @@ namespace PhaseImageRecorder
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.label26);
+            this.tabPage3.Controls.Add(this.label25);
             this.tabPage3.Controls.Add(this.label24);
             this.tabPage3.Controls.Add(this.label23);
             this.tabPage3.Controls.Add(this.label22);
@@ -185,10 +189,64 @@ namespace PhaseImageRecorder
             this.tabPage3.Text = "Step";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(98, 332);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(44, 15);
+            this.label24.TabIndex = 26;
+            this.label24.Text = "label24";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(98, 314);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(44, 15);
+            this.label23.TabIndex = 25;
+            this.label23.Text = "label23";
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(98, 297);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(44, 15);
+            this.label22.TabIndex = 24;
+            this.label22.Text = "label22";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(98, 278);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(44, 15);
+            this.label21.TabIndex = 23;
+            this.label21.Text = "label21";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(98, 260);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(44, 15);
+            this.label20.TabIndex = 22;
+            this.label20.Text = "label20";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(98, 242);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(44, 15);
+            this.label19.TabIndex = 21;
+            this.label19.Text = "label19";
+            // 
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(29, 342);
+            this.label18.Location = new System.Drawing.Point(29, 333);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(46, 15);
             this.label18.TabIndex = 20;
@@ -197,7 +255,7 @@ namespace PhaseImageRecorder
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(29, 323);
+            this.label17.Location = new System.Drawing.Point(29, 314);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(48, 15);
             this.label17.TabIndex = 19;
@@ -207,7 +265,7 @@ namespace PhaseImageRecorder
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(29, 305);
+            this.label16.Location = new System.Drawing.Point(29, 296);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(71, 15);
             this.label16.TabIndex = 18;
@@ -217,7 +275,7 @@ namespace PhaseImageRecorder
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(29, 286);
+            this.label15.Location = new System.Drawing.Point(29, 277);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(45, 15);
             this.label15.TabIndex = 17;
@@ -227,7 +285,7 @@ namespace PhaseImageRecorder
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(29, 270);
+            this.label14.Location = new System.Drawing.Point(29, 261);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(38, 15);
             this.label14.TabIndex = 16;
@@ -236,7 +294,7 @@ namespace PhaseImageRecorder
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(29, 251);
+            this.label13.Location = new System.Drawing.Point(29, 242);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(60, 15);
             this.label13.TabIndex = 15;
@@ -246,7 +304,7 @@ namespace PhaseImageRecorder
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(98, 363);
+            this.label12.Location = new System.Drawing.Point(98, 354);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(44, 15);
             this.label12.TabIndex = 14;
@@ -255,7 +313,7 @@ namespace PhaseImageRecorder
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(98, 232);
+            this.label11.Location = new System.Drawing.Point(98, 223);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(44, 15);
             this.label11.TabIndex = 13;
@@ -264,7 +322,7 @@ namespace PhaseImageRecorder
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(98, 213);
+            this.label10.Location = new System.Drawing.Point(98, 204);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(44, 15);
             this.label10.TabIndex = 12;
@@ -273,7 +331,7 @@ namespace PhaseImageRecorder
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(98, 194);
+            this.label9.Location = new System.Drawing.Point(98, 185);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(38, 15);
             this.label9.TabIndex = 11;
@@ -282,7 +340,7 @@ namespace PhaseImageRecorder
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(7, 363);
+            this.label8.Location = new System.Drawing.Point(7, 354);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(64, 15);
             this.label8.TabIndex = 10;
@@ -292,7 +350,7 @@ namespace PhaseImageRecorder
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(7, 232);
+            this.label7.Location = new System.Drawing.Point(7, 223);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(72, 15);
             this.label7.TabIndex = 9;
@@ -302,7 +360,7 @@ namespace PhaseImageRecorder
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(8, 213);
+            this.label6.Location = new System.Drawing.Point(8, 204);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(70, 15);
             this.label6.TabIndex = 8;
@@ -311,7 +369,7 @@ namespace PhaseImageRecorder
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(9, 194);
+            this.label5.Location = new System.Drawing.Point(9, 185);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(55, 15);
             this.label5.TabIndex = 7;
@@ -393,7 +451,7 @@ namespace PhaseImageRecorder
             this.pictureBox1.Location = new System.Drawing.Point(257, 14);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(577, 541);
+            this.pictureBox1.Size = new System.Drawing.Size(577, 537);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
@@ -462,65 +520,29 @@ namespace PhaseImageRecorder
             this.checkBox1.UseVisualStyleBackColor = true;
             this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
-            // label19
+            // label25
             // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(98, 251);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(44, 15);
-            this.label19.TabIndex = 21;
-            this.label19.Text = "label19";
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(7, 369);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(44, 15);
+            this.label25.TabIndex = 27;
+            this.label25.Text = "Total";
             // 
-            // label20
+            // label26
             // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(98, 269);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(44, 15);
-            this.label20.TabIndex = 22;
-            this.label20.Text = "label20";
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(98, 287);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(44, 15);
-            this.label21.TabIndex = 23;
-            this.label21.Text = "label21";
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(98, 306);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(44, 15);
-            this.label22.TabIndex = 24;
-            this.label22.Text = "label22";
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(98, 323);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(44, 15);
-            this.label23.TabIndex = 25;
-            this.label23.Text = "label23";
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(98, 341);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(44, 15);
-            this.label24.TabIndex = 26;
-            this.label24.Text = "label24";
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(98, 371);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(44, 15);
+            this.label26.TabIndex = 28;
+            this.label26.Text = "label26";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(852, 572);
+            this.ClientSize = new System.Drawing.Size(852, 568);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -584,6 +606,8 @@ namespace PhaseImageRecorder
         private Label label21;
         private Label label20;
         private Label label19;
+        private Label label26;
+        private Label label25;
     }
 }
 

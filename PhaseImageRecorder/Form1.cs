@@ -169,6 +169,7 @@ namespace PhaseImageRecorder
                         label22.Text = phaseImage.report.PathFinding.ToString();
                         label23.Text = phaseImage.report.Unwrap.ToString();
                         label24.Text = phaseImage.report.Refresh.ToString();
+                        label26.Text = (phaseImage.Creation + phaseImage.Calculating + phaseImage.Unwrapping + phaseImage.Processing).ToString();
 
                         label19.Update();
                         label20.Update();
@@ -176,6 +177,7 @@ namespace PhaseImageRecorder
                         label22.Update();
                         label23.Update();
                         label24.Update();
+                        label26.Update();
                     }
                     }
                     catch { }

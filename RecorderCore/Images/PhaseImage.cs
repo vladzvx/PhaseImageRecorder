@@ -158,6 +158,7 @@ namespace RecorderCore
         }
         public PhaseImage(double[,] image)
         {
+            unwrapping.UpdateParamsIfNeed(image);
             RecordingTime = DateTime.UtcNow;
             Image = image;
             

@@ -23,12 +23,15 @@ namespace RecorderCore
         public Unwrapping3(double[,] image)
         {
             TWOPI = 2 * PI;
-            UpdateParams(image);
+            UpdateParamsIfNeed(image);
         }
-        public void UpdateParams(double[,] image)
+        public void UpdateParamsIfNeed(double[,] image)
         {
-            size0 = image.GetUpperBound(0);
-            size1 = image.GetUpperBound(1);
+            int _size0 = image.GetUpperBound(0);
+            int _size1 = image.GetUpperBound(1);
+            if (size1 == _size1 && size0 == _size0) return;
+            size0 = _size0;
+            size1 = _size1;
             pixels = new pixel[size0 + 1, size1 + 1];
             for (int i = 0; i <= size0; i++)
             {
@@ -175,9 +178,9 @@ namespace RecorderCore
             score.EdgesCalc = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
 
             dt1 = DateTime.UtcNow;
-            //Array.Sort(_edges, new edgeComparer());
+            Array.Sort(edges_reliabilities, _edges);
 
-            Sortings.ParallelQuickSort(edges_reliabilities, _edges);
+            //Sortings.ParallelQuickSort(edges_reliabilities, _edges);
 
             score.Sorting = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
 
