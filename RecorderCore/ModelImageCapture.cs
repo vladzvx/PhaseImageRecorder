@@ -13,7 +13,7 @@ namespace RecorderCore
     public class ModelImageCapture:BaseCapture
     {
         Random rnd = new Random();
-        private ImageSource imageSource = new ImageSource(1000, 1500);
+        private ImageSource imageSource = new ImageSource(1000, 2000);
         private double MaxFPS = 25;
         public void SetMaxFPS(double FPS)
         {

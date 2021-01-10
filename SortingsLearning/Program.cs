@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Emgu.CV;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -404,6 +405,20 @@ namespace SortingsLearning
 
         static void Main(string[] args)
         {
+
+            Emgu.CV.VideoCapture capture = new Emgu.CV.VideoCapture(0,captureApi:VideoCapture.API.Firewire);
+
+            Mat mat = new Mat();
+            capture.Grab();
+            capture.Retrieve(mat);
+
+
+
+
+
+
+
+
             var q = Element.CreateArrays(4000000);
             Element[] elements = q.Item1;
             double[] d = q.Item2;

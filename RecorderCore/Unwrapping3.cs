@@ -308,6 +308,275 @@ namespace RecorderCore
             }
             score.Refresh = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
         }
+
+        public void UnwrapParallel(double[,] image, out UwrReport score)//todo проверки выходов за диапазоны
+        {
+            score = new UwrReport();
+            DateTime dt1 = DateTime.UtcNow;
+
+
+            Parallel.For(1, size0 , (i) =>
+            {
+                for (int j = 1; j < size1; j++)
+                {
+                    double H = gamma(image[i, j - 1] - image[i, j]) - gamma(image[i, j] - image[i, j + 1]);
+                    double V = gamma(image[i - 1, j] - image[i, j]) - gamma(image[i, j] - image[i + 1, j]);
+                    double D1 = gamma(image[i - 1, j - 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, j + 1]);
+                    double D2 = gamma(image[i - 1, j + 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, j - 1]);
+                    pixels[i, j].reliability = (H * H + V * V + D1 * D1 + D2 * D2);
+
+                }
+            });
+
+
+            //for (int i = 1; i < size0; i++)
+            //{
+            //    for (int j = 1; j < size1; j++)
+            //    {
+            //        double H = gamma(image[i, j - 1] - image[i, j]) - gamma(image[i, j] - image[i, j + 1]);
+            //        double V = gamma(image[i - 1, j] - image[i, j]) - gamma(image[i, j] - image[i + 1, j]);
+            //        double D1 = gamma(image[i - 1, j - 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, j + 1]);
+            //        double D2 = gamma(image[i - 1, j + 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, j - 1]);
+            //        pixels[i, j].reliability = (H * H + V * V + D1 * D1 + D2 * D2);
+
+            //    }
+            //}
+
+
+            Parallel.For(1, size0, (i) =>
+            {
+                int j = 0;
+
+                double H = gamma(image[i, size1 - 1] - image[i, j]) - gamma(image[i, j] - image[i, j + 1]);
+                double V = gamma(image[i - 1, j] - image[i, j]) - gamma(image[i, j] - image[i + 1, j]);
+                double D1 = gamma(image[i - 1, size1 - 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, j + 1]);
+                double D2 = gamma(image[i - 1, j + 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, size1 - 1]);
+                pixels[i, 0].reliability = (H * H + V * V + D1 * D1 + D2 * D2);
+
+                j = size1;
+                H = gamma(image[i, j - 1] - image[i, j]) - gamma(image[i, j] - image[i, 0]);
+                V = gamma(image[i - 1, j] - image[i, j]) - gamma(image[i, j] - image[i + 1, j]);
+                D1 = gamma(image[i - 1, j - 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, 0]);
+                D2 = gamma(image[i - 1, 0] - image[i, j]) - gamma(image[i, j] - image[i + 1, j - 1]);
+                pixels[i, size1].reliability = (H * H + V * V + D1 * D1 + D2 * D2);
+            });
+
+
+            Parallel.For(1, size1, (j) =>
+            {
+                int i = 0;
+                double H = gamma(image[i, j - 1] - image[i, j]) - gamma(image[i, j] - image[i, j + 1]);
+                double V = gamma(image[size0, j] - image[i, j]) - gamma(image[i, j] - image[i + 1, j]);
+                double D1 = gamma(image[size0, j - 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, j + 1]);
+                double D2 = gamma(image[size0, j + 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, j - 1]);
+                pixels[0, j].reliability = (H * H + V * V + D1 * D1 + D2 * D2);
+                //pixels[i, j].value = image[i, j];
+
+                i = size0;
+                H = gamma(image[i, j - 1] - image[i, j]) - gamma(image[i, j] - image[i, j + 1]);
+                V = gamma(image[i - 1, j] - image[i, j]) - gamma(image[i, j] - image[0, j]);
+                D1 = gamma(image[i - 1, j - 1] - image[i, j]) - gamma(image[i, j] - image[0, j + 1]);
+                D2 = gamma(image[i - 1, j + 1] - image[i, j]) - gamma(image[i, j] - image[0, j - 1]);
+                pixels[size0, j].reliability = (H * H + V * V + D1 * D1 + D2 * D2);
+            });
+
+
+
+
+            //for (int i = 1; i < size0; i++)//left and right borders
+            //{
+            //    int j = 0;
+
+            //    double H = gamma(image[i, size1 - 1] - image[i, j]) - gamma(image[i, j] - image[i, j + 1]);
+            //    double V = gamma(image[i - 1, j] - image[i, j]) - gamma(image[i, j] - image[i + 1, j]);
+            //    double D1 = gamma(image[i - 1, size1 - 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, j + 1]);
+            //    double D2 = gamma(image[i - 1, j + 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, size1 - 1]);
+            //    pixels[i, 0].reliability = (H * H + V * V + D1 * D1 + D2 * D2);
+
+            //    j = size1;
+            //    H = gamma(image[i, j - 1] - image[i, j]) - gamma(image[i, j] - image[i, 0]);
+            //    V = gamma(image[i - 1, j] - image[i, j]) - gamma(image[i, j] - image[i + 1, j]);
+            //    D1 = gamma(image[i - 1, j - 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, 0]);
+            //    D2 = gamma(image[i - 1, 0] - image[i, j]) - gamma(image[i, j] - image[i + 1, j - 1]);
+            //    pixels[i, size1].reliability = (H * H + V * V + D1 * D1 + D2 * D2);
+            //}
+
+            //for (int j = 1; j < size1; j++)
+            //{
+            //    int i = 0;
+            //    double H = gamma(image[i, j - 1] - image[i, j]) - gamma(image[i, j] - image[i, j + 1]);
+            //    double V = gamma(image[size0, j] - image[i, j]) - gamma(image[i, j] - image[i + 1, j]);
+            //    double D1 = gamma(image[size0, j - 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, j + 1]);
+            //    double D2 = gamma(image[size0, j + 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, j - 1]);
+            //    pixels[0, j].reliability = (H * H + V * V + D1 * D1 + D2 * D2);
+            //    //pixels[i, j].value = image[i, j];
+
+            //    i = size0;
+            //    H = gamma(image[i, j - 1] - image[i, j]) - gamma(image[i, j] - image[i, j + 1]);
+            //    V = gamma(image[i - 1, j] - image[i, j]) - gamma(image[i, j] - image[0, j]);
+            //    D1 = gamma(image[i - 1, j - 1] - image[i, j]) - gamma(image[i, j] - image[0, j + 1]);
+            //    D2 = gamma(image[i - 1, j + 1] - image[i, j]) - gamma(image[i, j] - image[0, j - 1]);
+            //    pixels[size0, j].reliability = (H * H + V * V + D1 * D1 + D2 * D2);
+            //}
+
+            score.GammasCalc = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
+            dt1 = DateTime.UtcNow;
+            //for (int i = 0; i < _edges.Length; i++)
+            //{
+            //    _edges[i].increment = find_wrap(image[_edges[i].pixel1.i, _edges[i].pixel1.j], image[_edges[i].pixel2.i, _edges[i].pixel2.j]);
+            //    edges_reliabilities[i] = Math.Round(_edges[i].pixel1.reliability + _edges[i].pixel2.reliability, 3);
+            //}
+
+            Parallel.For(0, _edges.Length , (i) =>
+            {
+                _edges[i].increment = find_wrap(image[_edges[i].pixel1.i, _edges[i].pixel1.j], image[_edges[i].pixel2.i, _edges[i].pixel2.j]);
+                edges_reliabilities[i] = Math.Round(_edges[i].pixel1.reliability + _edges[i].pixel2.reliability, 3);
+            });
+
+
+            score.EdgesCalc = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
+
+            dt1 = DateTime.UtcNow;
+            //Array.Sort(edges_reliabilities, _edges);
+
+            Sortings.ParallelQuickSort(edges_reliabilities, _edges);
+
+            score.Sorting = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
+
+            dt1 = DateTime.UtcNow;
+            foreach (edge _edge in _edges)
+            {
+                pixel PIXEL1 = _edge.pixel1;
+                pixel PIXEL2 = _edge.pixel2;
+                pixel group1;
+                pixel group2;
+                int incremento;
+
+                if (PIXEL2.head != PIXEL1.head)
+                {
+                    // PIXELM 2 is alone in its group
+                    // merge this pixel with PIXELM 1 group and find the number of 2 pi to add
+                    // to or subtract to unwrap it
+                    if ((PIXEL2.next == null) && (PIXEL2.head == PIXEL2))
+                    {
+                        PIXEL1.head.last.next = PIXEL2;
+                        PIXEL1.head.last = PIXEL2;
+                        (PIXEL1.head.number_of_pixels_in_group)++;
+                        PIXEL2.head = PIXEL1.head;
+                        PIXEL2.increment = PIXEL1.increment - _edge.increment;
+                    }
+
+                    // PIXELM 1 is alone in its group
+                    // merge this pixel with PIXELM 2 group and find the number of 2 pi to add
+                    // to or subtract to unwrap it
+                    else if ((PIXEL1.next == null) && (PIXEL1.head == PIXEL1))
+                    {
+                        PIXEL2.head.last.next = PIXEL1;
+                        PIXEL2.head.last = PIXEL1;
+                        (PIXEL2.head.number_of_pixels_in_group)++;
+                        PIXEL1.head = PIXEL2.head;
+                        PIXEL1.increment = PIXEL2.increment + _edge.increment;
+                    }
+
+                    // PIXELM 1 and PIXELM 2 both have groups
+                    else
+                    {
+                        group1 = PIXEL1.head;
+                        group2 = PIXEL2.head;
+                        // if the no. of pixels in PIXELM 1 group is larger than the
+                        // no. of pixels in PIXELM 2 group.  Merge PIXELM 2 group to
+                        // PIXELM 1 group and find the number of wraps between PIXELM 2
+                        // group and PIXELM 1 group to unwrap PIXELM 2 group with respect
+                        // to PIXELM 1 group.  the no. of wraps will be added to PIXELM 2
+                        // group in the future
+                        if (group1.number_of_pixels_in_group >
+                            group2.number_of_pixels_in_group)
+                        {
+                            // merge PIXELM 2 with PIXELM 1 group
+                            group1.last.next = group2;
+                            group1.last = group2.last;
+                            group1.number_of_pixels_in_group =
+                                    group1.number_of_pixels_in_group +
+                                    group2.number_of_pixels_in_group;
+                            incremento =
+                                    PIXEL1.increment - _edge.increment - PIXEL2.increment;
+                            // merge the other pixels in PIXELM 2 group to PIXELM 1 group
+                            while (group2 != null)
+                            {
+                                group2.head = group1;
+                                group2.increment += incremento;
+                                group2 = group2.next;
+                            }
+                        }
+
+                        // if the no. of pixels in PIXELM 2 group is larger than the
+                        // no. of pixels in PIXELM 1 group.  Merge PIXELM 1 group to
+                        // PIXELM 2 group and find the number of wraps between PIXELM 2
+                        // group and PIXELM 1 group to unwrap PIXELM 1 group with respect
+                        // to PIXELM 2 group.  the no. of wraps will be added to PIXELM 1
+                        // group in the future
+                        else
+                        {
+                            // merge PIXELM 1 with PIXELM 2 group
+                            group2.last.next = group1;
+                            group2.last = group1.last;
+                            group2.number_of_pixels_in_group =
+                                    group2.number_of_pixels_in_group +
+                                    group1.number_of_pixels_in_group;
+                            incremento =
+                                    PIXEL2.increment + _edge.increment - PIXEL1.increment;
+                            // merge the other pixels in PIXELM 2 group to PIXELM 1 group
+                            while (group1 != null)
+                            {
+                                group1.head = group2;
+                                group1.increment += incremento;
+                                group1 = group1.next;
+                            }  // while
+
+                        }  // else
+                    }  // else
+                }  // if
+
+
+            }
+
+            score.PathFinding = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
+            dt1 = DateTime.UtcNow;
+
+
+
+            //foreach (pixel pixel in pixels)
+            //{
+            //    image[pixel.i, pixel.j] += TWOPI * ((double)pixel.increment);
+            //}
+
+            Parallel.For(0, size0 + 1, (i) =>
+              {
+                  for (int j = 0; j <= size1; j++)
+                  {
+                      image[pixels[i, j].i, pixels[i, j].j] += TWOPI * ((double)pixels[i, j].increment);
+                  }
+              });
+
+
+            score.Unwrap = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
+            dt1 = DateTime.UtcNow;
+
+            Parallel.For(0, size0 + 1, (i) =>
+            {
+                for (int j = 0; j <= size1; j++)
+                {
+                    pixels[i, j].Refresh();
+                }
+            });
+
+
+            //foreach (pixel pixel in pixels)
+            //{
+            //    pixel.Refresh();
+            //}
+            score.Refresh = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
+        }
     }
 
 }

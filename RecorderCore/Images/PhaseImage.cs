@@ -16,7 +16,7 @@ namespace RecorderCore
         public double Unwrapping;
         public double Processing;
         public UwrReport report;
-
+        public bool IsParallel = true;
         public static Unwrapping3 unwrapping;
 
         List<string> lines = new List<string>();
@@ -119,7 +119,7 @@ namespace RecorderCore
             {
                 for (int j = 0; j <= Image.GetUpperBound(1); j++)
                 {
-                    byte val1 = (byte)(255 * (Image[i, j] - min) / (max - min));
+                    byte val1 = (byte)(254 * (Image[i, j] - min) / (max - min));
                     ImageForUI[i, j, 0] = val1;
                     ImageForUI[i, j, 1] = val1;
                     ImageForUI[i, j, 2] = val1;
@@ -158,7 +158,7 @@ namespace RecorderCore
         }
         public PhaseImage(double[,] image)
         {
-            unwrapping.UpdateParamsIfNeed(image);
+            
             RecordingTime = DateTime.UtcNow;
             Image = image;
             
@@ -182,9 +182,13 @@ namespace RecorderCore
             {
                 if (MaxProcessingStep < SettingsContainer.ProcessingStep.UnwrappedPhaseImage) return;
 
-                if (unwrapping == null) unwrapping = new Unwrapping3(Image);
-                       
-                unwrapping.Unwrap(Image, out UwrReport rep);
+                if (unwrapping == null) 
+                    unwrapping = new Unwrapping3(Image);
+                else
+                    unwrapping.UpdateParamsIfNeed(Image);
+
+                //unwrapping.Unwrap(Image, out UwrReport rep);
+                unwrapping.UnwrapParallel(Image, out UwrReport rep);
                 report = rep;
                 /*
                 double[,] matrix = new double[Image.GetUpperBound(0) + 1, Image.GetUpperBound(1) + 1];

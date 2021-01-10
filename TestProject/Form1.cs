@@ -79,15 +79,15 @@ namespace TestProject
         private void button2_Click(object sender, EventArgs e)
         {
             var t = TestImageGenerator.GetTestPair(400, 400, rnd.NextDouble()* 5 * Math.PI, 2 + rnd.NextDouble() * 20);
-            t.Item1.CalculatePhaseImage();
-            t.Item1.Unwrap();
+            //t.Item1.CalculatePhaseImage();
+            //t.Item1.Unwrap();
             double[,] dif = ImageSource.diff(t.Item1.Image, t.Item2);
             this.label1.Text = Math.Round(ImageSource.max(dif), 2).ToString();
             label1.Update();
             this.label2.Text = Math.Round(ImageSource.min(dif), 2).ToString();
             label2.Update();
             //plot(GetUIMatrix(t.Item1.Image));
-            plot(GetUIMatrix(dif));
+            plot(GetUIMatrix(t.Item1.Image));
         }
 
         private void button3_Click(object sender, EventArgs e)
