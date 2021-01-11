@@ -8,7 +8,7 @@ namespace RecorderCore
 {
     public class ArduinoWorker
     {
-        ArduinoDriver.ArduinoDriver driver = new ArduinoDriver.ArduinoDriver(ArduinoUploader.Hardware.ArduinoModel.Mega1284);
+        ArduinoDriver.ArduinoDriver driver = new ArduinoDriver.ArduinoDriver(ArduinoUploader.Hardware.ArduinoModel.NanoR3,autoBootstrap:true);
         public void Action(int k)
         {
             for (int i = 2; i <= 10; i++)
