@@ -137,7 +137,8 @@ namespace PhaseImageRecorder
 
                     try
                     {
-                    plot(phaseImage.ImageForUI);
+                    ph.SetUIMatrix();
+                    plot(ph.ImageForUI);
                     imagePlotted = true;
                             //imagePlotted = true;
                     FrameCounter++;
@@ -151,25 +152,25 @@ namespace PhaseImageRecorder
                         FrameCounter = 0;
                     }
 
-                    label9.Text = phaseImage.Creation.ToString();
-                    label10.Text = phaseImage.Calculating.ToString();
-                    label11.Text = phaseImage.Unwrapping.ToString();
-                    label12.Text = phaseImage.Processing.ToString();
+                    label9.Text = ph.Creation.ToString();
+                    label10.Text = ph.Calculating.ToString();
+                    label11.Text = ph.Unwrapping.ToString();
+                    label12.Text = ph.Processing.ToString();
 
                     label9.Update();
                     label10.Update();
                     label11.Update();
                     label12.Update();
 
-                    if (phaseImage.report != null)
+                    if (ph.report != null)
                     {
-                        label19.Text = phaseImage.report.GammasCalc.ToString();
-                        label20.Text = phaseImage.report.EdgesCalc.ToString();
-                        label21.Text = phaseImage.report.Sorting.ToString();
-                        label22.Text = phaseImage.report.PathFinding.ToString();
-                        label23.Text = phaseImage.report.Unwrap.ToString();
-                        label24.Text = phaseImage.report.Refresh.ToString();
-                        label26.Text = (phaseImage.Creation + phaseImage.Calculating + phaseImage.Unwrapping + phaseImage.Processing).ToString();
+                        label19.Text = ph.report.GammasCalc.ToString();
+                        label20.Text = ph.report.EdgesCalc.ToString();
+                        label21.Text = ph.report.Sorting.ToString();
+                        label22.Text = ph.report.PathFinding.ToString();
+                        label23.Text = ph.report.Unwrap.ToString();
+                        label24.Text = ph.report.Refresh.ToString();
+                        label26.Text = (ph.Creation + ph.Calculating + ph.Unwrapping + ph.Processing).ToString();
 
                         label19.Update();
                         label20.Update();

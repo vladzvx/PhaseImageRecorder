@@ -7,6 +7,16 @@ using System.Threading.Tasks;
 
 namespace SortingsLearning
 {
+    class test_class
+    {
+        static Random rnd=new Random();
+        public DateTime dt;
+
+        public test_class()
+        {
+            dt = DateTime.UtcNow+TimeSpan.FromSeconds((rnd.NextDouble()-0.5)*1000);
+        }
+    }
     class Element
     {
         #region static
@@ -405,6 +415,14 @@ namespace SortingsLearning
 
         static void Main(string[] args)
         {
+            List<test_class> t = new List<test_class>();
+            for (int u = 0; u < 10; u++)
+                t.Add(new test_class());
+
+            t.Sort((item1, item2) => item1.dt > item2.dt ? 1 : (item1.dt < item2.dt ? -1 : 0));
+
+
+
 
             Emgu.CV.VideoCapture capture = new Emgu.CV.VideoCapture(0,captureApi:VideoCapture.API.Firewire);
 

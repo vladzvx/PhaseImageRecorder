@@ -18,6 +18,7 @@ namespace RecorderCore
         public UwrReport report;
         public bool IsParallel = true;
         public static Unwrapping3 unwrapping;
+        public Unwrapping3 unwrapper;
 
         List<string> lines = new List<string>();
         public void Save(object _path)
@@ -188,6 +189,7 @@ namespace RecorderCore
                     unwrapping.UpdateParamsIfNeed(Image);
 
                 //unwrapping.Unwrap(Image, out UwrReport rep);
+                //unwrapper.Unwrap(Image, out UwrReport rep);
                 unwrapping.UnwrapParallel(Image, out UwrReport rep);
                 report = rep;
                 /*
@@ -214,7 +216,7 @@ namespace RecorderCore
         public virtual void Process()
         {
             DateTime dt1 = DateTime.UtcNow;
-            SetUIMatrix();
+            //SetUIMatrix();
             if (status <= SettingsContainer.ProcessingStep.UnwrappedPhaseImage)
             {
                 status = SettingsContainer.ProcessingStep.ProcessedImage;

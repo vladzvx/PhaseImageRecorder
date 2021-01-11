@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Threading;
 using static RecorderCore.RecordingDriver;
 using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace RecorderCore
 {
@@ -128,7 +129,106 @@ namespace RecorderCore
     }
 
 
+    public class ImagePool
+    {
+        DateTime LastImageRecordingTime;
+        object locker = new object();
+        List<PhaseImage> images = new List<PhaseImage>();
 
 
+        public void AddImage(PhaseImage phaseImage)
+        {
+            lock (locker)
+            {
+                images.Add(phaseImage);
+            }
+        }
+
+        public bool TryGetImage(out PhaseImage phaseImage)
+        {
+            lock (locker)
+            {
+                phaseImage = null;
+                if (images.Count > 0)
+                {
+                    images.RemoveAll(item => item.RecordingTime < LastImageRecordingTime);
+                    images.Sort((item1, item2) => item1.RecordingTime>item2.RecordingTime?1:(item1.RecordingTime < item2.RecordingTime?-1:0));
+                    while (images.Count > 30)
+                    {
+                        images.RemoveAt(0);
+                    }
+                    phaseImage = images[0];
+                    LastImageRecordingTime = phaseImage.RecordingTime;
+                    images.RemoveAt(0);
+                    return true;
+                }
+                return false;
+            }
+        }
+    }
+    class ImageProcessor2
+    {
+        private ImagePool imagePool = new ImagePool();
+        protected NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+        public event PhaseImageReciever PhaseImageInterfaceSender;
+        public event PhaseImageReciever PhaseImageSender;
+
+        private CancellationTokenSource cancellationTokenSource;
+        private Thread[] ImageProcessors;
+        private ConcurrentQueue<PhaseImage> MainProcessingQuenue;
+
+        public void PutImage(PhaseImage phaseImage)
+        {
+            //MainProcessingQuenue.TryDequeue(out var phaseImage1);
+            if (MainProcessingQuenue.Count > 50)
+            {
+                MainProcessingQuenue.TryDequeue(out var phaseImage1);
+            }
+            MainProcessingQuenue.Enqueue(phaseImage);
+        }
+
+        public void CleanQuenue()
+        {
+            while (MainProcessingQuenue.TryDequeue(out var phaseImage1)) ;
+        }
+        public ImageProcessor2(int ProcessingThreadsNumber)
+        {
+            if (ProcessingThreadsNumber <= 0) throw new ArgumentException("Uncorrect threads number!");
+            cancellationTokenSource = new CancellationTokenSource();
+            MainProcessingQuenue = new ConcurrentQueue<PhaseImage>();
+            ImageProcessors = new Thread[ProcessingThreadsNumber ];
+            for (int i = 0; i < ProcessingThreadsNumber; i++)
+            {
+                ImageProcessors[i] = new Thread(new ParameterizedThreadStart(ProcessImage));
+                ImageProcessors[i].Start(cancellationTokenSource.Token);
+            }
+        }
+
+        public void ProcessImage(object cancellationToken)
+        {
+            Unwrapping3 uwr = null;
+            CancellationToken token = (CancellationToken)cancellationToken;
+            while (!token.IsCancellationRequested)
+            {
+                while (MainProcessingQuenue.TryDequeue(out PhaseImage result))
+                {
+                    if (uwr == null) uwr = new Unwrapping3(result.Image);
+                    else uwr.UpdateParamsIfNeed(result.Image);
+                    result.unwrapper = uwr;
+                    result.CalculatePhaseImage();
+                    result.Unwrap();
+                    result.Process();
+                    imagePool.AddImage(result);
+                }
+                Thread.Sleep(50);
+            }
+
+        }
+
+        public bool TryGetImage(out PhaseImage phaseImage)
+        {
+            return imagePool.TryGetImage(out phaseImage);
+        }
+    }
 
 }

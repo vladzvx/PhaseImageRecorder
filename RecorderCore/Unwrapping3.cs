@@ -328,21 +328,6 @@ namespace RecorderCore
                 }
             });
 
-
-            //for (int i = 1; i < size0; i++)
-            //{
-            //    for (int j = 1; j < size1; j++)
-            //    {
-            //        double H = gamma(image[i, j - 1] - image[i, j]) - gamma(image[i, j] - image[i, j + 1]);
-            //        double V = gamma(image[i - 1, j] - image[i, j]) - gamma(image[i, j] - image[i + 1, j]);
-            //        double D1 = gamma(image[i - 1, j - 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, j + 1]);
-            //        double D2 = gamma(image[i - 1, j + 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, j - 1]);
-            //        pixels[i, j].reliability = (H * H + V * V + D1 * D1 + D2 * D2);
-
-            //    }
-            //}
-
-
             Parallel.For(1, size0, (i) =>
             {
                 int j = 0;
@@ -380,57 +365,13 @@ namespace RecorderCore
                 pixels[size0, j].reliability = (H * H + V * V + D1 * D1 + D2 * D2);
             });
 
-
-
-
-            //for (int i = 1; i < size0; i++)//left and right borders
-            //{
-            //    int j = 0;
-
-            //    double H = gamma(image[i, size1 - 1] - image[i, j]) - gamma(image[i, j] - image[i, j + 1]);
-            //    double V = gamma(image[i - 1, j] - image[i, j]) - gamma(image[i, j] - image[i + 1, j]);
-            //    double D1 = gamma(image[i - 1, size1 - 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, j + 1]);
-            //    double D2 = gamma(image[i - 1, j + 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, size1 - 1]);
-            //    pixels[i, 0].reliability = (H * H + V * V + D1 * D1 + D2 * D2);
-
-            //    j = size1;
-            //    H = gamma(image[i, j - 1] - image[i, j]) - gamma(image[i, j] - image[i, 0]);
-            //    V = gamma(image[i - 1, j] - image[i, j]) - gamma(image[i, j] - image[i + 1, j]);
-            //    D1 = gamma(image[i - 1, j - 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, 0]);
-            //    D2 = gamma(image[i - 1, 0] - image[i, j]) - gamma(image[i, j] - image[i + 1, j - 1]);
-            //    pixels[i, size1].reliability = (H * H + V * V + D1 * D1 + D2 * D2);
-            //}
-
-            //for (int j = 1; j < size1; j++)
-            //{
-            //    int i = 0;
-            //    double H = gamma(image[i, j - 1] - image[i, j]) - gamma(image[i, j] - image[i, j + 1]);
-            //    double V = gamma(image[size0, j] - image[i, j]) - gamma(image[i, j] - image[i + 1, j]);
-            //    double D1 = gamma(image[size0, j - 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, j + 1]);
-            //    double D2 = gamma(image[size0, j + 1] - image[i, j]) - gamma(image[i, j] - image[i + 1, j - 1]);
-            //    pixels[0, j].reliability = (H * H + V * V + D1 * D1 + D2 * D2);
-            //    //pixels[i, j].value = image[i, j];
-
-            //    i = size0;
-            //    H = gamma(image[i, j - 1] - image[i, j]) - gamma(image[i, j] - image[i, j + 1]);
-            //    V = gamma(image[i - 1, j] - image[i, j]) - gamma(image[i, j] - image[0, j]);
-            //    D1 = gamma(image[i - 1, j - 1] - image[i, j]) - gamma(image[i, j] - image[0, j + 1]);
-            //    D2 = gamma(image[i - 1, j + 1] - image[i, j]) - gamma(image[i, j] - image[0, j - 1]);
-            //    pixels[size0, j].reliability = (H * H + V * V + D1 * D1 + D2 * D2);
-            //}
-
             score.GammasCalc = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
             dt1 = DateTime.UtcNow;
-            //for (int i = 0; i < _edges.Length; i++)
-            //{
-            //    _edges[i].increment = find_wrap(image[_edges[i].pixel1.i, _edges[i].pixel1.j], image[_edges[i].pixel2.i, _edges[i].pixel2.j]);
-            //    edges_reliabilities[i] = Math.Round(_edges[i].pixel1.reliability + _edges[i].pixel2.reliability, 3);
-            //}
 
             Parallel.For(0, _edges.Length , (i) =>
             {
                 _edges[i].increment = find_wrap(image[_edges[i].pixel1.i, _edges[i].pixel1.j], image[_edges[i].pixel2.i, _edges[i].pixel2.j]);
-                edges_reliabilities[i] = Math.Round(_edges[i].pixel1.reliability + _edges[i].pixel2.reliability, 3);
+                edges_reliabilities[i] = Math.Round(_edges[i].pixel1.reliability + _edges[i].pixel2.reliability, 0);
             });
 
 
@@ -544,12 +485,6 @@ namespace RecorderCore
             dt1 = DateTime.UtcNow;
 
 
-
-            //foreach (pixel pixel in pixels)
-            //{
-            //    image[pixel.i, pixel.j] += TWOPI * ((double)pixel.increment);
-            //}
-
             Parallel.For(0, size0 + 1, (i) =>
               {
                   for (int j = 0; j <= size1; j++)
@@ -570,11 +505,6 @@ namespace RecorderCore
                 }
             });
 
-
-            //foreach (pixel pixel in pixels)
-            //{
-            //    pixel.Refresh();
-            //}
             score.Refresh = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
         }
     }

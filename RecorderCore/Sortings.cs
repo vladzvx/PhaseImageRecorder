@@ -81,10 +81,10 @@ namespace RecorderCore
                     //bounds.Add(j);
                 }
 
-                ArrayPreprocessing(keys, elements, left, j, bounds, depth_limit, depth);
-                ArrayPreprocessing(keys, elements, i, right, bounds, depth_limit, depth);
+                //ArrayPreprocessing(keys, elements, left, j, bounds, depth_limit, depth);
+                //ArrayPreprocessing(keys, elements, i, right, bounds, depth_limit, depth);
 
-                /*
+                
                 Task t1 = Task.Factory.StartNew(() =>
                 {
                     ArrayPreprocessing(keys, elements, left, j, bounds, depth_limit, depth);
@@ -95,7 +95,7 @@ namespace RecorderCore
                     ArrayPreprocessing(keys, elements, i, right, bounds, depth_limit, depth);
                 });
                 Task.WaitAll(t1, t2);
-                */
+                
 
                 right = j;
                 left = i;
