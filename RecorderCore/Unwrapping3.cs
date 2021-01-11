@@ -173,14 +173,14 @@ namespace RecorderCore
             for (int i = 0; i < _edges.Length; i++)
             {
                 _edges[i].increment = find_wrap(image[_edges[i].pixel1.i, _edges[i].pixel1.j], image[_edges[i].pixel2.i, _edges[i].pixel2.j]);
-                edges_reliabilities[i] = Math.Round(_edges[i].pixel1.reliability + _edges[i].pixel2.reliability, 0);
+                edges_reliabilities[i] = Math.Round(_edges[i].pixel1.reliability + _edges[i].pixel2.reliability, 3);
             }
             score.EdgesCalc = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
 
             dt1 = DateTime.UtcNow;
-            Array.Sort(edges_reliabilities, _edges);
+            //Array.Sort(edges_reliabilities, _edges);
 
-            //Sortings.ParallelQuickSort(edges_reliabilities, _edges);
+            Sortings.ParallelQuickSort(edges_reliabilities, _edges);
 
             score.Sorting = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
 

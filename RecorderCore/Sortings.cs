@@ -29,7 +29,7 @@ namespace RecorderCore
         public static void ParallelQuickSort(double[] keys, Unwrapping3.edge[] elements)
         {
             ConcurrentBag<int> _bounds = new ConcurrentBag<int>() { 0 };
-            Sortings.ArrayPreprocessing(keys, elements, 0, keys.Length - 1, _bounds, 2, 0);
+            Sortings.ArrayPreprocessing(keys, elements, 0, keys.Length - 1, _bounds, 6, 0);
             List<int> bounds = _bounds.ToList();
             bounds.Add(keys.Length);
             bounds.Sort();

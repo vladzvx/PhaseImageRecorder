@@ -40,9 +40,7 @@ namespace RecorderCore
         }
         public ModelImageCapture(): base()
         {
-            imageSource.CreateImagesForStepMethod(1, 4);
-
-
+            imageSource.CreateImagesForStepMethod(10, 4);
         }
 
         internal override void sleep(double sleep)

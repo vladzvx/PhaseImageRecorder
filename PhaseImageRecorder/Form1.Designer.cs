@@ -422,7 +422,7 @@ namespace PhaseImageRecorder
             this.comboBox1.Size = new System.Drawing.Size(140, 23);
             this.comboBox1.TabIndex = 1;
             this.comboBox1.Tag = "Steps Number";
-            this.comboBox1.Text = "3";
+            this.comboBox1.Text = "4";
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // checkedListBox2
