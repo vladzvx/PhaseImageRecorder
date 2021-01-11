@@ -170,8 +170,6 @@ namespace RecorderCore
     {
         private ImagePool imagePool = new ImagePool();
         protected NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
-        public event PhaseImageReciever PhaseImageInterfaceSender;
-        public event PhaseImageReciever PhaseImageSender;
 
         private CancellationTokenSource cancellationTokenSource;
         private Thread[] ImageProcessors;
