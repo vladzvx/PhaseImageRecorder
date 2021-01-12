@@ -16,6 +16,7 @@ namespace RecorderCore
         public event ImageReciever rec;
         public event ExternalAction action;
 
+
         protected Thread thread;
         protected object ReadSettingsLocker = new object();
 
@@ -53,66 +54,41 @@ namespace RecorderCore
 
         public void Pause()
         {
-            _lock.EnterWriteLock();
+            _lock.TryEnterWriteLock(-1);
             paused = true;
             _lock.ExitWriteLock();
         }
         public void PauseRelease()
         {
-            _lock.EnterWriteLock();
+            _lock.TryEnterWriteLock(-1);
             paused = false;
             _lock.ExitWriteLock();
         }
+
         #endregion
 
         #region image grabbing
 
         private void grab(object cancellationToken)
         {
-            CancellationToken[] cts = cancellationToken as CancellationToken[];
-            if (cts != null)
+            CancellationToken ct = (CancellationToken)cancellationToken;
+            int frameCounter = 0;
+            while (!ct.IsCancellationRequested)
             {
-                int frameCounter = 0;
-                while (!cts[0].IsCancellationRequested)
+                _lock.TryEnterReadLock(-1);
+                bool local_pause = paused;
+                _lock.ExitReadLock();
+                if (!local_pause)
                 {
-                    _lock.EnterReadLock();
-                    bool local_pause = paused;
-                    _lock.ExitReadLock();
-                    if (!local_pause)
+                    lock (ReadSettingsLocker)
                     {
-                        lock (ReadSettingsLocker)
-                        {
-                            if (action != null) action.Invoke(frameCounter);
-                            Thread.Sleep(FramePause);
-                            Grab();
-                            frameCounter = frameCounter < MaxFrameCounter ? frameCounter + 1 : 0;
-                        }
+                        if (action != null) action.Invoke(frameCounter);
+                        Thread.Sleep(FramePause);
+                        Grab();
+                        frameCounter = frameCounter < MaxFrameCounter ? frameCounter + 1 : 0;
                     }
-                    else Thread.Sleep(300);
-
                 }
-            }
-            else
-            {
-                CancellationToken ct = (CancellationToken)cancellationToken;
-                int frameCounter = 0;
-                while (!ct.IsCancellationRequested)
-                {
-                    _lock.EnterReadLock();
-                    bool local_pause = paused;
-                    _lock.ExitReadLock();
-                    if (!local_pause)
-                    {
-                        lock (ReadSettingsLocker)
-                        {
-                            if (action != null) action.Invoke(frameCounter);
-                            Thread.Sleep(FramePause);
-                            Grab();
-                            frameCounter = frameCounter < MaxFrameCounter ? frameCounter + 1 : 0;
-                        }
-                    }
-                    else Thread.Sleep(300);
-                }
+                else Thread.Sleep(300);
             }
 
         }

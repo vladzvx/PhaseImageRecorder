@@ -23,6 +23,7 @@ namespace RecorderCore
         protected Thread WorkingThread;
         protected CancellationTokenSource CancellationTokenSource;
         protected bool paused;
+        protected bool action_off=true;
         protected double AfterCaptureSleeping=0;
 
         #region diagnostic
@@ -104,6 +105,17 @@ namespace RecorderCore
                 paused = false;
         }
 
+        public void ActionOff()
+        {
+            lock (ReadSettingsLocker)
+                action_off = true;
+        }
+        public void ActionOn()
+        {
+            lock (ReadSettingsLocker)
+                action_off = false;
+        }
+
         internal virtual void sleep(double sleep)
         {
             Thread.Sleep(sleep>=1?(int)sleep:0);
@@ -118,18 +130,20 @@ namespace RecorderCore
             while (!ct.IsCancellationRequested)
             {
                 bool local_pause;
+                bool local_action_on;
                 double local_SleepingTime;
                 lock (ReadSettingsLocker)
                 {
                     local_SleepingTime = AfterCaptureSleeping;
                     local_pause = paused;
+                    local_action_on = action_off;
                 }
                 if (!local_pause)
                 {
                     if (DiagnosticEnable&&actionStarted != null) actionStarted.Invoke();
                     double[,] buffer = GetImage();
                     if (imageReciever != null) imageReciever.Invoke(buffer);
-                    if (externalAction != null) externalAction.Invoke();
+                    if (externalAction != null&& local_action_on) externalAction.Invoke();
                     if (DiagnosticEnable && actionEnded != null) actionEnded.Invoke();
                     sleep(local_SleepingTime);
                     if (DiagnosticEnable&&cycleEnded != null) cycleEnded.Invoke();

@@ -50,9 +50,11 @@ namespace PhaseImageRecorder
         private void SetCameraSettings()
         {
             SettingsContainer.recordingType = SettingsContainer.RecordingType.Camera;
+            SettingsContainer.FramePause = 0;
         }
         private void SetHilbertSettings()
         {
+            SettingsContainer.FramePause = 0;
             if (this.checkedListBox1.GetItemChecked(0))
             {
                 this.SettingsContainer.maxProcessingStep = SettingsContainer.ProcessingStep.UnwrappedPhaseImage;

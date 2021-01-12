@@ -9,7 +9,21 @@ namespace RecorderCore
     public class ArduinoWorker
     {
         private object locker = new object();
-        ArduinoDriver.ArduinoDriver driver;     
+        ArduinoDriver.ArduinoDriver driver;
+        
+        public ArduinoWorker()
+        {
+            try
+            {
+                init();
+            }
+            catch 
+            {
+                driver = null;
+            }
+
+            
+        }
         private void init()
         {
             lock (locker)
@@ -23,7 +37,8 @@ namespace RecorderCore
         }
         public void Action(int k)
         {
-            if (driver == null) init();
+            //if (driver == null) init();
+            if (driver == null) return;
             lock (locker)
             {
                 for (int i = 2; i <= 10; i++)
