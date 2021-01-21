@@ -11,6 +11,7 @@ namespace RecorderCore
 {
     public class RecordingDriver
     {
+        private double Wavelength = 1;
         public delegate void PhaseImageReciever(PhaseImage phaseImage);
         private object settingsLocker = new object();
         private ArduinoWorker ArduinoWorker;
@@ -82,16 +83,19 @@ namespace RecorderCore
                 if (settings.recordingType == SettingsContainer.RecordingType.Camera)
                 {
                     BufferPhaseImage = new CameraImage(image) { MaxProcessingStep = settings.maxProcessingStep };
+                    BufferPhaseImage.Wavelength = this.Wavelength;
                     imageProcessor.PutImage(BufferPhaseImage);
                 }
                 else if (settings.recordingType == SettingsContainer.RecordingType.Hilbert)
                 {
                     BufferPhaseImage = new HilbertPhaseImage(image) { MaxProcessingStep = settings.maxProcessingStep };
+                    BufferPhaseImage.Wavelength = this.Wavelength;
                     imageProcessor.PutImage(BufferPhaseImage);
                 }
                 else if (settings.recordingType == SettingsContainer.RecordingType.Step)
                 {
                     StepPhaseImage stepPhaseImage = BufferPhaseImage as StepPhaseImage;
+
                     if (stepPhaseImage != null)
                     {
                         if (stepPhaseImage.StepNumber < settings.MaximumSteps)
@@ -100,11 +104,13 @@ namespace RecorderCore
                         {
                             imageProcessor.PutImage(BufferPhaseImage);
                             BufferPhaseImage = new StepPhaseImage(image) { MaxProcessingStep = settings.maxProcessingStep }; ;
+                            BufferPhaseImage.Wavelength = this.Wavelength;
                         }
                     }
                     else
                     {
                         BufferPhaseImage = new StepPhaseImage(image) { MaxProcessingStep = settings.maxProcessingStep }; ;
+                        BufferPhaseImage.Wavelength = this.Wavelength;
 
                     }
                 }

@@ -15,7 +15,7 @@ namespace RecorderCore
         public delegate void ExternalAction(int count);
         public event ImageReciever rec;
         public event ExternalAction action;
-
+        public double Wavelength;
 
         protected Thread thread;
         protected object ReadSettingsLocker = new object();
@@ -107,6 +107,14 @@ namespace RecorderCore
         #endregion
 
         #region external ruling
+        public void UpdateWavelength(double Wavelength)
+        {
+            lock (ReadSettingsLocker)
+            {
+                this.Wavelength = Wavelength;
+            }
+        }
+
         public void UpdateCamera(int CameraNumber)
         {
             lock (ReadSettingsLocker)

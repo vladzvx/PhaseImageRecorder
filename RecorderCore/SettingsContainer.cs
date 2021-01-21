@@ -29,7 +29,7 @@ namespace RecorderCore
         public int Camera = 0;
         public int FramePause = 0;
         public bool model = false;
-
+        public double wavelength = 1;
         public bool AreEqual(SettingsContainer settings)
         {
             return this.maxProcessingStep == settings.maxProcessingStep || this.recordingType == settings.recordingType || this.MaximumSteps == settings.MaximumSteps|| (this.model == settings.model);

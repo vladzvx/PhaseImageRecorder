@@ -45,6 +45,7 @@ namespace PhaseImageRecorder
             SettingsContainer.recordingType = SettingsContainer.RecordingType.Step;
             SettingsContainer.MaximumSteps = int.Parse(this.comboBox1.SelectedItem.ToString());
             SettingsContainer.FramePause = int.Parse(this.comboBox2.SelectedItem.ToString());
+            if (double.TryParse(this.textBox1.Text, out SettingsContainer.wavelength)) ;
         }
 
         private void SetCameraSettings()
@@ -68,6 +69,7 @@ namespace PhaseImageRecorder
                 this.SettingsContainer.maxProcessingStep = SettingsContainer.ProcessingStep.WrappedPhaseImage;
             }
             SettingsContainer.recordingType = SettingsContainer.RecordingType.Hilbert;
+
         }
 
         private void UpdateSettings()
@@ -333,6 +335,31 @@ namespace PhaseImageRecorder
         }
 
         private void label17_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label27_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabPage2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tab_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }

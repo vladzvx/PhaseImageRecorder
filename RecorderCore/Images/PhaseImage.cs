@@ -11,6 +11,7 @@ namespace RecorderCore
 {
     public abstract class PhaseImage
     {
+        public double Wavelength=1;
         public double Creation;
         public double Calculating;
         public double Unwrapping;
