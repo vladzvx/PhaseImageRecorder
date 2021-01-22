@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace PhaseImageRecorder
 {
@@ -72,6 +73,7 @@ namespace PhaseImageRecorder
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tab = new System.Windows.Forms.TabControl();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -86,7 +88,7 @@ namespace PhaseImageRecorder
             this.pictureBox1.Location = new System.Drawing.Point(253, 12);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(586, 609);
+            this.pictureBox1.Size = new System.Drawing.Size(586, 711);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
@@ -97,7 +99,7 @@ namespace PhaseImageRecorder
             this.button1.Location = new System.Drawing.Point(9, 83);
             this.button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(227, 30);
+            this.button1.Size = new System.Drawing.Size(191, 30);
             this.button1.TabIndex = 1;
             this.button1.Text = "Save Image";
             this.button1.UseVisualStyleBackColor = true;
@@ -127,7 +129,7 @@ namespace PhaseImageRecorder
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(15, 610);
+            this.label3.Location = new System.Drawing.Point(15, 631);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(26, 15);
@@ -138,7 +140,7 @@ namespace PhaseImageRecorder
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(55, 610);
+            this.label4.Location = new System.Drawing.Point(55, 631);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(13, 15);
@@ -149,7 +151,7 @@ namespace PhaseImageRecorder
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(96, 609);
+            this.checkBox1.Location = new System.Drawing.Point(96, 630);
             this.checkBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(60, 19);
@@ -551,7 +553,7 @@ namespace PhaseImageRecorder
             this.tab.Controls.Add(this.tabPage1);
             this.tab.Controls.Add(this.tabPage3);
             this.tab.ItemSize = new System.Drawing.Size(100, 26);
-            this.tab.Location = new System.Drawing.Point(9, 119);
+            this.tab.Location = new System.Drawing.Point(9, 140);
             this.tab.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tab.Name = "tab";
             this.tab.Padding = new System.Drawing.Point(17, 3);
@@ -572,11 +574,21 @@ namespace PhaseImageRecorder
             this.checkBox2.UseVisualStyleBackColor = true;
             this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
             // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(11, 119);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(189, 15);
+            this.progressBar1.TabIndex = 8;
+            this.progressBar1.Click += new System.EventHandler(this.progressBar1_Click);
+            progressBar1.Maximum = 1000;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(852, 655);
+            this.ClientSize = new System.Drawing.Size(852, 757);
+            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -600,6 +612,7 @@ namespace PhaseImageRecorder
         }
 
         #endregion
+        private Task savingTask = null;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.RichTextBox richTextBox1;
@@ -642,6 +655,7 @@ namespace PhaseImageRecorder
         private TabPage tabPage1;
         private TabControl tab;
         private CheckBox checkBox2;
+        private ProgressBar progressBar1;
     }
 }
 

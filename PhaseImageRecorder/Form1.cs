@@ -45,7 +45,7 @@ namespace PhaseImageRecorder
             SettingsContainer.recordingType = SettingsContainer.RecordingType.Step;
             SettingsContainer.MaximumSteps = int.Parse(this.comboBox1.SelectedItem.ToString());
             SettingsContainer.FramePause = int.Parse(this.comboBox2.SelectedItem.ToString());
-            if (double.TryParse(this.textBox1.Text, out SettingsContainer.wavelength)) ;
+            
         }
 
         private void SetCameraSettings()
@@ -74,6 +74,7 @@ namespace PhaseImageRecorder
 
         private void UpdateSettings()
         {
+            if (double.TryParse(this.textBox1.Text, out SettingsContainer.wavelength)) ;
             switch (this.tab.SelectedTab.Text.ToLower())
             {
                 case "hilbert":
@@ -124,6 +125,17 @@ namespace PhaseImageRecorder
         }
         private void action(object sender, ElapsedEventArgs e)
         {
+            if (savingTask!=null&& !savingTask.IsCompleted)
+            {
+                if (progressBar1.Value == progressBar1.Maximum)
+                    progressBar1.Value = 0;
+                else
+                    progressBar1.PerformStep();
+            }
+            else
+                progressBar1.Value = 0;
+
+            //progressBar1.St
             // bool is_is_locked = false;
             //Monitor.Enter(locker, ref is_is_locked);
             PhaseImage ph;
@@ -282,15 +294,16 @@ namespace PhaseImageRecorder
         {
             lock (locker)
             {
+                if (phaseImage == null) return;
                 string path = Path.Combine(this.richTextBox1.Text, SaveCount.ToString() + "_" + DateTime.UtcNow.ToString().Replace('.', '_').Replace(':', '_').Replace(' ', '_'));
-                if (checkBox2.Checked&&tab.SelectedTab==tabPage2)
+                if (checkBox2.Checked&&tab.SelectedTab==tabPage3)
                 {
                     StepPhaseImage pi = phaseImage as StepPhaseImage;
                     if (pi!=null)
-                        Task.Factory.StartNew(pi.Save, path);
+                       savingTask= Task.Factory.StartNew(pi.FullSave, path);
                 }
                 else
-                    Task.Factory.StartNew(phaseImage.Save, path);
+                    savingTask = Task.Factory.StartNew(phaseImage.Save, path);
                 phaseImage = null;
                 //phaseImage.Save(path);
                 SaveCount++;
@@ -478,6 +491,11 @@ namespace PhaseImageRecorder
         }
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void progressBar1_Click(object sender, EventArgs e)
         {
 
         }

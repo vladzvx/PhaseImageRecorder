@@ -115,7 +115,7 @@ namespace RecorderCore
             {
                 for (int j = 0; j <= Image.GetUpperBound(1); j++)
                 {
-                    Image[i, j] = Math.Round(Image[i, j] / Math.PI * Wavelength,2);
+                    Image[i, j] = Math.Round(Image[i, j] / Math.PI * Wavelength, 2);
                     double val1 = Image[i, j];
                     if (val1 < min) min = val1;
                     if (val1 > max) max = val1;

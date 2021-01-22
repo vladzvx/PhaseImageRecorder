@@ -71,7 +71,7 @@ namespace RecorderCore
                         }
                         lines.Add(line);
                     }
-                    File.WriteAllLines(path + count.ToString()+ ".csv", lines);
+                    File.WriteAllLines(path +"_"+ count.ToString()+ ".csv", lines);
                     count++;
                 }
 

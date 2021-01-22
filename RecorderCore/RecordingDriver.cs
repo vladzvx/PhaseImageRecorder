@@ -83,13 +83,13 @@ namespace RecorderCore
                 if (settings.recordingType == SettingsContainer.RecordingType.Camera)
                 {
                     BufferPhaseImage = new CameraImage(image) { MaxProcessingStep = settings.maxProcessingStep };
-                    BufferPhaseImage.Wavelength = this.Wavelength;
+                    BufferPhaseImage.Wavelength = this.settings.wavelength;
                     imageProcessor.PutImage(BufferPhaseImage);
                 }
                 else if (settings.recordingType == SettingsContainer.RecordingType.Hilbert)
                 {
                     BufferPhaseImage = new HilbertPhaseImage(image) { MaxProcessingStep = settings.maxProcessingStep };
-                    BufferPhaseImage.Wavelength = this.Wavelength;
+                    BufferPhaseImage.Wavelength = this.settings.wavelength;
                     imageProcessor.PutImage(BufferPhaseImage);
                 }
                 else if (settings.recordingType == SettingsContainer.RecordingType.Step)
@@ -104,13 +104,13 @@ namespace RecorderCore
                         {
                             imageProcessor.PutImage(BufferPhaseImage);
                             BufferPhaseImage = new StepPhaseImage(image) { MaxProcessingStep = settings.maxProcessingStep }; ;
-                            BufferPhaseImage.Wavelength = this.Wavelength;
+                            BufferPhaseImage.Wavelength = this.settings.wavelength;
                         }
                     }
                     else
                     {
                         BufferPhaseImage = new StepPhaseImage(image) { MaxProcessingStep = settings.maxProcessingStep }; ;
-                        BufferPhaseImage.Wavelength = this.Wavelength;
+                        BufferPhaseImage.Wavelength = this.settings.wavelength;
 
                     }
                 }
@@ -164,6 +164,7 @@ namespace RecorderCore
                 if (settings.recordingType == SettingsContainer.RecordingType.Step)
                 {
                     StepPhaseImage stepPhaseImage = BufferPhaseImage as StepPhaseImage;
+                    
                     if (stepPhaseImage != null)
                     {
                         if (stepPhaseImage.StepNumber < settings.MaximumSteps)
@@ -172,11 +173,13 @@ namespace RecorderCore
                         {
                             imageProcessor.PutImage(BufferPhaseImage);
                             BufferPhaseImage = new StepPhaseImage(image) { MaxProcessingStep = settings.maxProcessingStep }; ;
+                            BufferPhaseImage.Wavelength = this.settings.wavelength;
                         }
                     }
                     else
                     {
                         BufferPhaseImage = new StepPhaseImage(image) { MaxProcessingStep = settings.maxProcessingStep }; ;
+                        BufferPhaseImage.Wavelength = this.settings.wavelength;
                     }
                 }
                 else if (settings.recordingType == SettingsContainer.RecordingType.Camera)
@@ -187,6 +190,7 @@ namespace RecorderCore
                 else if (settings.recordingType == SettingsContainer.RecordingType.Hilbert)
                 {
                     BufferPhaseImage = new HilbertPhaseImage(image) { MaxProcessingStep = settings.maxProcessingStep };
+                    BufferPhaseImage.Wavelength = this.settings.wavelength;
                     imageProcessor.PutImage(BufferPhaseImage);
                 }
 
