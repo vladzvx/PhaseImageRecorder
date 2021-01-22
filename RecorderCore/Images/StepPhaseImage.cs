@@ -1,6 +1,7 @@
 ﻿using Emgu.CV;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace RecorderCore
@@ -14,6 +15,7 @@ namespace RecorderCore
         public StepPhaseImage(Mat image) : base(image)
         {
             images = new List<double[,]>() { };
+            images.Add((double[,])Image.Clone());
             times = new List<DateTime>() { };
             StepNumber++;
         }
@@ -21,14 +23,7 @@ namespace RecorderCore
         public StepPhaseImage(double[,] image) : base(image)
         {
             images = new List<double[,]>() { };
-            times = new List<DateTime>() { };
-            StepNumber++;
-        }
-
-        public StepPhaseImage(List<double[,]> _images) : base(_images[0])
-        {
-            _images.RemoveAt(0);
-            images = _images;
+            images.Add((double[,])Image.Clone());
             times = new List<DateTime>() { };
             StepNumber++;
         }
@@ -47,6 +42,48 @@ namespace RecorderCore
             StepNumber++;
         }
 
+        public void FullSave(object _path)
+        {
+            string path = _path.ToString();
+            try
+            {
+                for (int i = 0; i < Image.GetUpperBound(0) + 1; i++)
+                {
+                    string line = "";
+                    for (int j = 0; j < Image.GetUpperBound(1) + 1; j++)
+                    {
+                        line += Math.Round(Image[i, j], 2).ToString() + ";";
+                    }
+                    lines.Add(line);
+                }
+                File.WriteAllLines(path+".csv", lines);
+
+                int count = 0;
+                foreach (var image in images)
+                {
+                    lines = new List<string>();
+                    for (int i = 0; i < image.GetUpperBound(0) + 1; i++)
+                    {
+                        string line = "";
+                        for (int j = 0; j < image.GetUpperBound(1) + 1; j++)
+                        {
+                            line += Math.Round(image[i, j], 2).ToString() + ";";
+                        }
+                        lines.Add(line);
+                    }
+                    File.WriteAllLines(path + count.ToString()+ ".csv", lines);
+                    count++;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+        }
+
         public override void CalculatePhaseImage()
         {
             DateTime dt1 = DateTime.UtcNow;
@@ -58,14 +95,14 @@ namespace RecorderCore
                 {
                     for (int j = 0; j <= Image.GetUpperBound(1); j++)
                     {
-                        double val1 = Math.Atan((Image[i, j] - 2 * images[0][i, j] + images[1][i, j]) / (Image[i, j] - images[1][i, j]));
+                        double val1 = Math.Atan((images[0][i, j] - 2 * images[1][i, j] + images[2][i, j]) / (images[0][i, j] - images[2][i, j]));
                         Image[i, j] = val1;
                         //ImageForUI[i, j, 0] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
                         //ImageForUI[i, j, 1] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
                        // ImageForUI[i, j, 2] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
                     }
                 }
-                images = new List<double[,]>();
+                //images = new List<double[,]>();
             }
             else if (StepNumber == 4)
             {
@@ -74,14 +111,14 @@ namespace RecorderCore
                 {
                     for (int j = 0; j <= Image.GetUpperBound(1); j++)
                     {
-                        double val1 = Math.Atan((images[2][i, j] - images[0][i, j]) / (Image[i, j] - images[1][i, j]));
+                        double val1 = Math.Atan((images[3][i, j] - images[1][i, j]) / (images[0][i, j] - images[2][i, j]));
                         Image[i, j] = val1;
                         //ImageForUI[i, j, 0] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
                         //ImageForUI[i, j, 1] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
                         //ImageForUI[i, j, 2] = (byte)(255 * ((val1 + 2 * Math.PI) / Math.PI / 2));
                     }
                 }
-               images = new List<double[,]>();
+               //images = new List<double[,]>();
 
             }
             Calculating = DateTime.UtcNow.Subtract(dt1).TotalSeconds;
