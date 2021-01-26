@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace PhaseImageRecorder
 {
@@ -40,6 +41,7 @@ namespace PhaseImageRecorder
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label27 = new System.Windows.Forms.Label();
             this.label26 = new System.Windows.Forms.Label();
@@ -71,7 +73,8 @@ namespace PhaseImageRecorder
             this.checkedListBox2 = new System.Windows.Forms.CheckedListBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tab = new System.Windows.Forms.TabControl();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -83,10 +86,10 @@ namespace PhaseImageRecorder
             this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox1.Location = new System.Drawing.Point(311, 14);
+            this.pictureBox1.Location = new System.Drawing.Point(253, 12);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(523, 609);
+            this.pictureBox1.Size = new System.Drawing.Size(586, 711);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
@@ -94,10 +97,10 @@ namespace PhaseImageRecorder
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(9, 65);
+            this.button1.Location = new System.Drawing.Point(9, 83);
             this.button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(270, 50);
+            this.button1.Size = new System.Drawing.Size(191, 30);
             this.button1.TabIndex = 1;
             this.button1.Text = "Save Image";
             this.button1.UseVisualStyleBackColor = true;
@@ -108,17 +111,17 @@ namespace PhaseImageRecorder
             this.richTextBox1.Location = new System.Drawing.Point(10, 15);
             this.richTextBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(178, 46);
+            this.richTextBox1.Size = new System.Drawing.Size(158, 46);
             this.richTextBox1.TabIndex = 2;
             this.richTextBox1.Text = "";
             this.richTextBox1.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(195, 14);
+            this.button2.Location = new System.Drawing.Point(176, 14);
             this.button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(84, 47);
+            this.button2.Size = new System.Drawing.Size(64, 47);
             this.button2.TabIndex = 3;
             this.button2.Text = "Select\r\nFolder";
             this.button2.UseVisualStyleBackColor = true;
@@ -127,27 +130,29 @@ namespace PhaseImageRecorder
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(15, 610);
+            this.label3.Location = new System.Drawing.Point(15, 631);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(26, 15);
             this.label3.TabIndex = 4;
             this.label3.Text = "FPS";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(55, 610);
+            this.label4.Location = new System.Drawing.Point(55, 631);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(13, 15);
             this.label4.TabIndex = 5;
             this.label4.Text = "0";
+            this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(96, 609);
+            this.checkBox1.Location = new System.Drawing.Point(96, 630);
             this.checkBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(60, 19);
@@ -184,7 +189,7 @@ namespace PhaseImageRecorder
             // 
             // tabPage3
             // 
-            this.tabPage3.Controls.Add(this.checkBox2);
+            this.tabPage3.Controls.Add(this.checkBox3);
             this.tabPage3.Controls.Add(this.textBox1);
             this.tabPage3.Controls.Add(this.label27);
             this.tabPage3.Controls.Add(this.label26);
@@ -218,16 +223,28 @@ namespace PhaseImageRecorder
             this.tabPage3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tabPage3.Size = new System.Drawing.Size(266, 450);
+            this.tabPage3.Size = new System.Drawing.Size(223, 450);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Step";
             this.tabPage3.UseVisualStyleBackColor = true;
+            this.tabPage3.Click += new System.EventHandler(this.tabPage3_Click);
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(11, 63);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(142, 19);
+            this.checkBox2.TabIndex = 7;
+            this.checkBox2.Text = "Save Interferogramms";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
             // 
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(10, 73);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 23);
+            this.textBox1.Size = new System.Drawing.Size(125, 23);
             this.textBox1.TabIndex = 30;
             this.textBox1.Text = "633";
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
@@ -250,6 +267,7 @@ namespace PhaseImageRecorder
             this.label26.Size = new System.Drawing.Size(44, 15);
             this.label26.TabIndex = 28;
             this.label26.Text = "label26";
+            this.label26.Click += new System.EventHandler(this.label26_Click);
             // 
             // label25
             // 
@@ -259,6 +277,7 @@ namespace PhaseImageRecorder
             this.label25.Size = new System.Drawing.Size(32, 15);
             this.label25.TabIndex = 27;
             this.label25.Text = "Total";
+            this.label25.Click += new System.EventHandler(this.label25_Click);
             // 
             // label24
             // 
@@ -268,6 +287,7 @@ namespace PhaseImageRecorder
             this.label24.Size = new System.Drawing.Size(44, 15);
             this.label24.TabIndex = 26;
             this.label24.Text = "label24";
+            this.label24.Click += new System.EventHandler(this.label24_Click);
             // 
             // label23
             // 
@@ -277,6 +297,7 @@ namespace PhaseImageRecorder
             this.label23.Size = new System.Drawing.Size(44, 15);
             this.label23.TabIndex = 25;
             this.label23.Text = "label23";
+            this.label23.Click += new System.EventHandler(this.label23_Click);
             // 
             // label22
             // 
@@ -286,6 +307,7 @@ namespace PhaseImageRecorder
             this.label22.Size = new System.Drawing.Size(44, 15);
             this.label22.TabIndex = 24;
             this.label22.Text = "label22";
+            this.label22.Click += new System.EventHandler(this.label22_Click);
             // 
             // label21
             // 
@@ -295,6 +317,7 @@ namespace PhaseImageRecorder
             this.label21.Size = new System.Drawing.Size(44, 15);
             this.label21.TabIndex = 23;
             this.label21.Text = "label21";
+            this.label21.Click += new System.EventHandler(this.label21_Click);
             // 
             // label20
             // 
@@ -304,6 +327,7 @@ namespace PhaseImageRecorder
             this.label20.Size = new System.Drawing.Size(44, 15);
             this.label20.TabIndex = 22;
             this.label20.Text = "label20";
+            this.label20.Click += new System.EventHandler(this.label20_Click);
             // 
             // label19
             // 
@@ -313,6 +337,7 @@ namespace PhaseImageRecorder
             this.label19.Size = new System.Drawing.Size(44, 15);
             this.label19.TabIndex = 21;
             this.label19.Text = "label19";
+            this.label19.Click += new System.EventHandler(this.label19_Click);
             // 
             // label18
             // 
@@ -322,6 +347,7 @@ namespace PhaseImageRecorder
             this.label18.Size = new System.Drawing.Size(46, 15);
             this.label18.TabIndex = 20;
             this.label18.Text = "Refresh";
+            this.label18.Click += new System.EventHandler(this.label18_Click);
             // 
             // label17
             // 
@@ -361,6 +387,7 @@ namespace PhaseImageRecorder
             this.label14.Size = new System.Drawing.Size(38, 15);
             this.label14.TabIndex = 16;
             this.label14.Text = "Edges";
+            this.label14.Click += new System.EventHandler(this.label14_Click);
             // 
             // label13
             // 
@@ -380,6 +407,7 @@ namespace PhaseImageRecorder
             this.label12.Size = new System.Drawing.Size(44, 15);
             this.label12.TabIndex = 14;
             this.label12.Text = "label12";
+            this.label12.Click += new System.EventHandler(this.label12_Click);
             // 
             // label11
             // 
@@ -389,6 +417,7 @@ namespace PhaseImageRecorder
             this.label11.Size = new System.Drawing.Size(44, 15);
             this.label11.TabIndex = 13;
             this.label11.Text = "label11";
+            this.label11.Click += new System.EventHandler(this.label11_Click);
             // 
             // label10
             // 
@@ -398,6 +427,7 @@ namespace PhaseImageRecorder
             this.label10.Size = new System.Drawing.Size(44, 15);
             this.label10.TabIndex = 12;
             this.label10.Text = "label10";
+            this.label10.Click += new System.EventHandler(this.label10_Click);
             // 
             // label9
             // 
@@ -407,6 +437,7 @@ namespace PhaseImageRecorder
             this.label9.Size = new System.Drawing.Size(38, 15);
             this.label9.TabIndex = 11;
             this.label9.Text = "label9";
+            this.label9.Click += new System.EventHandler(this.label9_Click);
             // 
             // label8
             // 
@@ -436,6 +467,7 @@ namespace PhaseImageRecorder
             this.label6.Size = new System.Drawing.Size(70, 15);
             this.label6.TabIndex = 8;
             this.label6.Text = "Calculating:";
+            this.label6.Click += new System.EventHandler(this.label6_Click);
             // 
             // label5
             // 
@@ -456,6 +488,7 @@ namespace PhaseImageRecorder
             this.label2.Size = new System.Drawing.Size(82, 15);
             this.label2.TabIndex = 6;
             this.label2.Text = "Steps Number";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // label1
             // 
@@ -466,6 +499,7 @@ namespace PhaseImageRecorder
             this.label1.Size = new System.Drawing.Size(63, 15);
             this.label1.TabIndex = 5;
             this.label1.Text = "Delay (ms)";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // comboBox2
             // 
@@ -521,42 +555,53 @@ namespace PhaseImageRecorder
             this.tabPage1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tabPage1.Size = new System.Drawing.Size(266, 450);
+            this.tabPage1.Size = new System.Drawing.Size(223, 450);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Camera";
             this.tabPage1.UseVisualStyleBackColor = true;
+            this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
             // 
             // tab
             // 
             this.tab.Controls.Add(this.tabPage1);
             this.tab.Controls.Add(this.tabPage3);
             this.tab.ItemSize = new System.Drawing.Size(100, 26);
-            this.tab.Location = new System.Drawing.Point(9, 119);
+            this.tab.Location = new System.Drawing.Point(9, 140);
             this.tab.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tab.Name = "tab";
             this.tab.Padding = new System.Drawing.Point(17, 3);
             this.tab.SelectedIndex = 0;
-            this.tab.Size = new System.Drawing.Size(274, 484);
+            this.tab.Size = new System.Drawing.Size(231, 484);
             this.tab.TabIndex = 0;
             this.tab.Tag = "11111";
             this.tab.SelectedIndexChanged += new System.EventHandler(this.tab_SelectedIndexChanged);
             // 
-            // checkBox2
+            // progressBar1
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(143, 7);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(83, 19);
-            this.checkBox2.TabIndex = 31;
-            this.checkBox2.Text = "Arduino";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            this.progressBar1.Location = new System.Drawing.Point(11, 119);
+            this.progressBar1.Maximum = 1000;
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(189, 15);
+            this.progressBar1.TabIndex = 8;
+            this.progressBar1.Click += new System.EventHandler(this.progressBar1_Click);
+            // 
+            // checkBox3
+            // 
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Location = new System.Drawing.Point(143, 7);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(83, 19);
+            this.checkBox3.TabIndex = 31;
+            this.checkBox3.Text = "Arduino";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(852, 655);
+            this.ClientSize = new System.Drawing.Size(852, 757);
+            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -565,6 +610,7 @@ namespace PhaseImageRecorder
             this.Controls.Add(this.button1);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.tab);
+            this.Controls.Add(this.checkBox2);
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -579,6 +625,7 @@ namespace PhaseImageRecorder
         }
 
         #endregion
+        private Task savingTask = null;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.RichTextBox richTextBox1;
@@ -621,6 +668,8 @@ namespace PhaseImageRecorder
         private TabPage tabPage1;
         private TabControl tab;
         private CheckBox checkBox2;
+        private ProgressBar progressBar1;
+        private CheckBox checkBox3;
     }
 }
 

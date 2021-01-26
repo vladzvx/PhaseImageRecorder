@@ -35,7 +35,8 @@ namespace RecorderCore
             imageProcessor = new ImageProcessor(processingThreadNumber);
             imageCapture.rec += AddImage;
             imageCapture2.imageReciever += AddImage;
-            imageCapture.action += ArduinoWorker.Action;
+            if (ArduinoWorker!=null)
+                imageCapture.action += ArduinoWorker.Action;
             imageCapture.Start();
             imageCapture2.Pause();
             imageCapture2.Start();
@@ -79,6 +80,8 @@ namespace RecorderCore
             if (settings.arduino)
             {
                 ArduinoWorker.init();
+                if (ArduinoWorker != null)
+                    imageCapture.action += ArduinoWorker.Action;
             }
             else
             {
@@ -97,13 +100,13 @@ namespace RecorderCore
                 if (settings.recordingType == SettingsContainer.RecordingType.Camera)
                 {
                     BufferPhaseImage = new CameraImage(image) { MaxProcessingStep = settings.maxProcessingStep };
-                    BufferPhaseImage.Wavelength = this.Wavelength;
+                    BufferPhaseImage.Wavelength = this.settings.wavelength;
                     imageProcessor.PutImage(BufferPhaseImage);
                 }
                 else if (settings.recordingType == SettingsContainer.RecordingType.Hilbert)
                 {
                     BufferPhaseImage = new HilbertPhaseImage(image) { MaxProcessingStep = settings.maxProcessingStep };
-                    BufferPhaseImage.Wavelength = this.Wavelength;
+                    BufferPhaseImage.Wavelength = this.settings.wavelength;
                     imageProcessor.PutImage(BufferPhaseImage);
                 }
                 else if (settings.recordingType == SettingsContainer.RecordingType.Step)
@@ -118,13 +121,13 @@ namespace RecorderCore
                         {
                             imageProcessor.PutImage(BufferPhaseImage);
                             BufferPhaseImage = new StepPhaseImage(image) { MaxProcessingStep = settings.maxProcessingStep }; ;
-                            BufferPhaseImage.Wavelength = this.Wavelength;
+                            BufferPhaseImage.Wavelength = this.settings.wavelength;
                         }
                     }
                     else
                     {
                         BufferPhaseImage = new StepPhaseImage(image) { MaxProcessingStep = settings.maxProcessingStep }; ;
-                        BufferPhaseImage.Wavelength = this.Wavelength;
+                        BufferPhaseImage.Wavelength = this.settings.wavelength;
 
                     }
                 }
@@ -178,6 +181,7 @@ namespace RecorderCore
                 if (settings.recordingType == SettingsContainer.RecordingType.Step)
                 {
                     StepPhaseImage stepPhaseImage = BufferPhaseImage as StepPhaseImage;
+                    
                     if (stepPhaseImage != null)
                     {
                         if (stepPhaseImage.StepNumber < settings.MaximumSteps)
@@ -186,11 +190,13 @@ namespace RecorderCore
                         {
                             imageProcessor.PutImage(BufferPhaseImage);
                             BufferPhaseImage = new StepPhaseImage(image) { MaxProcessingStep = settings.maxProcessingStep }; ;
+                            BufferPhaseImage.Wavelength = this.settings.wavelength;
                         }
                     }
                     else
                     {
                         BufferPhaseImage = new StepPhaseImage(image) { MaxProcessingStep = settings.maxProcessingStep }; ;
+                        BufferPhaseImage.Wavelength = this.settings.wavelength;
                     }
                 }
                 else if (settings.recordingType == SettingsContainer.RecordingType.Camera)
@@ -201,6 +207,7 @@ namespace RecorderCore
                 else if (settings.recordingType == SettingsContainer.RecordingType.Hilbert)
                 {
                     BufferPhaseImage = new HilbertPhaseImage(image) { MaxProcessingStep = settings.maxProcessingStep };
+                    BufferPhaseImage.Wavelength = this.settings.wavelength;
                     imageProcessor.PutImage(BufferPhaseImage);
                 }
 

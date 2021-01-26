@@ -45,7 +45,7 @@ namespace PhaseImageRecorder
             SettingsContainer.recordingType = SettingsContainer.RecordingType.Step;
             SettingsContainer.MaximumSteps = int.Parse(this.comboBox1.SelectedItem.ToString());
             SettingsContainer.FramePause = int.Parse(this.comboBox2.SelectedItem.ToString());
-            if (double.TryParse(this.textBox1.Text, out SettingsContainer.wavelength)) ;
+            
         }
 
         private void SetCameraSettings()
@@ -74,6 +74,7 @@ namespace PhaseImageRecorder
 
         private void UpdateSettings()
         {
+            if (double.TryParse(this.textBox1.Text, out SettingsContainer.wavelength)) ;
             switch (this.tab.SelectedTab.Text.ToLower())
             {
                 case "hilbert":
@@ -124,6 +125,17 @@ namespace PhaseImageRecorder
         }
         private void action(object sender, ElapsedEventArgs e)
         {
+            if (savingTask!=null&& !savingTask.IsCompleted)
+            {
+                if (progressBar1.Value == progressBar1.Maximum)
+                    progressBar1.Value = 0;
+                else
+                    progressBar1.PerformStep();
+            }
+            else
+                progressBar1.Value = 0;
+
+            //progressBar1.St
             // bool is_is_locked = false;
             //Monitor.Enter(locker, ref is_is_locked);
             PhaseImage ph;
@@ -282,8 +294,17 @@ namespace PhaseImageRecorder
         {
             lock (locker)
             {
-                string path = Path.Combine(this.richTextBox1.Text, SaveCount.ToString() + "_" + DateTime.UtcNow.ToString().Replace('.', '_').Replace(':', '_').Replace(' ', '_') + ".csv");
-                Task.Factory.StartNew(phaseImage.Save, path);
+                if (phaseImage == null) return;
+                string path = Path.Combine(this.richTextBox1.Text, SaveCount.ToString() + "_" + DateTime.UtcNow.ToString().Replace('.', '_').Replace(':', '_').Replace(' ', '_'));
+                if (checkBox2.Checked&&tab.SelectedTab==tabPage3)
+                {
+                    StepPhaseImage pi = phaseImage as StepPhaseImage;
+                    if (pi!=null)
+                       savingTask= Task.Factory.StartNew(pi.FullSave, path);
+                }
+                else
+                    savingTask = Task.Factory.StartNew(phaseImage.Save, path);
+                phaseImage = null;
                 //phaseImage.Save(path);
                 SaveCount++;
             }
@@ -364,9 +385,124 @@ namespace PhaseImageRecorder
 
         }
 
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabPage3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label26_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label25_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label24_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label23_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label22_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label21_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label20_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label19_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label18_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label14_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label12_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label11_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label10_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabPage1_Click(object sender, EventArgs e)
+        {
+
+        }
+
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
-            this.SettingsContainer.arduino = this.checkBox2.Checked;
+
+        }
+
+        private void progressBar1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            this.SettingsContainer.arduino = this.checkBox3.Checked;
             UpdateSettings();
         }
     }

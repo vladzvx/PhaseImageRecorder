@@ -21,7 +21,7 @@ namespace RecorderCore
         public static Unwrapping3 unwrapping;
         public Unwrapping3 unwrapper;
 
-        List<string> lines = new List<string>();
+        internal List<string> lines = new List<string>();
         public void Save(object _path)
         {
             string path = _path.ToString();
@@ -36,7 +36,7 @@ namespace RecorderCore
                     }
                     lines.Add(line);
                 }
-                File.WriteAllLines(path, lines);
+                File.WriteAllLines(path + ".csv", lines);
             }
             catch (Exception ex)
             {
@@ -44,6 +44,10 @@ namespace RecorderCore
             }
 
         }
+
+
+
+
         internal static class NativeMethods
         {
             [DllImport(@"uwr.dll", EntryPoint = "unwrap2D")]
@@ -111,6 +115,7 @@ namespace RecorderCore
             {
                 for (int j = 0; j <= Image.GetUpperBound(1); j++)
                 {
+                    Image[i, j] = Math.Round(Image[i, j] / Math.PI * Wavelength, 2);
                     double val1 = Image[i, j];
                     if (val1 < min) min = val1;
                     if (val1 > max) max = val1;

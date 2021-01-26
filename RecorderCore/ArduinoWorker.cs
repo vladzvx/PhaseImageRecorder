@@ -25,7 +25,7 @@ namespace RecorderCore
             {
                 init();
             }
-            catch 
+            catch (Exception ex)
             {
                 driver = null;
             }
