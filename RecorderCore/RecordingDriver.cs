@@ -79,15 +79,19 @@ namespace RecorderCore
 
             if (settings.arduino)
             {
-                ArduinoWorker.init();
-                if (ArduinoWorker != null)
+                if (ArduinoWorker == null)
+                {
+                    ArduinoWorker = new ArduinoWorker();
+                    ArduinoWorker.init();
                     imageCapture.action += ArduinoWorker.Action;
+                }
             }
             else
             {
                 if (ArduinoWorker != null)
                 {
                     ArduinoWorker.Stop();
+                    imageCapture.action -= ArduinoWorker.Action;
                     ArduinoWorker = null;
                 }
 

@@ -43,8 +43,10 @@ namespace PhaseImageRecorder
                 this.SettingsContainer.maxProcessingStep = SettingsContainer.ProcessingStep.WrappedPhaseImage;
             }
             SettingsContainer.recordingType = SettingsContainer.RecordingType.Step;
-            SettingsContainer.MaximumSteps = int.Parse(this.comboBox1.SelectedItem.ToString());
-            SettingsContainer.FramePause = int.Parse(this.comboBox2.SelectedItem.ToString());
+            if (this.comboBox1.SelectedItem != null)
+                SettingsContainer.MaximumSteps = int.Parse(this.comboBox1.SelectedItem.ToString());
+            if (this.comboBox2.SelectedItem!=null)
+                SettingsContainer.FramePause = int.Parse(this.comboBox2.SelectedItem.ToString());
             
         }
 
