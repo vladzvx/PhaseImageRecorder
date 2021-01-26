@@ -11,6 +11,14 @@ namespace RecorderCore
         private object locker = new object();
         ArduinoDriver.ArduinoDriver driver;
         
+        public void Stop()
+        {
+            lock (locker)
+            {
+                if (driver != null)
+                    driver.Dispose();
+            }
+        }
         public ArduinoWorker()
         {
             try
@@ -24,15 +32,23 @@ namespace RecorderCore
 
             
         }
-        private void init()
+        public void init()
         {
-            lock (locker)
+            try
             {
-                driver = new ArduinoDriver.ArduinoDriver(ArduinoUploader.Hardware.ArduinoModel.NanoR3, autoBootstrap: true);
-                for (int i = 2; i <= 10; i++)
-                    driver.Send(new ArduinoDriver.SerialProtocol.PinModeRequest((byte)i, ArduinoDriver.SerialProtocol.PinMode.Output));
-                driver.Send(new ArduinoDriver.SerialProtocol.DigitalWriteRequest((byte)(8), DigitalValue.High));
+                lock (locker)
+                {
+                    if (driver != null)
+                    {
+                        driver = new ArduinoDriver.ArduinoDriver(ArduinoUploader.Hardware.ArduinoModel.NanoR3, autoBootstrap: true);
+                        for (int i = 2; i <= 10; i++)
+                            driver.Send(new ArduinoDriver.SerialProtocol.PinModeRequest((byte)i, ArduinoDriver.SerialProtocol.PinMode.Output));
+                        driver.Send(new ArduinoDriver.SerialProtocol.DigitalWriteRequest((byte)(8), DigitalValue.High));
+                    }
+                }
             }
+            catch { }
+
 
         }
         public void Action(int k)

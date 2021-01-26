@@ -363,5 +363,11 @@ namespace PhaseImageRecorder
         {
 
         }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            this.SettingsContainer.arduino = this.checkBox2.Checked;
+            UpdateSettings();
+        }
     }
 }

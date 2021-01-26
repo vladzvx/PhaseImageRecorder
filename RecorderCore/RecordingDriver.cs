@@ -55,7 +55,7 @@ namespace RecorderCore
 
         private void ApplySettings()
         {
-
+            
             imageCapture.UpdateCamera(settings.Camera);
             imageCapture.UpdateFramePause(settings.FramePause);
             imageCapture.UpdateMaxFrameCounter(settings.MaximumSteps);
@@ -73,6 +73,20 @@ namespace RecorderCore
                 lock (locker)
                     BufferPhaseImage = null;
                 imageCapture.PauseRelease();
+
+            }
+
+            if (settings.arduino)
+            {
+                ArduinoWorker.init();
+            }
+            else
+            {
+                if (ArduinoWorker != null)
+                {
+                    ArduinoWorker.Stop();
+                    ArduinoWorker = null;
+                }
 
             }
         }

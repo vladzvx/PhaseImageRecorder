@@ -71,6 +71,7 @@ namespace PhaseImageRecorder
             this.checkedListBox2 = new System.Windows.Forms.CheckedListBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tab = new System.Windows.Forms.TabControl();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -183,6 +184,7 @@ namespace PhaseImageRecorder
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.checkBox2);
             this.tabPage3.Controls.Add(this.textBox1);
             this.tabPage3.Controls.Add(this.label27);
             this.tabPage3.Controls.Add(this.label26);
@@ -539,6 +541,17 @@ namespace PhaseImageRecorder
             this.tab.Tag = "11111";
             this.tab.SelectedIndexChanged += new System.EventHandler(this.tab_SelectedIndexChanged);
             // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(143, 7);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(83, 19);
+            this.checkBox2.TabIndex = 31;
+            this.checkBox2.Text = "Arduino";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -607,6 +620,7 @@ namespace PhaseImageRecorder
         private CheckedListBox checkedListBox2;
         private TabPage tabPage1;
         private TabControl tab;
+        private CheckBox checkBox2;
     }
 }
 

@@ -29,6 +29,7 @@ namespace RecorderCore
         public int Camera = 0;
         public int FramePause = 0;
         public bool model = false;
+        public bool arduino = false;
         public double wavelength = 1;
         public bool AreEqual(SettingsContainer settings)
         {
