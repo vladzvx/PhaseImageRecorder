@@ -23,6 +23,7 @@ namespace RecorderCore.Modeling
         [ClassCleanup]
         public static void ClassCleanup()
         {
+
         }
 
         [TestMethod]

@@ -10,7 +10,7 @@ namespace RecorderCore
     {
 
         public int StepNumber { get; set; } = 0;
-        private List<double[,]> images;
+        public List<double[,]> images { get; private set; }
         private List<DateTime> times;
         public StepPhaseImage(Mat image) : base(image)
         {

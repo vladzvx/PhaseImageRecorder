@@ -11,6 +11,42 @@ using static RecorderCore.Unwrapping;
 
 namespace RecorderCore
 {
+    [TestClass]
+    public class FFT_tests
+    {
+
+        [TestMethod]
+        public void FFT2_test1()
+        {
+            var tuple = TestImageGenerator.GetTestPair(1024, 1024, 4);
+            Complex[,] test_image = Complex.CreateComplexArray(tuple.Item1.images[0]);
+            FourierTransform.FFT2(test_image, FourierTransform.Direction.Forward);
+            Complex[,] reserv = (Complex[,])test_image.Clone();
+            FourierTransform.FFT2(test_image, FourierTransform.Direction.Backward);
+            double[,] inverse_result  = Complex.CreateDoubleArray(test_image);
+            double std = ImageSource.std(tuple.Item1.images[0], inverse_result);
+            Assert.IsTrue(std< ImageSource.mean(tuple.Item1.images[0])/1000);
+        }
+
+        [TestMethod]
+        public void FFT2_test2()
+        {
+            var tuple = TestImageGenerator.GetTestPair(1024, 2048, 4);
+            //DateTime dt1 = DateTime.UtcNow;
+            Complex[,] test_image = Complex.CreateComplexArray(tuple.Item1.images[0]);
+            DateTime dt1 = DateTime.UtcNow;
+            FourierTransform.FFT2(test_image, FourierTransform.Direction.Forward);
+            Complex[,] reserv = (Complex[,])test_image.Clone();
+            FourierTransform.FFT2(test_image, FourierTransform.Direction.Backward);
+            double[,] inverse_result = Complex.CreateDoubleArray(test_image);
+            double resss = dt1.Subtract(DateTime.UtcNow).TotalSeconds;
+
+            double std = ImageSource.std(tuple.Item1.images[0], inverse_result);
+            Assert.IsTrue(std < ImageSource.mean(tuple.Item1.images[0]) / 1000);
+        }
+    }
+
+
 
     [TestClass]
     public class ImageCalculatingTests
@@ -24,6 +60,9 @@ namespace RecorderCore
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
+
+
+
 
         }
         public static void init()
@@ -77,7 +116,7 @@ namespace RecorderCore
         }
         */
         [TestMethod]
-        public void PreclisionTest2()
+        public void PreclisionTest1()
         {
             DateTime dt1 = DateTime.UtcNow;
             double count = 0;
@@ -112,7 +151,7 @@ namespace RecorderCore
 
 
         [TestMethod]
-        public void PreclisionTest3()
+        public void PreclisionTest2()
         {
             Unwrapping2 uwr = new Unwrapping2(TestImageGenerator.GetTestPair(1000, 2000, Math.PI / 2 * 1, 10).Item2);
 
