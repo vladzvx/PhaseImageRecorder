@@ -44,9 +44,46 @@ namespace RecorderCore
             double std = ImageSource.std(tuple.Item1.images[0], inverse_result);
             Assert.IsTrue(std < ImageSource.mean(tuple.Item1.images[0]) / 1000);
         }
+
+
     }
 
+    [TestClass]
+    public class HilbertTests
+    {
 
+        [TestMethod]
+        public void HilbertTests1()
+        {
+            int size0 = 1024;
+            int size1 = 1024;
+            var tuple = TestImageGenerator.GetTestPair(size0, size1, 4);
+            Complex[,] test_image = Complex.CreateComplexArray(tuple.Item1.images[0]);
+            FourierTransform.FFT2(test_image, FourierTransform.Direction.Forward);
+            double[,] filter = Tools.CreateHilbertFilter1(size0, size1);
+            Complex.ApplyFilter(test_image, filter);
+            //Complex[,] reserv = (Complex[,])test_image.Clone();
+            FourierTransform.FFT2(test_image, FourierTransform.Direction.Backward);
+            double[,] inverse_result = Tools.CalculatePhaseImageByHilbert(test_image);
+            Unwrapping3 unwrapper = new Unwrapping3(inverse_result);
+            
+            ImageSource.mult(inverse_result, -1);
+            //ImageSource.subtract_min(inverse_result);
+            //ImageSource.subtract_min(tuple.Item2);
+            unwrapper.UnwrapParallel(inverse_result, out UwrReport rep);
+            double _min = ImageSource.min(tuple.Item2);
+            double _max = ImageSource.max(tuple.Item2);
+            double _mean = ImageSource.mean(tuple.Item2);
+
+
+            double min = ImageSource.min(inverse_result);
+            double max = ImageSource.max(inverse_result);
+            double mean = ImageSource.mean(inverse_result);
+            double std = ImageSource.std(tuple.Item1.images[0], inverse_result);
+            Assert.IsTrue(std < ImageSource.mean(tuple.Item2) / 1000);
+        }
+
+    }
 
     [TestClass]
     public class ImageCalculatingTests

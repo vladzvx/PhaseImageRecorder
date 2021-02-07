@@ -265,6 +265,36 @@ namespace RecorderCore
             }
         }
 
+        public static void mult(double[,] matrix1, double[,] matrix2)
+        {
+            int size0 = matrix1.GetUpperBound(0);
+            int size1 = matrix1.GetUpperBound(1);
+            int _size0 = matrix2.GetUpperBound(0);
+            int _size1 = matrix2.GetUpperBound(1);
+            if (size0 != _size0 || size1 != _size1) throw new ArgumentException("Uncomp. array sizes!0");
+            for (int i = 0; i <= size0; i++)
+            {
+                for (int j = 0; j <= size1; j++)
+                {
+                    matrix1[i, j] = matrix1[i, j] * matrix2[i, j];
+                }
+            }
+        }
+
+        public static void mult(double[,] matrix1, double value)
+        {
+            int size0 = matrix1.GetUpperBound(0);
+            int size1 = matrix1.GetUpperBound(1);
+            for (int i = 0; i <= size0; i++)
+            {
+                for (int j = 0; j <= size1; j++)
+                {
+                    matrix1[i, j] = matrix1[i, j] * value;
+                }
+            }
+        }
+
+
         public static double min(double[,] matrix)
         {
             double minValue = matrix[0, 0];
