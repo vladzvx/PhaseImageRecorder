@@ -67,10 +67,14 @@ namespace RecorderCore
             double[,] inverse_result = Tools.CalculatePhaseImageByHilbert(test_image);
             Unwrapping3 unwrapper = new Unwrapping3(inverse_result);
             
-            ImageSource.mult(inverse_result, -1);
-            //ImageSource.subtract_min(inverse_result);
-            //ImageSource.subtract_min(tuple.Item2);
+           // ImageSource.mult(inverse_result, -1);
+
             unwrapper.UnwrapParallel(inverse_result, out UwrReport rep);
+
+
+            ImageSource.subtract_min(inverse_result);
+            ImageSource.subtract_min(tuple.Item2);
+
             double _min = ImageSource.min(tuple.Item2);
             double _max = ImageSource.max(tuple.Item2);
             double _mean = ImageSource.mean(tuple.Item2);
@@ -79,7 +83,7 @@ namespace RecorderCore
             double min = ImageSource.min(inverse_result);
             double max = ImageSource.max(inverse_result);
             double mean = ImageSource.mean(inverse_result);
-            double std = ImageSource.std(tuple.Item1.images[0], inverse_result);
+            double std = ImageSource.std(tuple.Item2, inverse_result);
             Assert.IsTrue(std < ImageSource.mean(tuple.Item2) / 1000);
         }
 
