@@ -14,7 +14,7 @@ namespace FFT_demo
 {
     public partial class Form1 : Form
     {
-        private const int size0 = 1024;
+        private const int size0 = 512;
         private const int size1 = 1024;
         private ImageSource imageSource = new ImageSource(size0, size1);
         private double[,] image=new double[size0, size1];
@@ -83,10 +83,47 @@ namespace FFT_demo
 
         private void button4_Click(object sender, EventArgs e)
         {
-            filter_image = Tools.CreateHilbertFilter2(image.GetUpperBound(0) + 1, image.GetUpperBound(1) + 1);
+            CreateHilbertFilter();
             plot(filter_image);
         }
 
+        private void CreateHilbertFilter()
+        {
+            switch (this.comboBox1.Text)
+            {
+                case "1":
+                    {
+                        filter_image = Tools.CreateHilbertFilter1(image.GetUpperBound(0) + 1, image.GetUpperBound(1) + 1);
+                        break;
+                    }
+                case "2":
+                    {
+                        filter_image = Tools.CreateHilbertFilter2(image.GetUpperBound(0) + 1, image.GetUpperBound(1) + 1);
+                        break;
+                    }
+                case "3":
+                    {
+                        filter_image = Tools.CreateHilbertFilter3(image.GetUpperBound(0) + 1, image.GetUpperBound(1) + 1);
+                        break;
+                    }
+                case "4":
+                    {
+                        filter_image = Tools.CreateHilbertFilter4(image.GetUpperBound(0) + 1, image.GetUpperBound(1) + 1);
+                        break;
+                    }
+                case "5":
+                    {
+                        filter_image = Tools.CreateHilbertFilter5(image.GetUpperBound(0) + 1, image.GetUpperBound(1) + 1);
+                        break;
+                    }
+                case "6":
+                    {
+                        filter_image = Tools.CreateHilbertFilter6(image.GetUpperBound(0) + 1, image.GetUpperBound(1) + 1);
+                        break;
+                    }
+            }
+            
+        }
         private void button6_Click(object sender, EventArgs e)
         {
             FourierTransform.FFT2(fft_image, FourierTransform.Direction.Backward);
@@ -122,7 +159,7 @@ namespace FFT_demo
             image_res = tmp.Item2;
             fft_image = Complex.CreateComplexArray(image);
             FourierTransform.FFT2(fft_image, FourierTransform.Direction.Forward);
-            filter_image = Tools.CreateHilbertFilter1(image.GetUpperBound(0) + 1, image.GetUpperBound(1) + 1);
+            CreateHilbertFilter();
             Complex.ApplyFilter(fft_image, filter_image);
             FourierTransform.FFT2(fft_image, FourierTransform.Direction.Backward);
             image = Tools.CalculatePhaseImageByHilbert(fft_image);
@@ -141,6 +178,11 @@ namespace FFT_demo
         }
 
         private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
