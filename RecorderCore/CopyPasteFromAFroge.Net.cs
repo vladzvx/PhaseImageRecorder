@@ -15,29 +15,7 @@ namespace RecorderCore
             {
                 for (int j = 0; j < size1; j++)
                 {
-                    if ((i < center0 && j < center1) || (i > center0 && j > center1))
-                    {
-                        result[i, j] = -1;
-                    }
-                    else
-                    {
-                        result[i, j] = 1;
-                    }
-                }
-            }
-            return result;
-        }
-
-        public static double[,] CreateHilbertFilter2(int size0, int size1)
-        {
-            double[,] result = new double[size0, size1];
-            int center0 = size0 / 2;
-            int center1 = size1 / 2;
-            for (int i = 0; i < size0; i++)
-            {
-                for (int j = 0; j < size1; j++)
-                {
-                    if (i < center0)
+                    if (i <= center0)
                     {
                         result[i, j] = 0;
                     }
@@ -49,6 +27,108 @@ namespace RecorderCore
             }
             return result;
         }
+
+
+        public static double[,] CreateHilbertFilter2(int size0, int size1)
+        {
+            double[,] result = new double[size0, size1];
+            int center0 = size0 / 2;
+            int center1 = size1 / 2;
+            for (int i = 0; i < size0; i++)
+            {
+                for (int j = 0; j < size1; j++)
+                {
+                    if ((i <= center0 && j <= center1) || (i > center0 && j > center1))
+                    {
+                        result[i, j] = 2;
+                    }
+                    else
+                    {
+                        result[i, j] = 0;
+                    }
+                }
+            }
+            return result;
+        }
+
+
+
+
+
+        public static double[,] CreateHilbertFilter3(int size0, int size1)
+        {
+            double[,] result = new double[size0, size1];
+            int center0 = size0 / 2;
+            int center1 = size1 / 2;
+            for (int i = 0; i < size0; i++)
+            {
+                for (int j = 0; j < size1; j++)
+                {
+                    if ((i <= center0 && j <= center1))
+                    {
+                        result[i, j] = 3;
+                    }
+                    else
+                    {
+                        result[i, j] = -1;
+                    }
+                }
+            }
+            return result;
+        }
+
+        public static double[,] CreateHilbertFilter4(int size0, int size1)
+        {
+            double[,] result = new double[size0, size1];
+            int center0 = size0 / 2;
+            int center1 = size1 / 2;
+            for (int i = 0; i < size0; i++)
+            {
+                for (int j = 0; j < size1; j++)
+                {
+                    if ((i <= center0 && j <= center1))
+                    {
+                        result[i, j] = -1;
+                    }
+                    else if ((i > center0 && j > center1))
+                    {
+                        result[i, j] = 1;
+                    }
+                    else
+                    {
+                        result[i, j] = 0;
+                    }
+                }
+            }
+            return result;
+        }
+
+        public static double[,] CreateHilbertFilter5(int size0, int size1)
+        {
+            double[,] result = new double[size0, size1];
+            int center0 = size0 / 2;
+            int center1 = size1 / 2;
+            for (int i = 0; i < size0; i++)
+            {
+                for (int j = 0; j < size1; j++)
+                {
+                    if ((i > center0 && j <= center1))
+                    {
+                        result[i, j] = 1;
+                    }
+                    else if ((i <= center0 && j > center1))
+                    {
+                        result[i, j] = 1;
+                    }
+                    else
+                    {
+                        result[i, j] = 0;
+                    }
+                }
+            }
+            return result;
+        }
+
         public static double[,] CalculatePhaseImageByHilbert(Complex[,] ifft_image)
         {
             int size0 = ifft_image.GetUpperBound(0);
