@@ -40,11 +40,11 @@ namespace RecorderCore
                 {
                     if ((i <= center0 && j <= center1) || (i > center0 && j > center1))
                     {
-                        result[i, j] = 2;
+                        result[i, j] = 1;
                     }
                     else
                     {
-                        result[i, j] = 0;
+                        result[i, j] = -1;
                     }
                 }
             }
@@ -144,6 +144,24 @@ namespace RecorderCore
             }
             return result;
         }
+
+
+        public static double[,] GetABS(Complex[,] ifft_image)
+        {
+            int size0 = ifft_image.GetUpperBound(0);
+            int size1 = ifft_image.GetUpperBound(1);
+            double[,] result = new double[size0 + 1, size1 + 1];
+
+            for (int i = 0; i <= size0; i++)
+            {
+                for (int j = 0; j <= size1; j++)
+                {
+                    result[i, j] = Math.Sqrt(ifft_image[i, j].Im* ifft_image[i, j].Im + ifft_image[i, j].Re*ifft_image[i, j].Re);
+                }
+            }
+            return result;
+        }
+
         /// <summary>
         /// Calculates power of 2.
         /// </summary>
