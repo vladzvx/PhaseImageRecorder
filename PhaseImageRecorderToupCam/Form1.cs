@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using ToupTek;
 using System.Runtime.InteropServices;
 using RecorderCore;
+using System.Linq;
 
 namespace PhaseImageRecorderToupCam
 {
@@ -68,17 +69,52 @@ namespace PhaseImageRecorderToupCam
         {
             if (bmp_ != null)
             {
-                BitmapData bmpdata = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.WriteOnly, bmp_.PixelFormat);
+               // BitmapData bmpdata = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.WriteOnly, bmp_.PixelFormat);
 
+
+                //byte[] arr = new byte[bmp_.Height * bmp_.Width * 3];
+                byte[,,] arr = new byte[bmp_.Height,bmp_.Width,3];
+               // byte[] arr2 = new byte[bmp_.Height*bmp_.Width*3];
+                IntPtr pointer = Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0);
                 uint nWidth = 0, nHeight = 0;
-                toupcam_.PullImage(bmpdata.Scan0, 24, out nWidth, out nHeight);
+               // toupcam_.PullImage(bmpdata.Scan0, 24, out nWidth, out nHeight);
+                toupcam_.PullImage(pointer, 24, out nWidth, out nHeight);
 
-                bmp_.UnlockBits(bmpdata);
+                int x = 100;
+                int y = 100;
+                int w = 1024;
+                int h = 1024;
+                //Marshal.Copy(pointer, arr2, 0, arr.Length);
+                for (int i = y; i < h + y; i++)
+                {
+                    arr[i, x, 1] = 255;
+                    arr[i, x + 1, 1] = 255;
+                    arr[i, x + 2, 1] = 255;
+                    arr[i, x + w, 1] = 255;
+                    arr[i, x + w + 1, 1] = 255;
+                    arr[i, x + w + 2, 1] = 255;
+                }
+                for (int j = x; j < w + x; j++)
+                {
+                    arr[y, j, 1] = 255;
+                    arr[y + 1, j, 1] = 255;
+                    arr[y + 2, j, 1] = 255;
+                    arr[y + h, j, 1] = 255;
+                    arr[y + h + 1, j, 1] = 255;
+                    arr[y + h + 2, j, 1] = 255;
 
-                pictureBox1.Image = bmp_;
-                pictureBox1.Invalidate();
+                }
+                // bmp_.UnlockBits(bmpdata);
+
+                //pictureBox1.Image = bmp_;
+                pictureBox1.Image = new Bitmap((int)nWidth, (int)nHeight, (int)nWidth *3,PixelFormat.Format24bppRgb, 
+                    Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0));
+                //pictureBox1.Invalidate();
+                pictureBox1.Update();
                 label5.Text = Math.Round(fPSCounter.Count(), 2).ToString();
                 label5.Update();
+
+                //button4_Click(null, null);
             }
         }
 
@@ -378,6 +414,21 @@ namespace PhaseImageRecorderToupCam
                 toupcam_.put_TempTint(trackBar2.Value, trackBar3.Value);
             label2.Text = trackBar2.Value.ToString();
             label3.Text = trackBar3.Value.ToString();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            int RectangleWight = 1024* pictureBox1.Width/pictureBox1.Image.Width ;
+            int RectangleHeight = 1024* pictureBox1.Height/pictureBox1.Image.Height;
+
+
+            System.Drawing.Pen myPen = new System.Drawing.Pen(System.Drawing.Color.Green);
+            System.Drawing.Graphics formGraphics;
+
+            formGraphics = pictureBox1.CreateGraphics();
+            formGraphics.DrawRectangle(myPen, new Rectangle(0, 0, RectangleWight, RectangleHeight));
+            myPen.Dispose();
+            formGraphics.Dispose();
         }
     }
 }
