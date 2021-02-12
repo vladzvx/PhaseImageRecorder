@@ -9,6 +9,28 @@ using System.Threading.Tasks;
 
 namespace RecorderCore
 {
+
+    [TestClass]
+    public class FPSCounterTests
+    {
+        
+        
+        [TestMethod]
+        public void FPS_test1()
+        {
+            FPSCounter counter = new FPSCounter();
+            for (int i = 0; i < 40; i++)
+            {
+                counter.Count();
+                Thread.Sleep(250);
+            }
+            double res = counter.Count(); ;
+        }
+
+
+
+    }
+
     [TestClass]
     public class ModelImageCaptureTests
     {

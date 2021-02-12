@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using ToupTek;
 using System.Runtime.InteropServices;
+using RecorderCore;
 
 namespace PhaseImageRecorderToupCam
 {
@@ -17,7 +18,7 @@ namespace PhaseImageRecorderToupCam
         private ToupCam toupcam_ = null;
         private Bitmap bmp_ = null;
         private DelegateEvent ev_ = null;
-
+        private FPSCounter fPSCounter = new FPSCounter(30);
         private void savefile(IntPtr pData, ref ToupCam.BITMAPINFOHEADER header)
         {
             Bitmap bmp = new Bitmap(header.biWidth, header.biHeight, PixelFormat.Format24bppRgb);
@@ -76,6 +77,8 @@ namespace PhaseImageRecorderToupCam
 
                 pictureBox1.Image = bmp_;
                 pictureBox1.Invalidate();
+                label5.Text = Math.Round(fPSCounter.Count(), 2).ToString();
+                label5.Update();
             }
         }
 
