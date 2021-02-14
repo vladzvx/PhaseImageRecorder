@@ -65,52 +65,86 @@ namespace PhaseImageRecorderToupCam
             }
         }
 
+        private bool isFrameSetted = false;
         private void OnEventImage()
         {
             if (bmp_ != null)
             {
-               // BitmapData bmpdata = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.WriteOnly, bmp_.PixelFormat);
-
-
-                //byte[] arr = new byte[bmp_.Height * bmp_.Width * 3];
-                byte[,,] arr = new byte[bmp_.Height,bmp_.Width,3];
-               // byte[] arr2 = new byte[bmp_.Height*bmp_.Width*3];
-                IntPtr pointer = Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0);
                 uint nWidth = 0, nHeight = 0;
-               // toupcam_.PullImage(bmpdata.Scan0, 24, out nWidth, out nHeight);
-                toupcam_.PullImage(pointer, 24, out nWidth, out nHeight);
-
-                int x = 100;
-                int y = 100;
-                int w = 1024;
-                int h = 1024;
-                //Marshal.Copy(pointer, arr2, 0, arr.Length);
-                for (int i = y; i < h + y; i++)
+                if (radioButton2.Checked)
                 {
-                    arr[i, x, 1] = 255;
-                    arr[i, x + 1, 1] = 255;
-                    arr[i, x + 2, 1] = 255;
-                    arr[i, x + w, 1] = 255;
-                    arr[i, x + w + 1, 1] = 255;
-                    arr[i, x + w + 2, 1] = 255;
+                    byte[,,] arr = new byte[bmp_.Height, bmp_.Width, 3];
+                    IntPtr pointer = Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0);
+                    
+                    toupcam_.PullImage(pointer, 24, out nWidth, out nHeight);
+                    int x = trackBar4.Value;
+                    int y = trackBar5.Value;
+                    int w = int.Parse(comboBox2.Text);
+                    int h = int.Parse(comboBox3.Text); ;
+                    //Marshal.Copy(pointer, arr2, 0, arr.Length);
+                    for (int i = y; i < h + y; i++)
+                    {
+                        arr[i, x, 1] = 255;
+                        arr[i, x + 1, 1] = 255;
+                        arr[i, x + 2, 1] = 255;
+                        arr[i, x + w, 1] = 255;
+                        arr[i, x + w + 1, 1] = 255;
+                        arr[i, x + w + 2, 1] = 255;
+                    }
+                    for (int j = x; j < w + x; j++)
+                    {
+                        arr[y, j, 1] = 255;
+                        arr[y + 1, j, 1] = 255;
+                        arr[y + 2, j, 1] = 255;
+                        arr[y + h, j, 1] = 255;
+                        arr[y + h + 1, j, 1] = 255;
+                        arr[y + h + 2, j, 1] = 255;
+
+                    }
+
+                    pictureBox1.Image = new Bitmap((int)nWidth, (int)nHeight, (int)nWidth * 3, PixelFormat.Format24bppRgb,
+                            Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0));
+                    pictureBox1.Update();
+                    //isFrameSetted = true;
                 }
-                for (int j = x; j < w + x; j++)
+                else if (radioButton1.Checked)
                 {
-                    arr[y, j, 1] = 255;
-                    arr[y + 1, j, 1] = 255;
-                    arr[y + 2, j, 1] = 255;
-                    arr[y + h, j, 1] = 255;
-                    arr[y + h + 1, j, 1] = 255;
-                    arr[y + h + 2, j, 1] = 255;
+                    if (isFrameSetted)
+                    {
+                        byte[,,] arr1 = new byte[bmp_.Height, bmp_.Width, 3];
+                        IntPtr pointer = Marshal.UnsafeAddrOfPinnedArrayElement(arr1, 0);
+                        toupcam_.PullImage(pointer, 24, out nWidth, out nHeight);
 
-                }
-                // bmp_.UnlockBits(bmpdata);
 
-                //pictureBox1.Image = bmp_;
-                pictureBox1.Image = new Bitmap((int)nWidth, (int)nHeight, (int)nWidth *3,PixelFormat.Format24bppRgb, 
-                    Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0));
-                //pictureBox1.Invalidate();
-                pictureBox1.Update();
+                        int x = trackBar4.Value;
+                        int y = trackBar5.Value;
+                        int w = int.Parse(comboBox2.Text);
+                        int h = int.Parse(comboBox3.Text); ;
+
+                        byte[,,] arr = new byte[h, w, 3];
+
+                        for (int i = y; i < h + y; i++)
+                        {
+                            for (int j = x; j < w + x; j++)
+                            {
+                                arr[i - y, j - x, 0] = arr1[i, j, 0];
+                                arr[i - y, j - x, 1] = arr1[i, j, 1];
+                                arr[i - y, j - x, 2] = arr1[i, j, 2];
+                            }
+                        }
+                        pictureBox1.Image = new Bitmap((int)nWidth, (int)nHeight, (int)nWidth * 3, PixelFormat.Format24bppRgb,
+                            Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0));
+                        pictureBox1.Update();
+                    }
+                    else
+                    {
+                        BitmapData bmpdata = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.WriteOnly, bmp_.PixelFormat);
+                        toupcam_.PullImage(bmpdata.Scan0, 24, out nWidth, out nHeight);
+                        bmp_.UnlockBits(bmpdata);
+                        pictureBox1.Image = bmp_;
+                        pictureBox1.Invalidate();
+                    }
+                }           
                 label5.Text = Math.Round(fPSCounter.Count(), 2).ToString();
                 label5.Update();
 
@@ -429,6 +463,61 @@ namespace PhaseImageRecorderToupCam
             formGraphics.DrawRectangle(myPen, new Rectangle(0, 0, RectangleWight, RectangleHeight));
             myPen.Dispose();
             formGraphics.Dispose();
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label8_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void trackBar2_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void trackBar4_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void trackBar5_Scroll(object sender, EventArgs e)
+        {
+
         }
     }
 }
