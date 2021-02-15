@@ -15,6 +15,8 @@ namespace PhaseImageRecorderToupCam
 {
     public partial class Form1 : Form
     {
+        private int selectIndexCombo2 = 3;
+        private int selectIndexCombo3 = 3;
         private bool started = false;
         private delegate void DelegateEvent(ToupCam.eEVENT[] ev);
         private ToupCam toupcam_ = null;
@@ -66,7 +68,6 @@ namespace PhaseImageRecorderToupCam
             }
         }
 
-        private bool isFrameSetted = false;
         private void OnEventImage()
         {
             if (bmp_ != null)
@@ -437,17 +438,20 @@ namespace PhaseImageRecorderToupCam
 
         private void SetMinFramesize(int width, int height)
         {
+            SetComboBoxes();
             int w = int.Parse(comboBox2.Text);
             int h = int.Parse(comboBox3.Text);
             if (w > width && comboBox2.SelectedIndex > 1)
             {
                 comboBox2.SelectedIndex -= 1;
+                selectIndexCombo2 = comboBox2.SelectedIndex;
                 comboBox2.Update();
                 SetMinFramesize(width, height);
             }
             if (h > height && comboBox3.SelectedIndex > 1)
             {
                 comboBox3.SelectedIndex -= 1;
+                selectIndexCombo3 = comboBox3.SelectedIndex;
                 comboBox3.Update();
                 SetMinFramesize(width, height);
             }
@@ -553,11 +557,52 @@ namespace PhaseImageRecorderToupCam
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
             if (Worked) Adjusted = true;
+
+            if (radioButton1.Checked)
+            {
+                trackBar4.Visible = false;
+                trackBar5.Visible = false;
+                label6.Visible = false;
+                label7.Visible = false;
+                label9.Visible = false;
+                label8.Visible = false;
+                comboBox2.Visible = false;
+                comboBox3.Visible = false;
+                SetComboBoxes();
+            }
         }
 
+        private void SetComboBoxes()
+        {
+            if (comboBox2.Text == null || comboBox2.Text.Equals(string.Empty))
+            {
+                comboBox2.SelectedIndex = selectIndexCombo2;
+                comboBox2.Text = comboBox2.Items[selectIndexCombo2].ToString();
+                comboBox2.Update();
+            }
+            if (comboBox3.Text == null || comboBox3.Text.Equals(string.Empty))
+            {
+                comboBox3.SelectedIndex = selectIndexCombo3;
+                comboBox3.Text = comboBox3.Items[selectIndexCombo3].ToString();
+                comboBox3.Update();
+            }
+        }
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
             Worked = true;
+            if (radioButton2.Checked)
+            {
+                label7.Visible = true;
+                trackBar4.Visible = true;
+                trackBar5.Visible = true;
+                label6.Visible = true;
+                label9.Visible = true;
+                label8.Visible = true;
+                comboBox2.Visible = true;
+                comboBox3.Visible = true;
+                SetComboBoxes();
+            }
+
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -610,6 +655,16 @@ namespace PhaseImageRecorderToupCam
         {
             if (started)
                 SetLimits(bmp_.Width, bmp_.Height);
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

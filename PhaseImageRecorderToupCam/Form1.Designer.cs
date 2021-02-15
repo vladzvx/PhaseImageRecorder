@@ -2,6 +2,7 @@
 {
     partial class Form1
     {
+
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -65,7 +66,7 @@
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(14, 17);
-            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(65, 28);
             this.button1.TabIndex = 0;
@@ -76,7 +77,7 @@
             // button2
             // 
             this.button2.Location = new System.Drawing.Point(14, 58);
-            this.button2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button2.Margin = new System.Windows.Forms.Padding(4);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(193, 28);
             this.button2.TabIndex = 1;
@@ -89,7 +90,7 @@
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Location = new System.Drawing.Point(14, 100);
-            this.comboBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.comboBox1.Margin = new System.Windows.Forms.Padding(4);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(193, 23);
             this.comboBox1.TabIndex = 3;
@@ -99,7 +100,7 @@
             // 
             this.checkBox1.AutoSize = true;
             this.checkBox1.Location = new System.Drawing.Point(14, 138);
-            this.checkBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.checkBox1.Margin = new System.Windows.Forms.Padding(4);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(103, 19);
             this.checkBox1.TabIndex = 4;
@@ -110,7 +111,7 @@
             // trackBar1
             // 
             this.trackBar1.Location = new System.Drawing.Point(14, 174);
-            this.trackBar1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.trackBar1.Margin = new System.Windows.Forms.Padding(4);
             this.trackBar1.Name = "trackBar1";
             this.trackBar1.Size = new System.Drawing.Size(193, 45);
             this.trackBar1.TabIndex = 5;
@@ -131,7 +132,7 @@
             // pictureBox1
             // 
             this.pictureBox1.Location = new System.Drawing.Point(214, 15);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(780, 564);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -141,7 +142,7 @@
             // button3
             // 
             this.button3.Location = new System.Drawing.Point(14, 208);
-            this.button3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button3.Margin = new System.Windows.Forms.Padding(4);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(193, 25);
             this.button3.TabIndex = 8;
@@ -172,7 +173,7 @@
             // trackBar2
             // 
             this.trackBar2.Location = new System.Drawing.Point(14, 262);
-            this.trackBar2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.trackBar2.Margin = new System.Windows.Forms.Padding(4);
             this.trackBar2.Name = "trackBar2";
             this.trackBar2.Size = new System.Drawing.Size(193, 45);
             this.trackBar2.TabIndex = 11;
@@ -183,7 +184,7 @@
             // trackBar3
             // 
             this.trackBar3.Location = new System.Drawing.Point(14, 306);
-            this.trackBar3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.trackBar3.Margin = new System.Windows.Forms.Padding(4);
             this.trackBar3.Name = "trackBar3";
             this.trackBar3.Size = new System.Drawing.Size(193, 45);
             this.trackBar3.TabIndex = 12;
@@ -246,6 +247,7 @@
             this.trackBar4.Size = new System.Drawing.Size(189, 45);
             this.trackBar4.TabIndex = 17;
             this.trackBar4.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.trackBar4.Visible = false;
             this.trackBar4.Scroll += new System.EventHandler(this.trackBar4_Scroll);
             // 
             // trackBar5
@@ -257,6 +259,7 @@
             this.trackBar5.Size = new System.Drawing.Size(189, 45);
             this.trackBar5.TabIndex = 18;
             this.trackBar5.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.trackBar5.Visible = false;
             this.trackBar5.Scroll += new System.EventHandler(this.trackBar5_Scroll);
             // 
             // label6
@@ -267,6 +270,8 @@
             this.label6.Size = new System.Drawing.Size(60, 15);
             this.label6.TabIndex = 19;
             this.label6.Text = "X position";
+            this.label6.Visible = false;
+            this.label6.Click += new System.EventHandler(this.label6_Click);
             // 
             // label7
             // 
@@ -276,6 +281,8 @@
             this.label7.Size = new System.Drawing.Size(60, 15);
             this.label7.TabIndex = 20;
             this.label7.Text = "Y position";
+            this.label7.Visible = false;
+            this.label7.Click += new System.EventHandler(this.label7_Click);
             // 
             // checkBox2
             // 
@@ -315,7 +322,7 @@
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(75, 23);
             this.comboBox2.TabIndex = 23;
-            comboBox2.SelectedIndex = 3;
+            this.comboBox2.Visible = false;
             this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
             // 
             // comboBox3
@@ -332,18 +339,18 @@
             this.comboBox3.Name = "comboBox3";
             this.comboBox3.Size = new System.Drawing.Size(74, 23);
             this.comboBox3.TabIndex = 24;
-            comboBox3.SelectedIndex = 3;
+            this.comboBox3.Visible = false;
             this.comboBox3.SelectedIndexChanged += new System.EventHandler(this.comboBox3_SelectedIndexChanged);
             // 
             // label8
             // 
-            this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(10, 482);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(70, 15);
             this.label8.TabIndex = 25;
             this.label8.Text = "X frame size";
             this.label8.Click += new System.EventHandler(this.label8_Click);
+            this.label8.Visible = false;
             // 
             // label9
             // 
@@ -353,6 +360,7 @@
             this.label9.Size = new System.Drawing.Size(70, 15);
             this.label9.TabIndex = 26;
             this.label9.Text = "Y frame size";
+            this.label9.Visible = false;
             this.label9.Click += new System.EventHandler(this.label9_Click);
             // 
             // Form1
@@ -387,7 +395,7 @@
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.DoubleBuffered = true;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MinimumSize = new System.Drawing.Size(743, 587);
             this.Name = "Form1";
             this.Text = "toupcamdemowinformcs2";
