@@ -15,6 +15,7 @@ namespace PhaseImageRecorderToupCam
 {
     public partial class Form1 : Form
     {
+        private bool started = false;
         private delegate void DelegateEvent(ToupCam.eEVENT[] ev);
         private ToupCam toupcam_ = null;
         private Bitmap bmp_ = null;
@@ -88,8 +89,8 @@ namespace PhaseImageRecorderToupCam
                         arr[i, x + 1, 1] = 255;
                         arr[i, x + 2, 1] = 255;
                         arr[i, x + w, 1] = 255;
-                        arr[i, x + w + 1, 1] = 255;
-                        arr[i, x + w + 2, 1] = 255;
+                        arr[i, x + w - 1, 1] = 255;
+                        arr[i, x + w - 2, 1] = 255;
                     }
                     for (int j = x; j < w + x; j++)
                     {
@@ -97,24 +98,42 @@ namespace PhaseImageRecorderToupCam
                         arr[y + 1, j, 1] = 255;
                         arr[y + 2, j, 1] = 255;
                         arr[y + h, j, 1] = 255;
-                        arr[y + h + 1, j, 1] = 255;
-                        arr[y + h + 2, j, 1] = 255;
+                        arr[y + h - 1, j, 1] = 255;
+                        arr[y + h - 2, j, 1] = 255;
 
                     }
 
+                    //BitmapData bmpdata = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.WriteOnly, bmp_.PixelFormat);
+                    //bmpdata.Scan0 = Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0);
+                    // bmp_.UnlockBits(bmpdata);
+
                     pictureBox1.Image = new Bitmap((int)nWidth, (int)nHeight, (int)nWidth * 3, PixelFormat.Format24bppRgb,
-                            Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0));
+                       Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0));
                     pictureBox1.Update();
                     //isFrameSetted = true;
                 }
                 else if (radioButton1.Checked)
                 {
-                    if (isFrameSetted)
+                    if (Adjusted)
                     {
                         byte[,,] arr1 = new byte[bmp_.Height, bmp_.Width, 3];
                         IntPtr pointer = Marshal.UnsafeAddrOfPinnedArrayElement(arr1, 0);
                         toupcam_.PullImage(pointer, 24, out nWidth, out nHeight);
 
+                        //for (int i = 0; i < bmp_.Height; i++)
+                        //{
+                        //    for (int j = 0; j < bmp_.Width; j++)
+                        //    {
+                        //        if (i % 50 == 0)
+                        //        {
+                        //            arr1[i, j, 0] = 255;
+                        //        }
+                        //        if (j % 50 == 0)
+                        //        {
+                        //            arr1[i, j, 0] = 255;
+                        //        }
+                        //    }
+                        //}
 
                         int x = trackBar4.Value;
                         int y = trackBar5.Value;
@@ -132,17 +151,35 @@ namespace PhaseImageRecorderToupCam
                                 arr[i - y, j - x, 2] = arr1[i, j, 2];
                             }
                         }
-                        pictureBox1.Image = new Bitmap((int)nWidth, (int)nHeight, (int)nWidth * 3, PixelFormat.Format24bppRgb,
+
+
+                        pictureBox1.Image = new Bitmap((int)w, (int)h, (int)w * 3, PixelFormat.Format24bppRgb,
                             Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0));
                         pictureBox1.Update();
+
+                      //  BitmapData bmpdata = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.WriteOnly, bmp_.PixelFormat);
+                        //bmpdata.Scan0= Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0);
+                        //Marshal.Copy(arr, 0, bmpdata.Scan0, bmp_.Height * bmp_.Width * 3);
+                       // bmp_.UnlockBits(bmpdata);
                     }
                     else
                     {
+                        /*
                         BitmapData bmpdata = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.WriteOnly, bmp_.PixelFormat);
                         toupcam_.PullImage(bmpdata.Scan0, 24, out nWidth, out nHeight);
                         bmp_.UnlockBits(bmpdata);
                         pictureBox1.Image = bmp_;
                         pictureBox1.Invalidate();
+
+                        */
+
+                        byte[,,] arr1 = new byte[bmp_.Height, bmp_.Width, 3];
+                        IntPtr pointer = Marshal.UnsafeAddrOfPinnedArrayElement(arr1, 0);
+                        toupcam_.PullImage(pointer, 24, out nWidth, out nHeight);
+                        pictureBox1.Image = new Bitmap(bmp_.Width, bmp_.Height, bmp_.Width * 3, PixelFormat.Format24bppRgb,
+                            Marshal.UnsafeAddrOfPinnedArrayElement(arr1, 0));
+                        pictureBox1.Update();
+
                     }
                 }           
                 label5.Text = Math.Round(fPSCounter.Count(), 2).ToString();
@@ -279,6 +316,8 @@ namespace PhaseImageRecorderToupCam
                                 trackBar1.Enabled = !checkBox1.Checked;
                             }
                         }
+                        SetLimits(width, height);
+                        started = true;
                     }
                 }
             }
@@ -390,11 +429,55 @@ namespace PhaseImageRecorderToupCam
                             ev_ = new DelegateEvent(DelegateOnEvent);
                             toupcam_.StartPullModeWithCallback(new ToupTek.ToupCam.DelegateEventCallback(DelegateOnEventCallback));
                         }
+                        SetLimits(width, height);
                     }
                 }
             }
         }
 
+        private void SetMinFramesize(int width, int height)
+        {
+            int w = int.Parse(comboBox2.Text);
+            int h = int.Parse(comboBox3.Text);
+            if (w > width && comboBox2.SelectedIndex > 1)
+            {
+                comboBox2.SelectedIndex -= 1;
+                comboBox2.Update();
+                SetMinFramesize(width, height);
+            }
+            if (h > height && comboBox3.SelectedIndex > 1)
+            {
+                comboBox3.SelectedIndex -= 1;
+                comboBox3.Update();
+                SetMinFramesize(width, height);
+            }
+            
+        }
+
+        private void SetFrameStartPositionMaxValues(int width, int height)
+        {
+            int w = int.Parse(comboBox2.Text);
+            int h = int.Parse(comboBox3.Text);
+            int newWight = width - w - 1;
+            int newHeight = height - h - 1;
+            if (newWight >= 0)
+            {
+                if (trackBar4.Value > newWight) trackBar4.Value = newWight;
+                trackBar4.Maximum = newWight;
+                trackBar4.Update();
+            }
+            if (newHeight >= 0)
+            {
+                if (trackBar5.Value > newHeight) trackBar5.Value = newHeight;
+                trackBar5.Maximum = newHeight;
+                trackBar5.Update();
+            }
+        }
+        private void SetLimits(int width, int height)
+        {
+            SetMinFramesize(width,height);
+            SetFrameStartPositionMaxValues(width, height);
+        }
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             if (toupcam_ != null)
@@ -465,14 +548,16 @@ namespace PhaseImageRecorderToupCam
             formGraphics.Dispose();
         }
 
+        private bool Worked = false;
+        private bool Adjusted = false;
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
-
+            if (Worked) Adjusted = true;
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
-
+            Worked = true;
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -502,7 +587,8 @@ namespace PhaseImageRecorderToupCam
 
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            if (started)
+                SetLimits(bmp_.Width,bmp_.Height);
         }
 
         private void trackBar2_Scroll(object sender, EventArgs e)
@@ -518,6 +604,12 @@ namespace PhaseImageRecorderToupCam
         private void trackBar5_Scroll(object sender, EventArgs e)
         {
 
+        }
+
+        private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (started)
+                SetLimits(bmp_.Width, bmp_.Height);
         }
     }
 }
