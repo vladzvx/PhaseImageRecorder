@@ -10,11 +10,19 @@ using ToupTek;
 using System.Runtime.InteropServices;
 using RecorderCore;
 using System.Linq;
+using System.IO;
+using RecorderCore.Images;
+using System.Threading.Tasks;
 
 namespace PhaseImageRecorderToupCam
 {
     public partial class Form1 : Form
     {
+        private Settings settings;
+        private bool Worked = false;
+        private bool Adjusted = false;
+        private HilbertPhaseImage2 hpi2;
+        private HilbertCalculator calculator = new HilbertCalculator();
         private int selectIndexCombo2 = 3;
         private int selectIndexCombo3 = 3;
         private bool started = false;
@@ -23,6 +31,22 @@ namespace PhaseImageRecorderToupCam
         private Bitmap bmp_ = null;
         private DelegateEvent ev_ = null;
         private FPSCounter fPSCounter = new FPSCounter(30);
+        private System.Timers.Timer dbsync = new System.Timers.Timer(10000);
+
+        private void TimerAction(object sender, System.Timers.ElapsedEventArgs args)
+        {
+            if (settings == null) settings = new Settings();
+            settings.auto_exposition = checkBox1.Checked;
+            settings.selectIndexCombo2 = selectIndexCombo2;
+            settings.selectIndexCombo3 = selectIndexCombo3;
+            settings.x_frame_position = trackBar4.Value;
+            settings.y_frame_position = trackBar5.Value;
+            settings.exposition = trackBar1.Value;
+            settings.work_folder = richTextBox2.Text;
+            Task.Factory.StartNew(()=> {
+                SaveSettings(settings);
+            });
+        }
         private void savefile(IntPtr pData, ref ToupCam.BITMAPINFOHEADER header)
         {
             Bitmap bmp = new Bitmap(header.biWidth, header.biHeight, PixelFormat.Format24bppRgb);
@@ -121,21 +145,6 @@ namespace PhaseImageRecorderToupCam
                         IntPtr pointer = Marshal.UnsafeAddrOfPinnedArrayElement(arr1, 0);
                         toupcam_.PullImage(pointer, 24, out nWidth, out nHeight);
 
-                        //for (int i = 0; i < bmp_.Height; i++)
-                        //{
-                        //    for (int j = 0; j < bmp_.Width; j++)
-                        //    {
-                        //        if (i % 50 == 0)
-                        //        {
-                        //            arr1[i, j, 0] = 255;
-                        //        }
-                        //        if (j % 50 == 0)
-                        //        {
-                        //            arr1[i, j, 0] = 255;
-                        //        }
-                        //    }
-                        //}
-
                         int x = trackBar4.Value;
                         int y = trackBar5.Value;
                         int w = int.Parse(comboBox2.Text);
@@ -152,7 +161,15 @@ namespace PhaseImageRecorderToupCam
                                 arr[i - y, j - x, 2] = arr1[i, j, 2];
                             }
                         }
-
+                        if (checkBox2.Checked)
+                        {
+                            calculator.PutImage(arr);
+                            hpi2 = calculator.GetImage();
+                            if (hpi2 != null)
+                            {
+                                arr = hpi2._images[0];
+                            }
+                        }
 
                         pictureBox1.Image = new Bitmap((int)w, (int)h, (int)w * 3, PixelFormat.Format24bppRgb,
                             Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0));
@@ -210,6 +227,19 @@ namespace PhaseImageRecorderToupCam
             InitializeComponent();
         }
 
+        private void ApplySettings()
+        {
+            if (settings != null)
+            {
+                checkBox1.Checked = settings.auto_exposition;
+                selectIndexCombo2 = settings.selectIndexCombo2;
+                selectIndexCombo3 = settings.selectIndexCombo3;
+                trackBar4.Value = settings.x_frame_position;
+                trackBar5.Value = settings.y_frame_position;
+                trackBar1.Value = settings.exposition;
+                richTextBox2.Text = settings.work_folder;
+            }
+        }
         private void Form1_Load(object sender, EventArgs e)
         {
             button2.Enabled = false;
@@ -322,6 +352,17 @@ namespace PhaseImageRecorderToupCam
                     }
                 }
             }
+
+            try
+            {
+
+                dbsync.Elapsed += TimerAction;
+                dbsync.SynchronizingObject = this;
+                dbsync.Start();
+                settings = LoadSettings();
+                ApplySettings();
+            }
+            catch { }
         }
 
         private void SnapClickedHandler(object sender, ToolStripItemClickedEventArgs e)
@@ -380,21 +421,36 @@ namespace PhaseImageRecorderToupCam
 
         private void OnSnap(object sender, EventArgs e)
         {
-            if (toupcam_ != null)
+            if (hpi2!=null)
             {
-                if (toupcam_.StillResolutionNumber <= 0)
+                HilbertPhaseImage2 temp = hpi2;
+
+                Task.Factory.StartNew(() => {
+                    string path = Path.Combine(this.richTextBox2.Text, DateTime.UtcNow.ToString().Replace('.', '_').Replace(':', '_').Replace(' ', '_'));
+                    Bitmap bmp = new Bitmap((int)temp.source_images[0].GetUpperBound(1) + 1, (int)temp.source_images[0].GetUpperBound(0) + 1, (int)(temp.source_images[0].GetUpperBound(1) + 1) * 3, PixelFormat.Format24bppRgb, Marshal.UnsafeAddrOfPinnedArrayElement(temp.source_images[0], 0));
+                    bmp.Save(path + ".jpg");
+                    temp.Save(path);
+                });
+            }
+            else
+            {
+                if (toupcam_ != null)
                 {
-                    if (bmp_ != null)
+                    if (toupcam_.StillResolutionNumber <= 0)
                     {
-                        bmp_.Save("toupcamdemowinformcs2.jpg");
+                        if (bmp_ != null)
+                        {
+                            bmp_.Save(Path.Combine(richTextBox2.Text, "toupcamdemowinformcs2.jpg"));
+                        }
+                    }
+                    else
+                    {
+                        if (button2.ContextMenuStrip != null)
+                            button2.ContextMenuStrip.Show(Cursor.Position);
                     }
                 }
-                else
-                {
-                    if (button2.ContextMenuStrip != null)
-                        button2.ContextMenuStrip.Show(Cursor.Position);
-                }
             }
+
         }
 
         private void OnClosing(object sender, FormClosingEventArgs e)
@@ -537,29 +593,13 @@ namespace PhaseImageRecorderToupCam
             label3.Text = trackBar3.Value.ToString();
         }
 
-        private void button4_Click(object sender, EventArgs e)
-        {
-            int RectangleWight = 1024* pictureBox1.Width/pictureBox1.Image.Width ;
-            int RectangleHeight = 1024* pictureBox1.Height/pictureBox1.Image.Height;
-
-
-            System.Drawing.Pen myPen = new System.Drawing.Pen(System.Drawing.Color.Green);
-            System.Drawing.Graphics formGraphics;
-
-            formGraphics = pictureBox1.CreateGraphics();
-            formGraphics.DrawRectangle(myPen, new Rectangle(0, 0, RectangleWight, RectangleHeight));
-            myPen.Dispose();
-            formGraphics.Dispose();
-        }
-
-        private bool Worked = false;
-        private bool Adjusted = false;
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
             if (Worked) Adjusted = true;
 
             if (radioButton1.Checked)
             {
+                comboBox1.Visible = false;
                 trackBar4.Visible = false;
                 trackBar5.Visible = false;
                 label6.Visible = false;
@@ -598,6 +638,7 @@ namespace PhaseImageRecorderToupCam
                 label6.Visible = true;
                 label9.Visible = true;
                 label8.Visible = true;
+                comboBox1.Visible = true;
                 comboBox2.Visible = true;
                 comboBox3.Visible = true;
                 SetComboBoxes();
@@ -663,6 +704,58 @@ namespace PhaseImageRecorderToupCam
         }
 
         private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button4_Click_1(object sender, EventArgs e)
+        {
+            FolderBrowserDialog FBD = new FolderBrowserDialog();
+            if (FBD.ShowDialog() == DialogResult.OK)
+            {
+                this.richTextBox2.Text = FBD.SelectedPath;
+            }
+        }
+
+        private void richTextBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+
+
+        static void SaveSettings(Settings settings)
+        {
+            using (ApplicationContext db = new ApplicationContext())
+            {
+                var AllSettings = db.Settings.ToList();
+                if (AllSettings.Count == 0)
+                {
+                    db.Settings.Add(settings);
+                    db.SaveChanges();
+                }
+                else
+                {
+                    AllSettings[0].Update(settings);
+                    db.Update(AllSettings[0]);
+                    db.SaveChanges();
+                }
+            }
+        }
+
+        static Settings LoadSettings()
+        {
+            using (ApplicationContext db = new ApplicationContext())
+            {
+                // получаем объекты из бд и выводим на консоль
+                var AllSettings = db.Settings.ToList();
+                if (AllSettings.Count > 0)
+                    return AllSettings[0];
+                else return null;
+            }
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
         {
 
         }

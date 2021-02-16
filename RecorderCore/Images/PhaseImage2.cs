@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +15,28 @@ namespace RecorderCore.Images
         {
 
         }
+        public void Save(string path)
+        {
+            try
+            {
+                List<string> lines = new List<string>();
+                for (int i = 0; i < images[0].GetUpperBound(0) + 1; i++)
+                {
+                    string line = "";
+                    for (int j = 0; j < images[0].GetUpperBound(1) + 1; j++)
+                    {
+                        line += ((int)images[0][i, j]).ToString() + ";";
+                    }
+                    lines.Add(line);
+                }
+                File.WriteAllLines(path + ".csv", lines);
+            }
+            catch (Exception ex)
+            {
 
+            }
+            
+        }
         public double[,] CreateFilterIfNeed(int size0, int size1)
         {
             if(filter==null|| size0 != images[0].GetUpperBound(0) + 1 || size1 != images[0].GetUpperBound(1) + 1)
@@ -36,6 +58,7 @@ namespace RecorderCore.Images
     public class PhaseImage2
     {
         private object locker = new object();
+        public List<byte[,,]> source_images=new List<byte[,,]>();
         public List<byte[,,]> _images = new List<byte[,,]>();
         public List<double[,]> images = new List<double[,]>();
         public int level = 0;
@@ -73,6 +96,7 @@ namespace RecorderCore.Images
         {
             lock (locker)
             {
+                source_images = new List<byte[,,]>(_images);
                 _images = new List<byte[,,]>();
                 foreach (double[,] image in images)
                 {

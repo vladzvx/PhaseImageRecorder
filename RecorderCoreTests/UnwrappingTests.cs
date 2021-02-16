@@ -57,16 +57,18 @@ namespace RecorderCore
         {
             int size0 = 1024;
             int size1 = 1024;
-            var tuple = TestImageGenerator.GetTestPair2(size0, size1, 4);
+            var tuple = TestImageGenerator.GetTestPair2(size0, size1, 4,15);
 
-            HilbertPhaseImage2 hpi = new HilbertPhaseImage2(tuple.Item1, 0, 1);
+            HilbertPhaseImage2 hpi = new HilbertPhaseImage2(tuple.Item1, 0, 2*Math.PI);
 
             hpi.Convert();
             hpi.Calc();
             hpi.Unwrapp();
             hpi.ReverseConvert();
-            
 
+
+            ImageSource.subtract_min(tuple.Item2);
+            ImageSource.subtract_min(hpi.images[0]);
             double _min = ImageSource.min(tuple.Item2);
             double _max = ImageSource.max(tuple.Item2);
             double _mean = ImageSource.mean(tuple.Item2);
