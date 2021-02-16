@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static RecorderCore.Unwrapping;
-
+using RecorderCore.Images;
 
 namespace RecorderCore
 {
@@ -57,33 +57,25 @@ namespace RecorderCore
         {
             int size0 = 1024;
             int size1 = 1024;
-            var tuple = TestImageGenerator.GetTestPair(size0, size1, 4);
-            Complex[,] test_image = Complex.CreateComplexArray(tuple.Item1.images[0]);
-            FourierTransform.FFT2(test_image, FourierTransform.Direction.Forward);
-            double[,] filter = Tools.CreateHilbertFilter1(size0, size1);
-            Complex.ApplyFilter(test_image, filter);
-            //Complex[,] reserv = (Complex[,])test_image.Clone();
-            FourierTransform.FFT2(test_image, FourierTransform.Direction.Backward);
-            double[,] inverse_result = Tools.CalculatePhaseImageByHilbert(test_image);
-            Unwrapping3 unwrapper = new Unwrapping3(inverse_result);
+            var tuple = TestImageGenerator.GetTestPair2(size0, size1, 4);
+
+            HilbertPhaseImage2 hpi = new HilbertPhaseImage2(tuple.Item1, 0, 1);
+
+            hpi.Convert();
+            hpi.Calc();
+            hpi.Unwrapp();
+            hpi.ReverseConvert();
             
-           // ImageSource.mult(inverse_result, -1);
-
-            unwrapper.UnwrapParallel(inverse_result, out UwrReport rep);
-
-
-            ImageSource.subtract_min(inverse_result);
-            ImageSource.subtract_min(tuple.Item2);
 
             double _min = ImageSource.min(tuple.Item2);
             double _max = ImageSource.max(tuple.Item2);
             double _mean = ImageSource.mean(tuple.Item2);
 
 
-            double min = ImageSource.min(inverse_result);
-            double max = ImageSource.max(inverse_result);
-            double mean = ImageSource.mean(inverse_result);
-            double std = ImageSource.std(tuple.Item2, inverse_result);
+            double min = ImageSource.min(hpi.images[0]);
+            double max = ImageSource.max(hpi.images[0]);
+            double mean = ImageSource.mean(hpi.images[0]);
+            double std = ImageSource.std(tuple.Item2, hpi.images[0]);
             Assert.IsTrue(std < ImageSource.mean(tuple.Item2) / 1000);
         }
 

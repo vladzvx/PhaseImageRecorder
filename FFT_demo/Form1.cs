@@ -1,4 +1,5 @@
 ﻿using RecorderCore;
+using RecorderCore.Images;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,9 +15,11 @@ namespace FFT_demo
 {
     public partial class Form1 : Form
     {
+        HilbertPhaseImage2 hpi;
         private const int size0 = 512;
         private const int size1 = 1024;
         private ImageSource imageSource = new ImageSource(size0, size1);
+        private byte[,,] image0=new byte[size0, size1,3];
         private double[,] image=new double[size0, size1];
         private double[,] filter_image=new double[size0, size1];
         private double[,] image_res=new double[size0, size1];
@@ -57,10 +60,11 @@ namespace FFT_demo
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var tmp = TestImageGenerator.GetTestPair(size0, size1, 5, 15);
-            image = tmp.Item1.images[0];
+            var tmp = TestImageGenerator.GetTestPair2(size0, size1, 5, 15);
+            image0 = tmp.Item1;
             image_res = tmp.Item2;
             plot(image_res);
+            hpi = new HilbertPhaseImage2(image0,0,1);
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -71,19 +75,21 @@ namespace FFT_demo
 
         private void button2_Click(object sender, EventArgs e)
         {
-            plot(image);
+
+            hpi.Convert();
+            plot(hpi.images[0]);
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            fft_image = Complex.CreateComplexArray(image);
+            fft_image = Complex.CreateComplexArray(hpi.images[0]);
             FourierTransform.FFT2(fft_image, FourierTransform.Direction.Forward);
             plot(Tools.GetABS(fft_image));
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            CreateHilbertFilter();
+            filter_image = hpi.CreateFilterIfNeed(size1,size0);
             plot(filter_image);
         }
 
@@ -126,26 +132,24 @@ namespace FFT_demo
         }
         private void button6_Click(object sender, EventArgs e)
         {
-            FourierTransform.FFT2(fft_image, FourierTransform.Direction.Backward);
-            image =  Tools.CalculatePhaseImageByHilbert(fft_image);
-            plot(image);
+            hpi.Calc();   
+            plot(hpi.images[0]);
         }
 
         private void button7_Click(object sender, EventArgs e)
         {
-            unwrapper.UpdateParamsIfNeed(image);
-            unwrapper.UnwrapParallel(image, out var scr);
-            plot(image);
+            hpi.Unwrapp();
+            plot(hpi.images[0]);
         }
 
         private void button8_Click(object sender, EventArgs e)
         {
-            ImageSource.subtract_min(image);
+            ImageSource.subtract_min(hpi.images[0]);
             ImageSource.subtract_min(image_res);
-            var d = ImageSource.diff(image,image_res);
+            var d = ImageSource.diff(hpi.images[0], image_res);
             label1.Text = Math.Round(ImageSource.max(d), 5).ToString(); ;
             label2.Text = Math.Round(ImageSource.min(d), 5).ToString(); ;
-            label3.Text = Math.Round(ImageSource.std(image,image_res), 5).ToString(); ;
+            label3.Text = Math.Round(ImageSource.std(hpi.images[0], image_res), 5).ToString(); ;
             label1.Update();
             label2.Update();
             label3.Update();
