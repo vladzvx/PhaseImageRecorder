@@ -51,7 +51,7 @@ namespace PhaseImageRecorderToupCam
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("Host=176.119.156.220;Port=5432;Database=settingsdb;Username=postgres;Password=1111");
+            optionsBuilder.UseNpgsql("Host=176.119.156.220;Port=5432;Database=settingsdb;Username=postgres;Password=qw12cv90");
         }
     }
 }

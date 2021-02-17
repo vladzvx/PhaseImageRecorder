@@ -18,6 +18,7 @@ namespace PhaseImageRecorderToupCam
 {
     public partial class Form1 : Form
     {
+        private string FolderPath = string.Empty;
         private Settings settings;
         private bool Worked = false;
         private bool Adjusted = false;
@@ -42,7 +43,7 @@ namespace PhaseImageRecorderToupCam
             settings.x_frame_position = trackBar4.Value;
             settings.y_frame_position = trackBar5.Value;
             settings.exposition = trackBar1.Value;
-            settings.work_folder = richTextBox2.Text;
+            settings.work_folder = FolderPath;
             Task.Factory.StartNew(()=> {
                 SaveSettings(settings);
             });
@@ -94,117 +95,136 @@ namespace PhaseImageRecorderToupCam
 
         private void OnEventImage()
         {
-            if (bmp_ != null)
+            try
             {
-                uint nWidth = 0, nHeight = 0;
-                if (radioButton2.Checked)
+                if (bmp_ != null)
                 {
-                    byte[,,] arr = new byte[bmp_.Height, bmp_.Width, 3];
-                    IntPtr pointer = Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0);
-                    
-                    toupcam_.PullImage(pointer, 24, out nWidth, out nHeight);
-                    int x = trackBar4.Value;
-                    int y = trackBar5.Value;
-                    int w = int.Parse(comboBox2.Text);
-                    int h = int.Parse(comboBox3.Text); ;
-                    //Marshal.Copy(pointer, arr2, 0, arr.Length);
-                    for (int i = y; i < h + y; i++)
+                    uint nWidth = 0, nHeight = 0;
+                    if (radioButton2.Checked)
                     {
-                        arr[i, x, 1] = 255;
-                        arr[i, x + 1, 1] = 255;
-                        arr[i, x + 2, 1] = 255;
-                        arr[i, x + w, 1] = 255;
-                        arr[i, x + w - 1, 1] = 255;
-                        arr[i, x + w - 2, 1] = 255;
-                    }
-                    for (int j = x; j < w + x; j++)
-                    {
-                        arr[y, j, 1] = 255;
-                        arr[y + 1, j, 1] = 255;
-                        arr[y + 2, j, 1] = 255;
-                        arr[y + h, j, 1] = 255;
-                        arr[y + h - 1, j, 1] = 255;
-                        arr[y + h - 2, j, 1] = 255;
+                        byte[,,] arr = new byte[bmp_.Height, bmp_.Width, 3];
+                        IntPtr pointer = Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0);
 
-                    }
-
-                    //BitmapData bmpdata = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.WriteOnly, bmp_.PixelFormat);
-                    //bmpdata.Scan0 = Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0);
-                    // bmp_.UnlockBits(bmpdata);
-
-                    pictureBox1.Image = new Bitmap((int)nWidth, (int)nHeight, (int)nWidth * 3, PixelFormat.Format24bppRgb,
-                       Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0));
-                    pictureBox1.Update();
-                    //isFrameSetted = true;
-                }
-                else if (radioButton1.Checked)
-                {
-                    if (Adjusted)
-                    {
-                        byte[,,] arr1 = new byte[bmp_.Height, bmp_.Width, 3];
-                        IntPtr pointer = Marshal.UnsafeAddrOfPinnedArrayElement(arr1, 0);
                         toupcam_.PullImage(pointer, 24, out nWidth, out nHeight);
-
                         int x = trackBar4.Value;
                         int y = trackBar5.Value;
                         int w = int.Parse(comboBox2.Text);
                         int h = int.Parse(comboBox3.Text); ;
-
-                        byte[,,] arr = new byte[h, w, 3];
-
+                        //Marshal.Copy(pointer, arr2, 0, arr.Length);
                         for (int i = y; i < h + y; i++)
                         {
-                            for (int j = x; j < w + x; j++)
-                            {
-                                arr[i - y, j - x, 0] = arr1[i, j, 0];
-                                arr[i - y, j - x, 1] = arr1[i, j, 1];
-                                arr[i - y, j - x, 2] = arr1[i, j, 2];
-                            }
+                            arr[i, x, 1] = 255;
+                            arr[i, x + 1, 1] = 255;
+                            arr[i, x + 2, 1] = 255;
+                            arr[i, x + w, 1] = 255;
+                            arr[i, x + w - 1, 1] = 255;
+                            arr[i, x + w - 2, 1] = 255;
                         }
-                        if (checkBox2.Checked)
+                        for (int j = x; j < w + x; j++)
                         {
-                            calculator.PutImage(arr);
-                            hpi2 = calculator.GetImage();
-                            if (hpi2 != null)
-                            {
-                                arr = hpi2._images[0];
-                            }
+                            arr[y, j, 1] = 255;
+                            arr[y + 1, j, 1] = 255;
+                            arr[y + 2, j, 1] = 255;
+                            arr[y + h, j, 1] = 255;
+                            arr[y + h - 1, j, 1] = 255;
+                            arr[y + h - 2, j, 1] = 255;
+
                         }
 
-                        pictureBox1.Image = new Bitmap((int)w, (int)h, (int)w * 3, PixelFormat.Format24bppRgb,
-                            Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0));
-                        pictureBox1.Update();
+                        //BitmapData bmpdata = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.WriteOnly, bmp_.PixelFormat);
+                        //bmpdata.Scan0 = Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0);
+                        // bmp_.UnlockBits(bmpdata);
 
-                      //  BitmapData bmpdata = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.WriteOnly, bmp_.PixelFormat);
-                        //bmpdata.Scan0= Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0);
-                        //Marshal.Copy(arr, 0, bmpdata.Scan0, bmp_.Height * bmp_.Width * 3);
-                       // bmp_.UnlockBits(bmpdata);
+                        pictureBox1.Image = new Bitmap((int)nWidth, (int)nHeight, (int)nWidth * 3, PixelFormat.Format24bppRgb,
+                           Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0));
+                        pictureBox1.Update();
+                        label5.Text = Math.Round(fPSCounter.Count(), 2).ToString();
+                        label5.Update();
+                        //isFrameSetted = true;
                     }
-                    else
+                    else if (radioButton1.Checked)
                     {
-                        /*
-                        BitmapData bmpdata = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.WriteOnly, bmp_.PixelFormat);
-                        toupcam_.PullImage(bmpdata.Scan0, 24, out nWidth, out nHeight);
-                        bmp_.UnlockBits(bmpdata);
-                        pictureBox1.Image = bmp_;
-                        pictureBox1.Invalidate();
+                        if (Adjusted)
+                        {
+                            byte[,,] arr1 = new byte[bmp_.Height, bmp_.Width, 3];
+                            IntPtr pointer = Marshal.UnsafeAddrOfPinnedArrayElement(arr1, 0);
+                            toupcam_.PullImage(pointer, 24, out nWidth, out nHeight);
 
-                        */
+                            int x = trackBar4.Value;
+                            int y = trackBar5.Value;
+                            int w = int.Parse(comboBox2.Text);
+                            int h = int.Parse(comboBox3.Text); ;
 
-                        byte[,,] arr1 = new byte[bmp_.Height, bmp_.Width, 3];
-                        IntPtr pointer = Marshal.UnsafeAddrOfPinnedArrayElement(arr1, 0);
-                        toupcam_.PullImage(pointer, 24, out nWidth, out nHeight);
-                        pictureBox1.Image = new Bitmap(bmp_.Width, bmp_.Height, bmp_.Width * 3, PixelFormat.Format24bppRgb,
-                            Marshal.UnsafeAddrOfPinnedArrayElement(arr1, 0));
-                        pictureBox1.Update();
+                            byte[,,] arr = new byte[h, w, 3];
 
+                            for (int i = y; i < h + y; i++)
+                            {
+                                for (int j = x; j < w + x; j++)
+                                {
+                                    arr[i - y, j - x, 0] = arr1[i, j, 0];
+                                    arr[i - y, j - x, 1] = arr1[i, j, 1];
+                                    arr[i - y, j - x, 2] = arr1[i, j, 2];
+                                }
+                            }
+                            if (checkBox2.Checked)
+                            {
+                                calculator.PutImage(arr, unwrap: checkBox3.Checked);
+                                var buff = calculator.GetImage();
+                                if (buff != null) hpi2 = buff;
+                                if (hpi2 != null)
+                                {
+                                    arr = hpi2._images[0];
+                                    pictureBox1.Image = new Bitmap((int)w, (int)h, (int)w * 3, PixelFormat.Format24bppRgb,
+                                        Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0));
+                                    pictureBox1.Update();
+                                    label5.Text = Math.Round(fPSCounter.Count(), 2).ToString();
+                                    label5.Update();
+                                }
+                            }
+                            else
+                            {
+                                pictureBox1.Image = new Bitmap((int)w, (int)h, (int)w * 3, PixelFormat.Format24bppRgb,
+                                    Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0));
+                                pictureBox1.Update();
+                                label5.Text = Math.Round(fPSCounter.Count(), 2).ToString();
+                                label5.Update();
+                            }
+
+
+
+                            //  BitmapData bmpdata = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.WriteOnly, bmp_.PixelFormat);
+                            //bmpdata.Scan0= Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0);
+                            //Marshal.Copy(arr, 0, bmpdata.Scan0, bmp_.Height * bmp_.Width * 3);
+                            // bmp_.UnlockBits(bmpdata);
+                        }
+                        else
+                        {
+                            /*
+                            BitmapData bmpdata = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.WriteOnly, bmp_.PixelFormat);
+                            toupcam_.PullImage(bmpdata.Scan0, 24, out nWidth, out nHeight);
+                            bmp_.UnlockBits(bmpdata);
+                            pictureBox1.Image = bmp_;
+                            pictureBox1.Invalidate();
+
+                            */
+
+                            byte[,,] arr1 = new byte[bmp_.Height, bmp_.Width, 3];
+                            IntPtr pointer = Marshal.UnsafeAddrOfPinnedArrayElement(arr1, 0);
+                            toupcam_.PullImage(pointer, 24, out nWidth, out nHeight);
+                            pictureBox1.Image = new Bitmap(bmp_.Width, bmp_.Height, bmp_.Width * 3, PixelFormat.Format24bppRgb,
+                                Marshal.UnsafeAddrOfPinnedArrayElement(arr1, 0));
+                            pictureBox1.Update();
+                            label5.Text = Math.Round(fPSCounter.Count(), 2).ToString();
+                            label5.Update();
+                        }
                     }
-                }           
-                label5.Text = Math.Round(fPSCounter.Count(), 2).ToString();
-                label5.Update();
 
-                //button4_Click(null, null);
+
+                    //button4_Click(null, null);
+                }
             }
+            catch { }
+            
         }
 
         private void OnEventStillImage()
@@ -237,7 +257,7 @@ namespace PhaseImageRecorderToupCam
                 trackBar4.Value = settings.x_frame_position;
                 trackBar5.Value = settings.y_frame_position;
                 trackBar1.Value = settings.exposition;
-                richTextBox2.Text = settings.work_folder;
+                FolderPath = settings.work_folder;
             }
         }
         private void Form1_Load(object sender, EventArgs e)
@@ -424,9 +444,8 @@ namespace PhaseImageRecorderToupCam
             if (hpi2!=null)
             {
                 HilbertPhaseImage2 temp = hpi2;
-
                 Task.Factory.StartNew(() => {
-                    string path = Path.Combine(this.richTextBox2.Text, DateTime.UtcNow.ToString().Replace('.', '_').Replace(':', '_').Replace(' ', '_'));
+                    string path = Path.Combine(FolderPath, DateTime.UtcNow.ToString().Replace('.', '_').Replace(':', '_').Replace(' ', '_'));
                     Bitmap bmp = new Bitmap((int)temp.source_images[0].GetUpperBound(1) + 1, (int)temp.source_images[0].GetUpperBound(0) + 1, (int)(temp.source_images[0].GetUpperBound(1) + 1) * 3, PixelFormat.Format24bppRgb, Marshal.UnsafeAddrOfPinnedArrayElement(temp.source_images[0], 0));
                     bmp.Save(path + ".jpg");
                     temp.Save(path);
@@ -434,21 +453,21 @@ namespace PhaseImageRecorderToupCam
             }
             else
             {
-                if (toupcam_ != null)
-                {
-                    if (toupcam_.StillResolutionNumber <= 0)
-                    {
-                        if (bmp_ != null)
-                        {
-                            bmp_.Save(Path.Combine(richTextBox2.Text, "toupcamdemowinformcs2.jpg"));
-                        }
-                    }
-                    else
-                    {
-                        if (button2.ContextMenuStrip != null)
-                            button2.ContextMenuStrip.Show(Cursor.Position);
-                    }
-                }
+                //if (toupcam_ != null)
+                //{
+                //    if (toupcam_.StillResolutionNumber <= 0)
+                //    {
+                //        if (bmp_ != null)
+                //        {
+                //            bmp_.Save(Path.Combine(richTextBox2.Text, "toupcamdemowinformcs2.jpg"));
+                //        }
+                //    }
+                //    else
+                //    {
+                //        if (button2.ContextMenuStrip != null)
+                //            button2.ContextMenuStrip.Show(Cursor.Position);
+                //    }
+                //}
             }
 
         }
@@ -713,7 +732,7 @@ namespace PhaseImageRecorderToupCam
             FolderBrowserDialog FBD = new FolderBrowserDialog();
             if (FBD.ShowDialog() == DialogResult.OK)
             {
-                this.richTextBox2.Text = FBD.SelectedPath;
+                FolderPath = FBD.SelectedPath;
             }
         }
 

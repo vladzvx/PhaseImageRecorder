@@ -10,10 +10,16 @@ namespace RecorderCore.Images
     public class HilbertPhaseImage2: PhaseImage2
     {
         static double[,] filter;
-        public HilbertPhaseImage2(byte[,,] image, int level, double Wavelength):
+        bool unwrap = true;
+        public HilbertPhaseImage2(byte[,,] image, int level, double Wavelength,bool unwrap=true):
             base(image,level,Wavelength)
         {
-
+            this.unwrap = unwrap;
+        }
+        public override void Unwrapp()
+        {
+            if (unwrap)
+                base.Unwrapp();
         }
         public void Save(string path)
         {

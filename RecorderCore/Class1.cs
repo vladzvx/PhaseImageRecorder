@@ -16,9 +16,9 @@ namespace RecorderCore
         private ConcurrentQueue<HilbertPhaseImage2> InputQueue = new ConcurrentQueue<HilbertPhaseImage2>();
         private ConcurrentQueue<HilbertPhaseImage2> ResultQueue = new ConcurrentQueue<HilbertPhaseImage2>();
         private object locker = new object();
-        public void PutImage(byte[,,] image,int level =0, double wavelength = 632.8)
+        public void PutImage(byte[,,] image,int level =2, double wavelength = 632.8,bool unwrap = false)
         {
-            InputQueue.Enqueue(new HilbertPhaseImage2(image, level, wavelength));
+            InputQueue.Enqueue(new HilbertPhaseImage2(image, level, wavelength, unwrap));
             bool TryEnterLockResult = false;
             Monitor.TryEnter(locker, ref TryEnterLockResult);
             if (ProcessingTask == null&&TryEnterLockResult)

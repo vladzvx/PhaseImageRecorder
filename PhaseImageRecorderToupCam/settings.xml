@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<config>
+	<device_name></device_name>
+	<path></path>
+	<resolution></resolution>
+	<exposition></exposition>
+	<auto_exposition></auto_exposition>
+	<x_field></x_field>
+	<y_field></y_field>
+	<x_frame_size></x_frame_size>
+	<y_frame_size></y_frame_size>
+	<x_frame_position></x_frame_position>
+	<y_frame_position></y_frame_position>
+	<wavelength></wavelength>
+	<color></color>
+</config>
