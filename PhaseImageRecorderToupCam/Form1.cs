@@ -154,7 +154,7 @@ namespace PhaseImageRecorderToupCam
                     }
                     else if (radioButton1.Checked)
                     {
-                        if (Adjusted&& checkBox4.Checked)
+                        if (checkBox4.Checked)
                         {
                             byte[,,] arr1 = new byte[bmp_.Height, bmp_.Width, 3];
                             IntPtr pointer = Marshal.UnsafeAddrOfPinnedArrayElement(arr1, 0);
@@ -259,10 +259,9 @@ namespace PhaseImageRecorderToupCam
 
         private void ApplySettings()
         {
-            if (settings != null)
+           
+            if (Settings.TryLoadSettings(out settings))
             {
-                trackBar4.Value = settings.x_frame_position;
-                trackBar5.Value = settings.y_frame_position;
                 trackBar1.Value = settings.exposition;
                 FolderPath = settings.path;
                 checkBox1.Checked = settings.auto_exposition;
