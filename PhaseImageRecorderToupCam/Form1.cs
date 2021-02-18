@@ -349,8 +349,9 @@ namespace PhaseImageRecorderToupCam
                             else
                             {
                                 bool autoexpo = true;
-                                toupcam_.get_AutoExpoEnable(out autoexpo);
-                                checkBox1.Checked = autoexpo;
+                                //toupcam_.get_AutoExpoEnable(out autoexpo);
+                                toupcam_.put_AutoExpoEnable(false);
+                                checkBox1.Checked = false;// autoexpo;
                                 trackBar1.Enabled = !checkBox1.Checked;
                             }
                         }
@@ -387,7 +388,7 @@ namespace PhaseImageRecorderToupCam
             uint nMin = 0, nMax = 0, nDef = 0;
             if (toupcam_.get_ExpTimeRange(out nMin, out nMax, out nDef))
                 trackBar1.SetRange((int)nMin, (int)nMax);
-            //OnEventExposure();
+            OnEventExposure();
 
             if (toupcam_.StillResolutionNumber <= 0)
                 return;
