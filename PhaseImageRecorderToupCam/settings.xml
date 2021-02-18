@@ -1,16 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<config>
-	<device_name>qqqq</device_name>
-	<path>dddd</path>
-	<resolution>1024*512</resolution>
-	<exposition>111</exposition>
-	<auto_exposition>true</auto_exposition>
-	<x_field>10</x_field>
+﻿<?xml version="1.0"?>
+<Settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.cpandl.com">
+	<device_name>Axiovert</device_name>
+	<path />
+	<resolution>1024*1024</resolution>
+	<exposition>85</exposition>
+	<auto_exposition>false</auto_exposition>
+	<x_field>12</x_field>
 	<y_field>12</y_field>
-	<x_frame_size>128</x_frame_size>
-	<y_frame_size>128</y_frame_size>
+	<framing_enabled>true</framing_enabled>
+	<x_frame_size>512</x_frame_size>
+	<y_frame_size>512</y_frame_size>
 	<x_frame_position>0</x_frame_position>
 	<y_frame_position>0</y_frame_position>
 	<wavelength>632.8</wavelength>
 	<color>0</color>
-</config>
+</Settings>

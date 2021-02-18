@@ -34,6 +34,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="settings.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="toupcam.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

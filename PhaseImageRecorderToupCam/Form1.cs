@@ -18,6 +18,7 @@ namespace PhaseImageRecorderToupCam
 {
     public partial class Form1 : Form
     {
+        private object locker = new object();
         private string FolderPath = string.Empty;
         private Settings settings;
         private bool Worked = false;
@@ -34,9 +35,28 @@ namespace PhaseImageRecorderToupCam
         private FPSCounter fPSCounter = new FPSCounter(30);
         private System.Timers.Timer dbsync = new System.Timers.Timer(10000);
 
+        private void UpdateSettings()
+        {
+            if (settings == null)
+            {
+                settings = new Settings();
+            }
+            settings.path = FolderPath;
+            settings.exposition = trackBar1.Value;
+            settings.auto_exposition = checkBox1.Checked;
+            settings.resolution = comboBox1.Text;
+            settings.framing_enabled = checkBox4.Checked;
+            settings.x_frame_position = trackBar4.Value;
+            settings.y_frame_position = trackBar5.Value;
+            var xframe_size = comboBox2.SelectedIndex >= 0 ? comboBox2.Items[comboBox2.SelectedIndex] : comboBox2.Items[0];
+            var yframe_size = comboBox3.SelectedIndex >= 0 ? comboBox3.Items[comboBox3.SelectedIndex] : comboBox3.Items[0];
+            settings.x_frame_size = (int)xframe_size;
+            settings.y_frame_size = (int)yframe_size;
+        }
         private void TimerAction(object sender, System.Timers.ElapsedEventArgs args)
         {
-
+            UpdateSettings();
+            settings.SaveSettings();
         }
         private void savefile(IntPtr pData, ref ToupCam.BITMAPINFOHEADER header)
         {
@@ -134,7 +154,7 @@ namespace PhaseImageRecorderToupCam
                     }
                     else if (radioButton1.Checked)
                     {
-                        if (Adjusted)
+                        if (Adjusted&& checkBox4.Checked)
                         {
                             byte[,,] arr1 = new byte[bmp_.Height, bmp_.Width, 3];
                             IntPtr pointer = Marshal.UnsafeAddrOfPinnedArrayElement(arr1, 0);
@@ -241,10 +261,29 @@ namespace PhaseImageRecorderToupCam
         {
             if (settings != null)
             {
-                checkBox1.Checked = settings.auto_exposition;
                 trackBar4.Value = settings.x_frame_position;
                 trackBar5.Value = settings.y_frame_position;
                 trackBar1.Value = settings.exposition;
+                FolderPath = settings.path;
+                checkBox1.Checked = settings.auto_exposition;
+                comboBox1.SelectedIndex = comboBox1.Items.IndexOf(settings.resolution)>=0? comboBox1.Items.IndexOf(settings.resolution):0;
+                checkBox4.Checked = settings.framing_enabled;
+                trackBar4.Value = settings.x_frame_position;
+                trackBar5.Value = settings.y_frame_position;
+                comboBox2.SelectedIndex = comboBox2.Items.IndexOf(settings.x_frame_size) >= 0 ? comboBox2.Items.IndexOf(settings.x_frame_size) : 0;
+                comboBox3.SelectedIndex = comboBox3.Items.IndexOf(settings.x_frame_size) >= 0 ? comboBox3.Items.IndexOf(settings.x_frame_size) : 0;
+
+
+                trackBar4.Update();
+                trackBar5.Update();
+                trackBar1.Update();
+                checkBox1.Update();
+                comboBox1.Update();
+                checkBox4.Update();
+                trackBar4.Update();
+                trackBar5.Update();
+                comboBox2.Update();
+                comboBox3.Update();
             }
         }
         private void Form1_Load(object sender, EventArgs e)
@@ -363,12 +402,10 @@ namespace PhaseImageRecorderToupCam
 
             try
             {
-
+                ApplySettings();
                 dbsync.Elapsed += TimerAction;
                 dbsync.SynchronizingObject = this;
                 dbsync.Start();
-                //settings = LoadSettings();
-                ApplySettings();
             }
             catch { }
         }
@@ -598,6 +635,7 @@ namespace PhaseImageRecorderToupCam
 
             if (radioButton1.Checked)
             {
+                checkBox4.Visible = false;
                 comboBox1.Visible = false;
                 trackBar4.Visible = false;
                 trackBar5.Visible = false;
@@ -631,6 +669,7 @@ namespace PhaseImageRecorderToupCam
             Worked = true;
             if (radioButton2.Checked)
             {
+                checkBox4.Visible = true;
                 label7.Visible = true;
                 trackBar4.Visible = true;
                 trackBar5.Visible = true;
@@ -723,16 +762,6 @@ namespace PhaseImageRecorderToupCam
 
 
 
-        static void SaveSettings()
-        {
-
-        }
-
-        static Settings LoadSettings()
-        {
-            return null;
-        }
-
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
 
@@ -740,7 +769,13 @@ namespace PhaseImageRecorderToupCam
 
         private void button3_Click(object sender, EventArgs e)
         {
-            Settings.readSettings();
+            Settings set = new Settings();
+            set.SaveSettings();
+
+        }
+
+        private void checkBox4_CheckedChanged(object sender, EventArgs e)
+        {
 
         }
     }
