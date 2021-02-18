@@ -387,7 +387,7 @@ namespace PhaseImageRecorderToupCam
             uint nMin = 0, nMax = 0, nDef = 0;
             if (toupcam_.get_ExpTimeRange(out nMin, out nMax, out nDef))
                 trackBar1.SetRange((int)nMin, (int)nMax);
-            OnEventExposure();
+            //OnEventExposure();
 
             if (toupcam_.StillResolutionNumber <= 0)
                 return;
