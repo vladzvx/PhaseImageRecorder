@@ -36,17 +36,7 @@ namespace PhaseImageRecorderToupCam
 
         private void TimerAction(object sender, System.Timers.ElapsedEventArgs args)
         {
-            if (settings == null) settings = new Settings();
-            settings.auto_exposition = checkBox1.Checked;
-            settings.selectIndexCombo2 = selectIndexCombo2;
-            settings.selectIndexCombo3 = selectIndexCombo3;
-            settings.x_frame_position = trackBar4.Value;
-            settings.y_frame_position = trackBar5.Value;
-            settings.exposition = trackBar1.Value;
-            settings.work_folder = FolderPath;
-            Task.Factory.StartNew(()=> {
-                SaveSettings(settings);
-            });
+
         }
         private void savefile(IntPtr pData, ref ToupCam.BITMAPINFOHEADER header)
         {
@@ -252,12 +242,9 @@ namespace PhaseImageRecorderToupCam
             if (settings != null)
             {
                 checkBox1.Checked = settings.auto_exposition;
-                selectIndexCombo2 = settings.selectIndexCombo2;
-                selectIndexCombo3 = settings.selectIndexCombo3;
                 trackBar4.Value = settings.x_frame_position;
                 trackBar5.Value = settings.y_frame_position;
                 trackBar1.Value = settings.exposition;
-                FolderPath = settings.work_folder;
             }
         }
         private void Form1_Load(object sender, EventArgs e)
@@ -379,7 +366,7 @@ namespace PhaseImageRecorderToupCam
                 dbsync.Elapsed += TimerAction;
                 dbsync.SynchronizingObject = this;
                 dbsync.Start();
-                settings = LoadSettings();
+                //settings = LoadSettings();
                 ApplySettings();
             }
             catch { }
@@ -735,39 +722,24 @@ namespace PhaseImageRecorderToupCam
 
 
 
-        static void SaveSettings(Settings settings)
+        static void SaveSettings()
         {
-            using (ApplicationContext db = new ApplicationContext())
-            {
-                var AllSettings = db.Settings.ToList();
-                if (AllSettings.Count == 0)
-                {
-                    db.Settings.Add(settings);
-                    db.SaveChanges();
-                }
-                else
-                {
-                    AllSettings[0].Update(settings);
-                    db.Update(AllSettings[0]);
-                    db.SaveChanges();
-                }
-            }
+
         }
 
         static Settings LoadSettings()
         {
-            using (ApplicationContext db = new ApplicationContext())
-            {
-                // получаем объекты из бд и выводим на консоль
-                var AllSettings = db.Settings.ToList();
-                if (AllSettings.Count > 0)
-                    return AllSettings[0];
-                else return null;
-            }
+            return null;
         }
 
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Settings.readSettings();
 
         }
     }
