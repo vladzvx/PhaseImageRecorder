@@ -263,10 +263,10 @@ namespace PhaseImageRecorderToupCam
         private void Form1_Load(object sender, EventArgs e)
         {
             button2.Enabled = false;
-            button3.Enabled = false;
+            // button3.Enabled = false;
             trackBar1.Enabled = false;
-            trackBar2.Enabled = false;
-            trackBar3.Enabled = false;
+           // trackBar2.Enabled = false;
+           // trackBar3.Enabled = false;
             checkBox1.Enabled = false;
             comboBox1.Enabled = false;
         }
@@ -328,16 +328,16 @@ namespace PhaseImageRecorderToupCam
                 {
                     checkBox1.Enabled = true;
                     trackBar1.Enabled = true;
-                    trackBar2.Enabled = true;
-                    trackBar3.Enabled = true;
+                 //   trackBar2.Enabled = true;
+                  //  trackBar3.Enabled = true;
                     comboBox1.Enabled = true;
                     button2.Enabled = true;
-                    button3.Enabled = true;
+                   // button3.Enabled = true;
                     button2.ContextMenuStrip = null;
                     InitSnapContextMenuAndExpoTimeRange();
 
-                    trackBar2.SetRange(2000, 15000);
-                    trackBar3.SetRange(200, 2500);
+                    //trackBar2.SetRange(2000, 15000);
+                    //trackBar3.SetRange(200, 2500);
                     OnEventTempTint();
 
                     uint resnum = toupcam_.ResolutionNumber;
@@ -590,10 +590,10 @@ namespace PhaseImageRecorderToupCam
                 int nTemp = 0, nTint = 0;
                 if (toupcam_.get_TempTint(out nTemp, out nTint))
                 {
-                    label2.Text = nTemp.ToString();
-                    label3.Text = nTint.ToString();
-                    trackBar2.Value = nTemp;
-                    trackBar3.Value = nTint;
+                  //  label2.Text = nTemp.ToString();
+                 //   label3.Text = nTint.ToString();
+                    //trackBar2.Value = nTemp;
+                  //  trackBar3.Value = nTint;
                 }
             }
         }
@@ -602,14 +602,6 @@ namespace PhaseImageRecorderToupCam
         {
             if (toupcam_ != null)
                 toupcam_.AwbOnePush(null);
-        }
-
-        private void OnTempTintChanged(object sender, EventArgs e)
-        {
-            if (toupcam_ != null)
-                toupcam_.put_TempTint(trackBar2.Value, trackBar3.Value);
-            label2.Text = trackBar2.Value.ToString();
-            label3.Text = trackBar3.Value.ToString();
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)

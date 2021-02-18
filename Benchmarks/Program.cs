@@ -2,9 +2,180 @@
 using BenchmarkDotNet.Running;
 using RecorderCore;
 using System;
+using System.Collections.Concurrent;
 
 namespace Benchmarks
 {
+    class val
+    {
+        int q = 0;
+        string text = "qqqqqqqqqqqq";
+    }
+    public class EnumBenchmark
+    {
+        static val va = new val();
+        static class strings1
+        {
+            public const string str1 = "str1";
+            public const string str2 = "str2";
+            public const string str3 = "str3";
+            public const string str4 = "str4";
+            public const string str5 = "str5";
+            public const string str6 = "str6";
+        }
+
+        static class strings2
+        {
+            public const string str1 = "str1";
+            public const string str2 = "str2";
+        }
+
+
+        test t = test.second;
+        string text = "text";
+        static Random rnd = new Random();
+        ConcurrentDictionary<string, ConcurrentDictionary<string, val>> dict1 = new ConcurrentDictionary<string, ConcurrentDictionary<string, val>>();
+        ConcurrentDictionary<test, ConcurrentDictionary<test2, val>> dict2 = new ConcurrentDictionary<test, ConcurrentDictionary<test2, val>>();
+        public enum test
+        {
+            first,
+            second,
+            thrd,
+            forth,
+            fifth,
+            six,
+            none
+        }
+
+        public enum test2
+        {
+            first,
+            second,
+        }
+
+        public void TryAddVal(string key1,string key2)
+        {
+            if (dict1.ContainsKey(key1))
+            {
+                dict1[key1].TryAdd(key2, va);
+            }
+            else
+            {
+                var temp = new ConcurrentDictionary<string, val>();
+                temp.TryAdd(key2,va);
+                dict1.TryAdd(key1, temp);
+            }
+        }
+        public void TryAddVal(test key1, test2 key2)
+        {
+            if (dict2.ContainsKey(key1))
+            {
+                dict2[key1].TryAdd(key2, va);
+            }
+            else
+            {
+                var temp = new ConcurrentDictionary<test2, val>();
+                temp.TryAdd(key2, va);
+                dict2.TryAdd(key1, temp);
+            }
+        }
+
+
+        [Benchmark(Description = "add_enum")]
+        public void Test0()
+        {
+            TryAddVal(test.first, test2.first);
+            //TryAddVal(test.first, test2.second);
+            //TryAddVal(test.second, test2.second);
+            //TryAddVal(test.second, test2.first);
+            //TryAddVal(test.thrd, test2.first);
+            //TryAddVal(test.thrd, test2.second);
+            //TryAddVal(test.forth, test2.second);
+            //TryAddVal(test.forth, test2.first);
+            //TryAddVal(test.fifth, test2.first);
+            //TryAddVal(test.fifth, test2.second);
+            //TryAddVal(test.six, test2.second);
+            //TryAddVal(test.six, test2.first);
+            //TryAddVal(test.first, test2.first);
+            //TryAddVal(test.first, test2.second);
+            //TryAddVal(test.second, test2.second);
+            //TryAddVal(test.second, test2.first);
+            //TryAddVal(test.thrd, test2.first);
+            //TryAddVal(test.thrd, test2.second);
+            //TryAddVal(test.forth, test2.second);
+            //TryAddVal(test.forth, test2.first);
+            //TryAddVal(test.fifth, test2.first);
+            //TryAddVal(test.fifth, test2.second);
+            //TryAddVal(test.six, test2.second);
+            //TryAddVal(test.six, test2.first);
+        }
+        [Benchmark(Description = "add_string")]
+        public void Test1()
+        {
+            TryAddVal(strings1.str1, strings2.str1);
+            //TryAddVal(strings1.str2, strings2.str1);
+            //TryAddVal(strings1.str3, strings2.str1);
+            //TryAddVal(strings1.str4, strings2.str1);
+            //TryAddVal(strings1.str5, strings2.str1);
+            //TryAddVal(strings1.str6, strings2.str1);
+
+            //TryAddVal(strings1.str1, strings2.str2);
+            //TryAddVal(strings1.str2, strings2.str2);
+            //TryAddVal(strings1.str3, strings2.str2);
+            //TryAddVal(strings1.str4, strings2.str2);
+            //TryAddVal(strings1.str5, strings2.str2);
+            //TryAddVal(strings1.str6, strings2.str2);
+
+            //TryAddVal(strings1.str1, strings2.str1);
+            //TryAddVal(strings1.str2, strings2.str1);
+            //TryAddVal(strings1.str3, strings2.str1);
+            //TryAddVal(strings1.str4, strings2.str1);
+            //TryAddVal(strings1.str5, strings2.str1);
+            //TryAddVal(strings1.str6, strings2.str1);
+
+            //TryAddVal(strings1.str1, strings2.str2);
+            //TryAddVal(strings1.str2, strings2.str2);
+            //TryAddVal(strings1.str3, strings2.str2);
+            //TryAddVal(strings1.str4, strings2.str2);
+            //TryAddVal(strings1.str5, strings2.str2);
+            //TryAddVal(strings1.str6, strings2.str2);
+        }
+
+        [Benchmark(Description = "read_enum")]
+        public void Test2()
+        {
+            TryAddVal(test.first, test2.first);
+            val q1 = dict2[test.first][test2.first];
+            q1 = dict2[test.first][test2.first];
+            q1 = dict2[test.first][test2.first];
+            q1 = dict2[test.first][test2.first];
+            q1 = dict2[test.first][test2.first];
+            q1 = dict2[test.first][test2.first];
+            q1 = dict2[test.first][test2.first];
+            q1 = dict2[test.first][test2.first];
+            q1 = dict2[test.first][test2.first];
+            q1 = dict2[test.first][test2.first];
+
+        }
+
+        [Benchmark(Description = "read_string")]
+        public void Test3()
+        {
+            TryAddVal(strings1.str1, strings2.str1);
+            val q1 = dict1[strings1.str1][strings2.str1];
+            q1 = dict1[strings1.str1][strings2.str1];
+            q1 = dict1[strings1.str1][strings2.str1];
+            q1 = dict1[strings1.str1][strings2.str1];
+            q1 = dict1[strings1.str1][strings2.str1];
+            q1 = dict1[strings1.str1][strings2.str1];
+            q1 = dict1[strings1.str1][strings2.str1];
+            q1 = dict1[strings1.str1][strings2.str1];
+            q1 = dict1[strings1.str1][strings2.str1];
+            q1 = dict1[strings1.str1][strings2.str1];
+
+        }
+
+    }
     public class PhaseStepImageBenchmark
     {
         public static ImageSource source;
@@ -145,7 +316,7 @@ namespace Benchmarks
           //  bm.Test2();
         //    bm.Test3();
           //  bm.Test4();
-            BenchmarkRunner.Run<PhaseStepImageBenchmark>();
+            BenchmarkRunner.Run<EnumBenchmark>();
             //BenchmarkRunner.Run<ArrayCopyBenchmark>();
         }
     }
