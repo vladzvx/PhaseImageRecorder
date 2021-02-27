@@ -142,6 +142,59 @@ namespace RecorderCore
             }
         }
 
+        public static void smooth(double[,] matrix, int windowSize)
+        {
+            if (windowSize % 2 == 0) throw new Exception("windowSize must be odd number!");
+            int size0 = matrix.GetUpperBound(0) + 1;
+            int size1 = matrix.GetUpperBound(1) + 1;
+            for (int i= windowSize / 2; i< size0- windowSize/2; i++)
+            {
+                for (int j = windowSize / 2; j < size1- windowSize / 2; j++)
+                {
+                    double val = 0;
+                    double c = 0;
+                    for (int k0=-windowSize / 2;k0<= windowSize / 2; k0++)
+                    {
+                        for (int k1 = -windowSize / 2; k1 <= windowSize / 2; k1++)
+                        {
+                            val = val + matrix[i + k0, j + k1];
+                            c++;
+                        }
+                    }
+                    matrix[i, j] = val / c;
+                }
+            }
+        }
+
+        public static void AddNoise(double[,] matrix, double A)
+        {
+            Random rnd = new Random();
+            int size0 = matrix.GetUpperBound(0) + 1;
+            int size1 = matrix.GetUpperBound(1) + 1;
+            for (int i = 0; i < size0; i++)
+            {
+                for (int j = 0; j < size1; j++)
+                {
+                    matrix[i, j] = matrix[i, j]+((rnd.NextDouble() * 2) - 1d)* A;
+                }
+            }
+        }
+
+        public static double[,] CreateOneValueArray(double value, int size0, int size1)
+        {
+            double[,] marixs = new double[size0, size1];
+            Random rnd = new Random();
+            for (int i = 0; i < size0; i++)
+            {
+                for (int j = 0; j < size1; j++)
+                {
+                    marixs[i, j] = value;
+                }
+            }
+            return marixs;
+        }
+
+
         public static double std(double[,] matrix1, double[,] matrix2)
         {
             double d = 0;
@@ -199,6 +252,20 @@ namespace RecorderCore
         {
             double s = sum(matrix);
             return s / (matrix.GetUpperBound(0) + 1) / (matrix.GetUpperBound(1) + 1);
+        }
+        public static double[,] plus(double[,] matrix1, double[,] matrix2)
+        {
+            int size0 = matrix1.GetUpperBound(0);
+            int size1 = matrix1.GetUpperBound(1);
+            double[,] matrix = new double[size0, size1];
+            for (int i = 0; i <=size0 ; i++)
+            {
+                for (int j = 0; j <= size1; j++)
+                {
+                    matrix[i, j] = matrix1[i, j] + matrix2[i, j];
+                }
+            }
+            return matrix;
         }
 
         public static void pow(double[,] matrix, double exp)

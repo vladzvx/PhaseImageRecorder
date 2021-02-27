@@ -16,9 +16,11 @@ namespace RecorderCore
         private ConcurrentQueue<HilbertPhaseImage2> InputQueue = new ConcurrentQueue<HilbertPhaseImage2>();
         private ConcurrentQueue<HilbertPhaseImage2> ResultQueue = new ConcurrentQueue<HilbertPhaseImage2>();
         private object locker = new object();
-        public void PutImage(byte[,,] image,int level =2, double wavelength = 632.8,bool unwrap = false)
+        public void PutImage(byte[,,] image,int level =2, double wavelength = 632.8,bool unwrap = false, int summDepth = 0, bool smooth = false)
         {
-            InputQueue.Enqueue(new HilbertPhaseImage2(image, level, wavelength, unwrap));
+            HilbertPhaseImage2 hpi = new HilbertPhaseImage2(image, level, wavelength, unwrap);
+            hpi.summDepth = summDepth;
+            InputQueue.Enqueue(hpi);
             bool TryEnterLockResult = false;
             Monitor.TryEnter(locker, ref TryEnterLockResult);
             if (ProcessingTask == null&&TryEnterLockResult)
@@ -30,6 +32,14 @@ namespace RecorderCore
                         while (!InputQueue.IsEmpty && InputQueue.TryDequeue(out HilbertPhaseImage2 hpi))
                         {
                             hpi.Convert();
+                            var temp = InputQueue.ToArray();
+                            if (hpi.summDepth>1&&temp.Length> hpi.summDepth)
+                            {
+                                for (int shift = 1;shift< hpi.summDepth;shift++)
+                                {
+                                    hpi.images[0] = ImageSource.plus(hpi.images[0], temp[shift].images[0]);
+                                }
+                            }
                             hpi.Calc();
                             hpi.Unwrapp();
                             hpi.ReverseConvert();

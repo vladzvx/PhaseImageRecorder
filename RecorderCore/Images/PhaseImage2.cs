@@ -11,6 +11,8 @@ namespace RecorderCore.Images
     {
         static double[,] filter;
         bool unwrap = true;
+        public int summDepth = 0;
+        public bool smooth = false;
         public HilbertPhaseImage2(byte[,,] image, int level, double Wavelength,bool unwrap=true):
             base(image,level,Wavelength)
         {
