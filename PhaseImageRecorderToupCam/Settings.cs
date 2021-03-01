@@ -17,10 +17,11 @@ namespace PhaseImageRecorderToupCam
         public string path { get; set; } = "";
         public string resolution { get; set; } = "1024*1024";
         public int exposition { get; set; } = 85;
+        public int gain { get; set; } = 85;
+        public int saturation { get; set; } = 85;
         public bool auto_exposition { get; set; } = false;
         public int x_field { get; set; } = 12;
         public int y_field { get; set; } = 12;
-
         public bool framing_enabled { get; set; } = true;
         public int x_frame_size { get; set; } = 512;
         public int y_frame_size { get; set; } = 512;

@@ -43,6 +43,8 @@ namespace PhaseImageRecorderToupCam
             }
             settings.path = FolderPath;
             settings.exposition = trackBar1.Value;
+            settings.gain = trackBar2.Value;
+            settings.saturation = trackBar3.Value;
             settings.auto_exposition = checkBox1.Checked;
             settings.resolution = comboBox1.Text;
             settings.framing_enabled = checkBox4.Checked;
@@ -275,8 +277,9 @@ namespace PhaseImageRecorderToupCam
                 trackBar5.Value = settings.y_frame_position;
                 comboBox2.SelectedIndex = comboBox2.Items.IndexOf(settings.x_frame_size) >= 0 ? comboBox2.Items.IndexOf(settings.x_frame_size) : 0;
                 comboBox3.SelectedIndex = comboBox3.Items.IndexOf(settings.x_frame_size) >= 0 ? comboBox3.Items.IndexOf(settings.x_frame_size) : 0;
-
-
+                trackBar2.Value = settings.gain;
+                trackBar3.Value = settings.saturation;
+                
                 trackBar4.Update();
                 trackBar5.Update();
                 trackBar1.Update();
@@ -294,8 +297,8 @@ namespace PhaseImageRecorderToupCam
             button2.Enabled = false;
             // button3.Enabled = false;
             trackBar1.Enabled = false;
-           // trackBar2.Enabled = false;
-           // trackBar3.Enabled = false;
+            trackBar2.Enabled = false;
+            trackBar3.Enabled = false;
             checkBox1.Enabled = false;
             comboBox1.Enabled = false;
         }
@@ -357,16 +360,16 @@ namespace PhaseImageRecorderToupCam
                 {
                     checkBox1.Enabled = true;
                     trackBar1.Enabled = true;
-                 //   trackBar2.Enabled = true;
-                  //  trackBar3.Enabled = true;
+                    trackBar2.Enabled = true;
+                    trackBar3.Enabled = true;
                     comboBox1.Enabled = true;
                     button2.Enabled = true;
                    // button3.Enabled = true;
                     button2.ContextMenuStrip = null;
                     InitSnapContextMenuAndExpoTimeRange();
 
-                    //trackBar2.SetRange(2000, 15000);
-                    //trackBar3.SetRange(200, 2500);
+                    trackBar2.SetRange(0, 255);
+                    trackBar3.SetRange(-100, 255);
                     OnEventTempTint();
 
                     uint resnum = toupcam_.ResolutionNumber;
@@ -397,6 +400,17 @@ namespace PhaseImageRecorderToupCam
                                 trackBar1.Enabled = !checkBox1.Checked;
                             }
                         }
+                        if (toupcam_.get_ExpoAGain(out ushort val))
+                        {
+                            trackBar2.Value = val;
+                            trackBar2.Update();
+                        }
+                        if (toupcam_.get_Saturation(out int val2))
+                        {
+                            trackBar3.Value = val2;
+                            trackBar3.Update();
+                        }
+
                         SetLimits(width, height);
                         started = true;
                     }
@@ -605,7 +619,31 @@ namespace PhaseImageRecorderToupCam
                 }
             }
         }
+        private void OnGainValueChange(object sender, EventArgs e)
+        {
+            if (!checkBox1.Checked)
+            {
+                if (toupcam_ != null)
+                {
+                    ushort n = (ushort)trackBar2.Value;
+                    toupcam_.put_ExpoAGain(n);
+                    label2.Text = "Gain: "+n.ToString();
+                }
+            }
+        }
 
+        private void OnSaturationValueChange(object sender, EventArgs e)
+        {
+            if (!checkBox1.Checked)
+            {
+                if (toupcam_ != null)
+                {
+                    int n = (int)trackBar3.Value;
+                    toupcam_.put_Saturation(n);
+                    label3.Text = "Saturation: " + n.ToString();
+                }
+            }
+        }
         private void Form_SizeChanged(object sender, EventArgs e)
         {
             pictureBox1.Width = ClientRectangle.Right - button1.Bounds.Right - 20;
@@ -786,6 +824,22 @@ namespace PhaseImageRecorderToupCam
         private void checkBox6_CheckedChanged(object sender, EventArgs e)
         {
             numericUpDown1.Enabled = checkBox6.Checked;
+            numericUpDown1.Update();
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void trackBar2_Scroll_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
