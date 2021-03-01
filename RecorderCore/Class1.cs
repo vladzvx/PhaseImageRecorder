@@ -18,8 +18,9 @@ namespace RecorderCore
         private object locker = new object();
         public void PutImage(byte[,,] image,int level =2, double wavelength = 632.8,bool unwrap = false, int summDepth = 0, bool smooth = false)
         {
-            HilbertPhaseImage2 hpi = new HilbertPhaseImage2(image, level, wavelength, unwrap);
+            HilbertPhaseImage2 hpi = new HilbertPhaseImage2(image, level, wavelength, unwrap, smooth);
             hpi.summDepth = summDepth;
+            hpi.Convert();
             InputQueue.Enqueue(hpi);
             bool TryEnterLockResult = false;
             Monitor.TryEnter(locker, ref TryEnterLockResult);
@@ -31,7 +32,7 @@ namespace RecorderCore
                     {
                         while (!InputQueue.IsEmpty && InputQueue.TryDequeue(out HilbertPhaseImage2 hpi))
                         {
-                            hpi.Convert();
+                            //hpi.Convert();
                             var temp = InputQueue.ToArray();
                             if (hpi.summDepth>1&&temp.Length> hpi.summDepth)
                             {

@@ -13,10 +13,16 @@ namespace RecorderCore.Images
         bool unwrap = true;
         public int summDepth = 0;
         public bool smooth = false;
-        public HilbertPhaseImage2(byte[,,] image, int level, double Wavelength,bool unwrap=true):
+        public HilbertPhaseImage2(byte[,,] image, int level, double Wavelength,bool unwrap=true,bool smooth=false) :
             base(image,level,Wavelength)
         {
             this.unwrap = unwrap;
+            this.smooth = smooth;
+        }
+        public override void Convert()
+        {
+            base.Convert();
+            if (smooth) ImageSource.smooth(images[0], 5);
         }
         public override void Unwrapp()
         {
@@ -95,6 +101,7 @@ namespace RecorderCore.Images
                             nImage[i, j] = (double)image[i, j, level];
                         }
                     });
+                   
                 }
             }
 

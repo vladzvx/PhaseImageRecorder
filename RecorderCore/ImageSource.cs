@@ -255,12 +255,12 @@ namespace RecorderCore
         }
         public static double[,] plus(double[,] matrix1, double[,] matrix2)
         {
-            int size0 = matrix1.GetUpperBound(0);
-            int size1 = matrix1.GetUpperBound(1);
+            int size0 = matrix1.GetUpperBound(0)+1;
+            int size1 = matrix1.GetUpperBound(1)+1;
             double[,] matrix = new double[size0, size1];
-            for (int i = 0; i <=size0 ; i++)
+            for (int i = 0; i <size0 ; i++)
             {
-                for (int j = 0; j <= size1; j++)
+                for (int j = 0; j <size1; j++)
                 {
                     matrix[i, j] = matrix1[i, j] + matrix2[i, j];
                 }
