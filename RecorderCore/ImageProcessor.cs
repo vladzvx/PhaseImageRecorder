@@ -14,7 +14,6 @@ namespace RecorderCore
 {
     class ImageProcessor
     {
-
         protected NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         public event PhaseImageReciever PhaseImageInterfaceSender;
         public event PhaseImageReciever PhaseImageSender;

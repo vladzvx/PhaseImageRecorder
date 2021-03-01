@@ -178,7 +178,11 @@ namespace PhaseImageRecorderToupCam
                             }
                             if (checkBox2.Checked)
                             {
-                                calculator.PutImage(arr, unwrap: checkBox3.Checked);
+                                calculator.PutImage(arr, 
+                                    unwrap: checkBox3.Checked, 
+                                    wavelength:settings.wavelength,
+                                    smooth:checkBox5.Checked,
+                                    summDepth:checkBox6.Checked?(int)numericUpDown1.Value:0);
                                 var buff = calculator.GetImage();
                                 if (buff != null) hpi2 = buff;
                                 if (hpi2 != null)
@@ -473,6 +477,7 @@ namespace PhaseImageRecorderToupCam
                     Bitmap bmp = new Bitmap((int)temp.source_images[0].GetUpperBound(1) + 1, (int)temp.source_images[0].GetUpperBound(0) + 1, (int)(temp.source_images[0].GetUpperBound(1) + 1) * 3, PixelFormat.Format24bppRgb, Marshal.UnsafeAddrOfPinnedArrayElement(temp.source_images[0], 0));
                     bmp.Save(path + ".jpg");
                     temp.Save(path);
+                    
                 });
             }
             else
@@ -776,6 +781,11 @@ namespace PhaseImageRecorderToupCam
         private void checkBox4_CheckedChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void checkBox6_CheckedChanged(object sender, EventArgs e)
+        {
+            numericUpDown1.Enabled = checkBox6.Checked;
         }
     }
 }
