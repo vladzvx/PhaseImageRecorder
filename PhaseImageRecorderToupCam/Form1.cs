@@ -24,7 +24,7 @@ namespace PhaseImageRecorderToupCam
         private bool Worked = false;
         private bool Adjusted = false;
         private HilbertPhaseImage2 hpi2;
-        private HilbertCalculator calculator = new HilbertCalculator();
+        private HilbertCalculator2 calculator = new HilbertCalculator2();
         private int selectIndexCombo2 = 3;
         private int selectIndexCombo3 = 3;
         private bool started = false;
