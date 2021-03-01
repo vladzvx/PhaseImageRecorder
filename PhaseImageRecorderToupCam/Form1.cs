@@ -41,6 +41,7 @@ namespace PhaseImageRecorderToupCam
             {
                 settings = new Settings();
             }
+            settings.color =(int) numericUpDown2.Value;
             settings.path = FolderPath;
             settings.exposition = trackBar1.Value;
             settings.gain = trackBar2.Value;
@@ -180,11 +181,12 @@ namespace PhaseImageRecorderToupCam
                             }
                             if (checkBox2.Checked)
                             {
-                                calculator.PutImage(arr, 
-                                    unwrap: checkBox3.Checked, 
-                                    wavelength:settings.wavelength,
-                                    smooth:checkBox5.Checked,
-                                    summDepth:checkBox6.Checked?(int)numericUpDown1.Value:0);
+                                calculator.PutImage(arr,
+                                    level: (int)numericUpDown2.Value,
+                                    unwrap: checkBox3.Checked,
+                                    wavelength: settings.wavelength,
+                                    smooth: checkBox5.Checked,
+                                    summDepth: checkBox6.Checked ? (int)numericUpDown1.Value : 0); 
                                 var buff = calculator.GetImage();
                                 if (buff != null) hpi2 = buff;
                                 if (hpi2 != null)
@@ -279,7 +281,7 @@ namespace PhaseImageRecorderToupCam
                 comboBox3.SelectedIndex = comboBox3.Items.IndexOf(settings.x_frame_size) >= 0 ? comboBox3.Items.IndexOf(settings.x_frame_size) : 0;
                 trackBar2.Value = settings.gain;
                 trackBar3.Value = settings.saturation;
-                
+                numericUpDown2.Value = settings.color;
                 trackBar4.Update();
                 trackBar5.Update();
                 trackBar1.Update();
@@ -838,6 +840,16 @@ namespace PhaseImageRecorderToupCam
         }
 
         private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label10_Click(object sender, EventArgs e)
         {
 
         }
