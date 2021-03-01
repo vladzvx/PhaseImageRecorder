@@ -135,7 +135,7 @@ namespace RecorderCore
             {
                 if (UnwrapQueue.TryDequeue(out HilbertPhaseImage2 hpi2))
                 {
-                    hpi2.Convert();
+                    hpi2.Unwrapp();
                     ReverseConvertQueue.Enqueue(hpi2);
                     while (UnwrapQueue.Count > 10) UnwrapQueue.TryDequeue(out var trash);
                 }
@@ -150,7 +150,7 @@ namespace RecorderCore
             {
                 if (ReverseConvertQueue.TryDequeue(out HilbertPhaseImage2 hpi2))
                 {
-                    hpi2.Convert();
+                    hpi2.ReverseConvert();
                     ResultQueue.Enqueue(hpi2);
                     while (ReverseConvertQueue.Count > 10) ReverseConvertQueue.TryDequeue(out var trash);
                     while (ResultQueue.Count > 10) ResultQueue.TryDequeue(out var trash);

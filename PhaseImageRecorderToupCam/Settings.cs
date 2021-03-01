@@ -63,7 +63,10 @@ namespace PhaseImageRecorderToupCam
 
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                int q =0;
+            }
             return false;
         }
     }
