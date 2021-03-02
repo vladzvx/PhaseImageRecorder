@@ -116,7 +116,7 @@ namespace RecorderCore
             return matrix;
         }
 
-        private double[,] GetPlane(int x, int y, double LineNums = 1)
+        public static double[,] GetPlane(int x, int y, double LineNums = 1)
         {
             double[,] matrix = new double[y, x];
             double step = 2 * Math.PI * LineNums / y;
@@ -125,6 +125,25 @@ namespace RecorderCore
                 for (int j = 0; j <= matrix.GetUpperBound(1); j++)
                 {
                     matrix[i, j] = (i * step);
+                }
+            }
+            return matrix;
+        }
+
+        public struct point
+        {
+            public int x;
+            public int y;
+            public double z;
+        }
+        public static double[,] GetPlane(int size0, int size1, point point0, point point1, point point2)
+        {
+            double[,] matrix = new double[size0, size1];
+            for (int y = 0; y < size0; y++)
+            {
+                for (int x = 0; x < size1; x++) 
+                {
+                    matrix[y, x] = point0.z + ((x - point0.x) * (point1.z - point0.z) * (point2.y - point0.y) + (y - point0.y) * (point1.x - point0.x) * (point2.z - point0.z) - (x - point0.x) * (point1.y - point0.y) * (point2.z - point0.z) - (y - point0.y) * (point1.z - point0.z) * (point2.x - point0.x)) / ((point1.x-point0.x)*(point2.y-point0.y)-(point1.y-point0.y)*(point2.x-point0.x));
                 }
             }
             return matrix;
