@@ -369,6 +369,8 @@ namespace PhaseImageRecorderToupCam
                     trackBar1.Enabled = true;
                     trackBar2.Enabled = true;
                     trackBar3.Enabled = true;
+                    trackBar4.Enabled = true;
+                    trackBar5.Enabled = true;
                     comboBox1.Enabled = true;
                     button2.Enabled = true;
                     radioButton1.Enabled = true;
