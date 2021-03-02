@@ -34,13 +34,14 @@ namespace PhaseImageRecorderToupCam
         private DelegateEvent ev_ = null;
         private FPSCounter fPSCounter = new FPSCounter(30);
         private System.Timers.Timer dbsync = new System.Timers.Timer(10000);
-
+        
         private void UpdateSettings()
         {
             if (settings == null)
             {
                 settings = new Settings();
             }
+
             settings.color =(int) numericUpDown2.Value;
             settings.path = FolderPath;
             settings.exposition = trackBar1.Value;
