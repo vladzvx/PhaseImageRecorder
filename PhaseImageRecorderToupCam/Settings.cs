@@ -14,7 +14,7 @@ namespace PhaseImageRecorderToupCam
     public class Settings
     {
         public string device_name { get; set; } = "Axiovert";
-        public string path { get; set; } = "";
+        public string path { get; set; } = "images";
         public string resolution { get; set; } = "1024*1024";
         public int exposition { get; set; } = 85;
         public int gain { get; set; } = 85;

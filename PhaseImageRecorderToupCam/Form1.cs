@@ -13,13 +13,16 @@ using System.Linq;
 using System.IO;
 using RecorderCore.Images;
 using System.Threading.Tasks;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace PhaseImageRecorderToupCam
 {
     public partial class Form1 : Form
     {
         private object locker = new object();
-        private string FolderPath = string.Empty;
+        private Regex pahtCheckRegex = new Regex(@"^\w:\w+.+$");
+        private string FolderPath = "images";
         private Settings settings;
         private bool Worked = false;
         private bool Adjusted = false;
@@ -496,9 +499,18 @@ namespace PhaseImageRecorderToupCam
         {
             if (hpi2!=null)
             {
+                
                 HilbertPhaseImage2 temp = hpi2;
                 Task.Factory.StartNew(() => {
-                    string path = Path.Combine(FolderPath, DateTime.UtcNow.ToString().Replace('.', '_').Replace(':', '_').Replace(' ', '_'));
+                    string folder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location); ;
+                    string folderPath = Path.Combine(folder, FolderPath);
+                    if (!Directory.Exists(folderPath))
+                    {
+                        Directory.CreateDirectory(folderPath);
+                    }
+                    DateTime dt = DateTime.UtcNow;
+                    string path = Path.Combine(folderPath, dt.ToString().Replace('.', '_').Replace(':', '_').Replace(' ', '_'));
+                    path += dt.Millisecond.ToString();
                     Bitmap bmp = new Bitmap((int)temp.source_images[0].GetUpperBound(1) + 1, (int)temp.source_images[0].GetUpperBound(0) + 1, (int)(temp.source_images[0].GetUpperBound(1) + 1) * 3, PixelFormat.Format24bppRgb, Marshal.UnsafeAddrOfPinnedArrayElement(temp.source_images[0], 0));
                     bmp.Save(path + ".jpg");
                     temp.Save(path);
