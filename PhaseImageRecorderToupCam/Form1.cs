@@ -362,11 +362,17 @@ namespace PhaseImageRecorderToupCam
                 else
                 {
                     checkBox1.Enabled = true;
+                    checkBox2.Enabled = true;
+                    checkBox4.Enabled = true;
+                    checkBox5.Enabled = true;
+                    checkBox6.Enabled = true;
                     trackBar1.Enabled = true;
                     trackBar2.Enabled = true;
                     trackBar3.Enabled = true;
                     comboBox1.Enabled = true;
                     button2.Enabled = true;
+                    radioButton1.Enabled = true;
+                    radioButton2.Enabled = true;
                    // button3.Enabled = true;
                     button2.ContextMenuStrip = null;
                     InitSnapContextMenuAndExpoTimeRange();
@@ -736,7 +742,22 @@ namespace PhaseImageRecorderToupCam
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
-
+            if (checkBox2.Checked)
+            {
+                numericUpDown2.Enabled = true;
+                numericUpDown2.Update();
+                checkBox3.Enabled = true;
+                checkBox3.Update();
+            }
+            else
+            {
+                numericUpDown2.Enabled = false;
+                numericUpDown2.Update();
+                checkBox3.Checked = false;
+                checkBox3.Enabled = false;
+                checkBox3.Update();
+            }
+            
         }
 
         private void checkBox3_CheckedChanged(object sender, EventArgs e)
@@ -851,6 +872,16 @@ namespace PhaseImageRecorderToupCam
         }
 
         private void label10_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void numericUpDown2_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox3_CheckedChanged_1(object sender, EventArgs e)
         {
 
         }
