@@ -13,6 +13,7 @@ namespace RecorderCore.Images
         bool unwrap = true;
         public int summDepth = 0;
         public bool smooth = false;
+        
         public HilbertPhaseImage2(byte[,,] image, int level, double Wavelength,bool unwrap=true,bool smooth=false) :
             base(image,level,Wavelength)
         {
@@ -59,6 +60,7 @@ namespace RecorderCore.Images
         }
         public override void Calc()
         {
+            if (!calc) return;
             int size0 = images[0].GetUpperBound(0) + 1;
             int size1 = images[0].GetUpperBound(1) + 1;
             Complex[,] test_image = Complex.CreateComplexArray(images[0]);
@@ -71,6 +73,7 @@ namespace RecorderCore.Images
     }
     public class PhaseImage2
     {
+        public bool calc = false;
         private object locker = new object();
         public List<byte[,,]> source_images=new List<byte[,,]>();
         public List<byte[,,]> _images = new List<byte[,,]>();
@@ -138,10 +141,18 @@ namespace RecorderCore.Images
                     {
                         for (int j = 0; j < size1; j++)
                         {
-                            byte val = (byte)(254 * (image[i, j] - min) / (max - min));
-                            nImage[i, j, 0] = val;
-                            nImage[i, j, 1] = val;
-                            nImage[i, j, 2] = val;
+                            if (!calc)
+                            {
+                                byte val = (byte)(254 * (image[i, j] - min) / (max - min));
+                                nImage[i, j, level] = val;
+                            }
+                            else
+                            {
+                                byte val = (byte)(254 * (image[i, j] - min) / (max - min));
+                                nImage[i, j, 0] = val;
+                                nImage[i, j, 1] = val;
+                                nImage[i, j, 2] = val;
+                            }
                         }
                     });
                 }

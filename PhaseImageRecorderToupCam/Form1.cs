@@ -147,17 +147,11 @@ namespace PhaseImageRecorderToupCam
                             arr[y + h - 2, j, 1] = 255;
 
                         }
-
-                        //BitmapData bmpdata = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.WriteOnly, bmp_.PixelFormat);
-                        //bmpdata.Scan0 = Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0);
-                        // bmp_.UnlockBits(bmpdata);
-
                         pictureBox1.Image = new Bitmap((int)nWidth, (int)nHeight, (int)nWidth * 3, PixelFormat.Format24bppRgb,
                            Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0));
                         pictureBox1.Update();
                         label5.Text = Math.Round(fPSCounter.Count(), 2).ToString();
                         label5.Update();
-                        //isFrameSetted = true;
                     }
                     else if (radioButton1.Checked)
                     {
@@ -183,53 +177,38 @@ namespace PhaseImageRecorderToupCam
                                     arr[i - y, j - x, 2] = arr1[i, j, 2];
                                 }
                             }
-                            if (checkBox2.Checked)
+                            //if (checkBox2.Checked)
+                            //{
+                            calculator.PutImage(arr,
+                                level: (int)numericUpDown2.Value,
+                                unwrap: checkBox3.Checked,
+                                wavelength: settings.wavelength,
+                                smooth: checkBox5.Checked,
+                                summDepth: checkBox6.Checked ? (int)numericUpDown1.Value : 0,
+                                calc:checkBox2.Checked); 
+                            var buff = calculator.GetImage();
+                            if (buff != null) hpi2 = buff;
+                            if (hpi2 != null)
                             {
-                                calculator.PutImage(arr,
-                                    level: (int)numericUpDown2.Value,
-                                    unwrap: checkBox3.Checked,
-                                    wavelength: settings.wavelength,
-                                    smooth: checkBox5.Checked,
-                                    summDepth: checkBox6.Checked ? (int)numericUpDown1.Value : 0); 
-                                var buff = calculator.GetImage();
-                                if (buff != null) hpi2 = buff;
-                                if (hpi2 != null)
-                                {
-                                    arr = hpi2._images[0];
-                                    pictureBox1.Image = new Bitmap((int)w, (int)h, (int)w * 3, PixelFormat.Format24bppRgb,
-                                        Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0));
-                                    pictureBox1.Update();
-                                    label5.Text = Math.Round(fPSCounter.Count(), 2).ToString();
-                                    label5.Update();
-                                }
-                            }
-                            else
-                            {
+                                arr = hpi2._images[0];
                                 pictureBox1.Image = new Bitmap((int)w, (int)h, (int)w * 3, PixelFormat.Format24bppRgb,
                                     Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0));
                                 pictureBox1.Update();
                                 label5.Text = Math.Round(fPSCounter.Count(), 2).ToString();
                                 label5.Update();
                             }
-
-
-
-                            //  BitmapData bmpdata = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.WriteOnly, bmp_.PixelFormat);
-                            //bmpdata.Scan0= Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0);
-                            //Marshal.Copy(arr, 0, bmpdata.Scan0, bmp_.Height * bmp_.Width * 3);
-                            // bmp_.UnlockBits(bmpdata);
+                            //}
+                            //else
+                            //{
+                            //    pictureBox1.Image = new Bitmap((int)w, (int)h, (int)w * 3, PixelFormat.Format24bppRgb,
+                            //        Marshal.UnsafeAddrOfPinnedArrayElement(arr, 0));
+                            //    pictureBox1.Update();
+                            //    label5.Text = Math.Round(fPSCounter.Count(), 2).ToString();
+                            //    label5.Update();
+                            //}
                         }
                         else
                         {
-                            /*
-                            BitmapData bmpdata = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.WriteOnly, bmp_.PixelFormat);
-                            toupcam_.PullImage(bmpdata.Scan0, 24, out nWidth, out nHeight);
-                            bmp_.UnlockBits(bmpdata);
-                            pictureBox1.Image = bmp_;
-                            pictureBox1.Invalidate();
-
-                            */
-
                             byte[,,] arr1 = new byte[bmp_.Height, bmp_.Width, 3];
                             IntPtr pointer = Marshal.UnsafeAddrOfPinnedArrayElement(arr1, 0);
                             toupcam_.PullImage(pointer, 24, out nWidth, out nHeight);

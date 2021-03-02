@@ -152,7 +152,7 @@
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(10, 682);
+            this.label4.Location = new System.Drawing.Point(10, 669);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(29, 15);
             this.label4.TabIndex = 13;
@@ -162,7 +162,7 @@
             // 
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(38, 682);
+            this.label5.Location = new System.Drawing.Point(38, 669);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(13, 15);
             this.label5.TabIndex = 14;
@@ -395,7 +395,6 @@
             this.trackBar2.Size = new System.Drawing.Size(193, 45);
             this.trackBar2.TabIndex = 35;
             this.trackBar2.TickStyle = System.Windows.Forms.TickStyle.None;
-            //this.trackBar2.Scroll += new System.EventHandler(this.trackBar2_Scroll_1);
             this.trackBar2.ValueChanged += new System.EventHandler(this.OnGainValueChange);
             // 
             // label2

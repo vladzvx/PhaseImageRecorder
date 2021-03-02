@@ -159,10 +159,11 @@ namespace RecorderCore
             }
         }
 
-        public void PutImage(byte[,,] image, int level = 2, double wavelength = 632.8, bool unwrap = false, int summDepth = 0, bool smooth = false)
+        public void PutImage(byte[,,] image, int level = 2, double wavelength = 632.8, bool unwrap = false, int summDepth = 0, bool smooth = false, bool calc=false)
         {
             HilbertPhaseImage2 hpi = new HilbertPhaseImage2(image, level, wavelength, unwrap, smooth);
             hpi.summDepth = summDepth;
+            hpi.calc = calc;
             InputQueue.Enqueue(hpi);
         }
         public HilbertPhaseImage2 GetImage()
