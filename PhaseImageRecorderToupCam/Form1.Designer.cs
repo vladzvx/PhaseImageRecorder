@@ -395,7 +395,8 @@
             this.trackBar2.Size = new System.Drawing.Size(193, 45);
             this.trackBar2.TabIndex = 35;
             this.trackBar2.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.trackBar2.Scroll += new System.EventHandler(this.trackBar2_Scroll_1);
+            //this.trackBar2.Scroll += new System.EventHandler(this.trackBar2_Scroll_1);
+            this.trackBar2.ValueChanged += new System.EventHandler(this.OnGainValueChange);
             // 
             // label2
             // 
@@ -416,6 +417,7 @@
             this.trackBar3.Size = new System.Drawing.Size(193, 45);
             this.trackBar3.TabIndex = 38;
             this.trackBar3.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.trackBar3.ValueChanged += new System.EventHandler(this.OnSaturationValueChange);
             // 
             // label3
             // 
