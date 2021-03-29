@@ -71,9 +71,11 @@ namespace RecorderCore.Images
             images[0] = Tools.CalculatePhaseImageByHilbert(test_image);
         }
     }
+
     public class PhaseImage2
     {
         public bool calc = false;
+        public bool del_trend = false;
         private object locker = new object();
         public List<byte[,,]> source_images=new List<byte[,,]>();
         public List<byte[,,]> _images = new List<byte[,,]>();
@@ -118,43 +120,31 @@ namespace RecorderCore.Images
                 _images = new List<byte[,,]>();
                 foreach (double[,] image in images)
                 {
-                    double max = 0;
-                    double min = 0;
                     int size0 = image.GetUpperBound(0) + 1;
                     int size1 = image.GetUpperBound(1) + 1;
 
-                    for (int i = 0; i < size0; i++)
-                    {
-                        for (int j = 0; j < size1; j++)
-                        {
-                            image[i, j] = Math.Round(image[i, j] / Math.PI * Wavelength, 0);
-                            double val1 = image[i, j];
-                            if (val1 < min) min = val1;
-                            if (val1 > max) max = val1;
+                    double max = ImageSource.maxParallel(image);
+                    double min = ImageSource.minParallel(image);
 
-                        }
-                    }
-
-                    byte[,,] nImage = new byte[size0, size1,3];
-                    _images.Add(nImage);
-                    Parallel.For(0, size0 , (i) =>
+                    if (this.calc)
                     {
-                        for (int j = 0; j < size1; j++)
+                        byte[,,] nImage = new byte[size0, size1, 3];
+                        _images.Add(nImage);
+                        Parallel.For(0, size0, (i) =>
                         {
-                            if (!calc)
+                            for (int j = 0; j < size1; j++)
                             {
                                 byte val = (byte)(254 * (image[i, j] - min) / (max - min));
                                 nImage[i, j, level] = val;
                             }
-                            else
-                            {
-                                byte val = (byte)(254 * (image[i, j] - min) / (max - min));
-                                nImage[i, j, 0] = val;
-                                nImage[i, j, 1] = val;
-                                nImage[i, j, 2] = val;
-                            }
-                        }
-                    });
+                        });
+                    }
+                    else
+                    {
+                        byte[,,] nImage = ColorConverter.ConvertTluckParallel(image);
+                        _images.Add(nImage);
+                    }
+
                 }
             }
 
@@ -172,6 +162,17 @@ namespace RecorderCore.Images
             {
                 unwrapper.UnwrapParallel(image, out var t);
             }
+            DelTrend();
         }
+
+        public virtual void DelTrend()
+        {
+            if(del_trend)
+                for (int i=0;i< images.Count; i++)
+                {
+                    images[i] = ImageSource.DelTrend(images[i]);
+                }
+        }
+
     }
 }

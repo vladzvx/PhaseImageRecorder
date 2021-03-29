@@ -15,8 +15,8 @@ namespace SmoothTests
         [TestMethod]
         public void Test1()
         {
-            double[,] test1 = ImageSource.GetPlane(1024, 1024, 10);
-            double[,] test2 = ImageSource.GetPlane(1024, 1024,new point() {x=100,y=100,z = test1[100, 100] }, new point() { x = 100, y = 900, z = test1[100, 900] }, new point() { x = 900, y = 512, z = test1[900, 512] });
+            double[,] test1 = ImageSource.GetPlane(100, 4024, 10);
+            double[,] test2 = ImageSource.GetTrendPlane(test1);
 
             double mean1 = ImageSource.mean(test1);
             double min1 = ImageSource.min(test1);
@@ -27,7 +27,12 @@ namespace SmoothTests
             double max2 = ImageSource.max(test2);
 
 
-            double std = ImageSource.std(test1, test2);
+            double[,] diff = ImageSource.diff(test1, test2);
+            double mean3 = ImageSource.mean(diff);
+
+            double min3 = ImageSource.min(diff);
+            double max3 = ImageSource.max(diff);
+
         }
     }
 

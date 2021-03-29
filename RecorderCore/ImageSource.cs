@@ -132,9 +132,9 @@ namespace RecorderCore
 
         public struct point
         {
-            public int x;
-            public int y;
-            public double z;
+            public int ko;
+            public int k1;
+            public double value;
         }
         public static double[,] GetPlane(int size0, int size1, point point0, point point1, point point2)
         {
@@ -143,10 +143,49 @@ namespace RecorderCore
             {
                 for (int x = 0; x < size1; x++) 
                 {
-                    matrix[y, x] = point0.z + ((x - point0.x) * (point1.z - point0.z) * (point2.y - point0.y) + (y - point0.y) * (point1.x - point0.x) * (point2.z - point0.z) - (x - point0.x) * (point1.y - point0.y) * (point2.z - point0.z) - (y - point0.y) * (point1.z - point0.z) * (point2.x - point0.x)) / ((point1.x-point0.x)*(point2.y-point0.y)-(point1.y-point0.y)*(point2.x-point0.x));
+                    //matrix[y, x] =( point0.z + ((x - point0.x) * (point1.z - point0.z) * (point2.y - point0.y) + (y - point0.y) * (point1.x - point0.x) * (point2.z - point0.z) - (x - point0.x) * (point1.y - point0.y) * (point2.z - point0.z) - (y - point0.y) * (point1.z - point0.z) * (point2.x - point0.x)) / ((point1.x-point0.x)*(point2.y-point0.y)-(point1.y-point0.y)*(point2.x-point0.x)));
+
+                    matrix[y, x] = (point0.value + ((x - point0.k1) * (point1.value - point0.value) * (point2.ko - point0.ko) + (y - point0.ko) * (point1.k1 - point0.k1) * (point2.value - point0.value) - (x - point0.k1) * (point1.ko - point0.ko) * (point2.value - point0.value) - (y - point0.ko) * (point1.value - point0.value) * (point2.k1 - point0.k1)) / ((point1.k1 - point0.k1) * (point2.ko - point0.ko) - (point1.ko - point0.ko) * (point2.k1 - point0.k1)));
                 }
             }
             return matrix;
+        }
+
+        public static double[,] GetTrendPlane(double[,] image)
+        {
+
+            int size0 = image.GetUpperBound(0)+1;
+            int size1 = image.GetUpperBound(1)+1;
+            int k1_0 =(int) size1 / 10;
+            int k0_0 =(int) size0 / 10;
+
+            int k1_1 = size1 - (int)size1 / 10;
+            int k0_1 = (int)size0 / 10;
+
+            int k1_2 =  (int)size1 / 2;
+            int k0_2 = size0 - (int)size0 / 10;
+
+
+            point point0 = new point() { ko = k0_0, k1 = k1_0, value = image[k0_0, k1_0] };
+            point point1 = new point() { ko = k0_1, k1 = k1_1, value = image[k0_1, k1_1] };
+            point point2 = new point() { ko = k0_2, k1 = k1_2, value = image[k0_2, k1_2] };
+
+
+            double[,] matrix = new double[size0, size1];
+            for (int y = 0; y < size0; y++)
+            {
+                for (int x = 0; x < size1; x++)
+                {
+                    matrix[y, x] = (point0.value + ((x - point0.k1) * (point1.value - point0.value) * (point2.ko - point0.ko) + (y - point0.ko) * (point1.k1 - point0.k1) * (point2.value - point0.value) - (x - point0.k1) * (point1.ko - point0.ko) * (point2.value - point0.value) - (y - point0.ko) * (point1.value - point0.value) * (point2.k1 - point0.k1)) / ((point1.k1 - point0.k1) * (point2.ko - point0.ko) - (point1.ko - point0.ko) * (point2.k1 - point0.k1)));
+                }
+            }
+            return matrix;
+        }
+
+
+        public static double[,] DelTrend(double[,] image)
+        {
+            return diff(image, GetTrendPlane(image));;
         }
 
         public static void AddPlane(double[,] matrix, int x, int y, double LineNums = 1)
@@ -393,6 +432,43 @@ namespace RecorderCore
                 }
             }
             return minValue;
+        }
+
+
+        public static double minParallel(double[,] matrix)
+        {
+            object locker = new object();
+            double MinValue = matrix[0, 0];
+            int size0 = matrix.GetUpperBound(0) + 1;
+            int size1 = matrix.GetUpperBound(1) + 1;
+            Parallel.For(0, size0, (i) => 
+            {
+                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
+                {
+                    if (matrix[i, j] < MinValue)
+                        lock(locker)
+                            MinValue = matrix[i, j];
+                }
+            });
+            return MinValue;
+        }
+
+        public static double maxParallel(double[,] matrix)
+        {
+            object locker = new object();
+            double MaxValue = matrix[0, 0];
+            int size0 = matrix.GetUpperBound(0) + 1;
+            int size1 = matrix.GetUpperBound(1) + 1;
+            Parallel.For(0, size0, (i) =>
+            {
+                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
+                {
+                    if (matrix[i, j] > MaxValue)
+                        lock (locker)
+                            MaxValue = matrix[i, j];
+                }
+            });
+            return MaxValue;
         }
 
         public double[,] GetPhaseImage(double val=0)

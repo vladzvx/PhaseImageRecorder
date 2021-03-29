@@ -27,7 +27,7 @@ namespace FFT_demo
         Complex[,] fft_image = new Complex[size0, size1];
         private void plot(double[,] image)
         {
-            byte[,,] im = Convert(image);
+            byte[,,] im = RecorderCore.ColorConverter.ConvertTluck(image);
             pictureBox1.Image = new Bitmap(im.GetUpperBound(1) + 1, im.GetUpperBound(0) + 1, 3 * (im.GetUpperBound(1) + 1),
                 System.Drawing.Imaging.PixelFormat.Format24bppRgb, Marshal.UnsafeAddrOfPinnedArrayElement(im, 0));
             pictureBox1.Update();
@@ -44,13 +44,57 @@ namespace FFT_demo
                 for (int j = 0; j < size1; j++)
                 {
                     byte value = (byte)Math.Round(image[i, j] / (max) * 255, 0);
-                    im[i, j, 0] = value;
-                    im[i, j, 1] = value;
-                    im[i, j, 2] = value;
+                    im[i, j, 0] = value;//blue
+                    im[i, j, 1] = value;//green;
+                    im[i, j, 2] = value;//red
                 }
             }
             return im;
         }
+
+
+
+        private byte CustomConvertor(double value)
+        {
+            if (value < 0) return 0;
+            else if (value > 255) return 255;
+            else return (byte)value;
+        }
+        private byte Red(double value)
+        {
+            return CustomConvertor(-370 + 2.5 * value);
+        }
+        private byte Blue(double value)
+        {
+            if (value<50)
+                return CustomConvertor(105 + 3*value);
+            else
+                return CustomConvertor(325 - 1.5 * value);
+        }
+        private byte Green(double value)
+        {
+            return CustomConvertor(-150 + 3 * value);
+        }
+        private byte[,,] ConvertJet(double[,] image)
+        {
+            ImageSource.subtract_min(image);
+            double max = ImageSource.max(image);
+            int size0 = image.GetUpperBound(0) + 1;
+            int size1 = image.GetUpperBound(1) + 1;
+            byte[,,] im = new byte[size0, size1, 3];
+            for (int i = 0; i < size0; i++)
+            {
+                for (int j = 0; j < size1; j++)
+                {
+                    double value = Math.Round(image[i, j] / (max) * 255, 0);
+                    im[i, j, 0] = Blue(value);//blue
+                    im[i, j, 1] = Green(value);//green;
+                    im[i, j, 2] = Red(value);//red;
+                }
+            }
+            return im;
+        }
+
 
 
         public Form1()
@@ -189,6 +233,34 @@ namespace FFT_demo
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            plot(ImageSource.GetPlane(256, 256, 10));
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            double[,] test1 = ImageSource.GetPlane(256, 256, 10);
+            //double[,] test2 = ImageSource.GetPlane(1024, 1024,
+            //    new ImageSource.point() { x = 100, y = 100, z = test1[100, 100] },
+            //    new ImageSource.point() { x = 100, y = 900, z = test1[100, 900] },
+            //    new ImageSource.point() { x = 900, y = 512, z = test1[900, 512] });
+            double[,] test2 = ImageSource.GetTrendPlane(test1);
+            plot(test2);
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            double[,] test1 = ImageSource.GetPlane(256, 256, 10);
+            double[,] test2 = ImageSource.GetTrendPlane(test1);
+            //double[,] test2 = ImageSource.GetPlane(1024, 1024,
+            //    new ImageSource.point() { x = 100, y = 100, z = test1[100, 100] },
+            //    new ImageSource.point() { x = 100, y = 900, z = test1[100, 900] },
+            //    new ImageSource.point() { x = 900, y = 512, z = test1[900, 512] });
+
+            plot(ImageSource.diff(test1, test2));
         }
     }
 }
