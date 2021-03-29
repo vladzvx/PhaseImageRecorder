@@ -37,7 +37,7 @@ namespace PhaseImageRecorderToupCam
         private DelegateEvent ev_ = null;
         private FPSCounter fPSCounter = new FPSCounter(30);
         private System.Timers.Timer dbsync = new System.Timers.Timer(10000);
-        
+        private byte[,,] image;
         private void UpdateSettings()
         {
             if (settings == null)
@@ -116,6 +116,7 @@ namespace PhaseImageRecorderToupCam
             {
                 if (bmp_ != null)
                 {
+                    if (this.tabControl1.SelectedIndex != 0) return;
                     uint nWidth = 0, nHeight = 0;
                     if (radioButton2.Checked)
                     {
@@ -886,6 +887,314 @@ namespace PhaseImageRecorderToupCam
         private void trackBar3_Scroll(object sender, EventArgs e)
         {
 
+        }
+
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabPage1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox5_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button3_Click_2(object sender, EventArgs e)
+        {
+            var filePath = string.Empty;
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.InitialDirectory = Directory.Exists("c:\\") ? "c:\\images" : "c:\\";
+                openFileDialog.Filter = "Image Files(*.BMP;*.JPG;*.PNG)|*.BMP;*.JPG;*.PNG|All files (*.*)|*.*";
+                openFileDialog.FilterIndex = 1;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    filePath = openFileDialog.FileName;
+                    bmp_ = new Bitmap(filePath);
+                    BitmapData bmd = bmp_.LockBits(new Rectangle(0, 0, bmp_.Width, bmp_.Height), ImageLockMode.ReadOnly, bmp_.PixelFormat);
+                    byte[] bytedata = new byte[bmp_.Height * bmp_.Width * 3];
+                    IntPtr ptr = bmd.Scan0;
+                    Marshal.Copy(ptr, bytedata, 0, bmp_.Height * bmp_.Width * 3);
+                    image = new byte[bmp_.Height , bmp_.Width , 3];
+                    IntPtr pointer = Marshal.UnsafeAddrOfPinnedArrayElement(image, 0);
+                    Marshal.Copy(bytedata,0, pointer, bmp_.Height * bmp_.Width * 3);
+                    hpi2 = new HilbertPhaseImage2(image, (int)numericUpDown3.Value, settings!=null? settings.wavelength:632.8, checkBox10.Checked)
+                    {
+                        calc = checkBox11.Checked,
+                        del_trend = checkBox9.Checked,
+                        smooth = checkBox8.Checked,
+                    };
+                    pictureBox1.Image = new Bitmap(bmp_.Width, bmp_.Height, bmp_.Width * 3, PixelFormat.Format24bppRgb, pointer);
+                    pictureBox1.Update();
+
+                }
+            }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox8_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox13.Checked) execute();
+        }
+
+        private void checkBox11_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox13.Checked) execute();
+        }
+
+        private void numericUpDown3_ValueChanged(object sender, EventArgs e)
+        {
+            if (checkBox13.Checked) execute();
+        }
+
+        private void checkBox9_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox13.Checked) execute();
+        }
+
+        private void checkBox10_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox13.Checked) execute();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+           if (!checkBox13.Checked) execute();
+        }
+
+        private void execute()
+        {
+            set_defaults();
+            if (radioButton4.Checked)
+            {
+                int x = trackBar3.Value;
+                int y = trackBar6.Value;
+                int w = int.Parse(comboBox6.Text);
+                int h = int.Parse(comboBox5.Text); ;
+
+                byte[,,] arr = new byte[h, w, 3];
+
+                for (int i = y; i < h + y; i++)
+                {
+                    for (int j = x; j < w + x; j++)
+                    {
+                        arr[i - y, j - x, 0] = image[i, j, 0];
+                        arr[i - y, j - x, 1] = image[i, j, 1];
+                        arr[i - y, j - x, 2] = image[i, j, 2];
+                    }
+                }
+                hpi2 = new HilbertPhaseImage2(arr, (int)numericUpDown3.Value, settings != null ? settings.wavelength : 632.8, checkBox10.Checked)
+                {
+                    calc = checkBox11.Checked,
+                    del_trend = checkBox9.Checked,
+                    smooth = checkBox8.Checked,
+                };
+            }
+            else
+            {
+                hpi2 = new HilbertPhaseImage2(image, (int)numericUpDown3.Value, settings != null ? settings.wavelength : 632.8, checkBox10.Checked)
+                {
+                    calc = checkBox11.Checked,
+                    del_trend = checkBox9.Checked,
+                    smooth = checkBox8.Checked,
+                };
+            }
+
+            hpi2.Convert();
+            hpi2.Calc();
+            hpi2.Unwrapp();
+            hpi2.ReverseConvert();
+            framing();
+
+        }
+
+        private void framing()
+        {
+            set_defaults();
+            byte[,,] image_copy = (byte[,,])hpi2._images[0].Clone();
+            if (radioButton3.Checked)
+            {
+                int x = trackBar3.Value;
+                int y = trackBar6.Value;
+                int w = int.Parse(comboBox6.Text);
+                int h = int.Parse(comboBox5.Text); ;
+                //Marshal.Copy(pointer, arr2, 0, arr.Length);
+                for (int i = y; i < h + y; i++)
+                {
+                    image_copy[i, x, 1] = 255;
+                    image_copy[i, x + 1, 1] = 255;
+                    image_copy[i, x + 2, 1] = 255;
+                    image_copy[i, x + w, 1] = 255;
+                    image_copy[i, x + w - 1, 1] = 255;
+                    image_copy[i, x + w - 2, 1] = 255;
+                }
+                for (int j = x; j < w + x; j++)
+                {
+                    image_copy[y, j, 1] = 255;
+                    image_copy[y + 1, j, 1] = 255;
+                    image_copy[y + 2, j, 1] = 255;
+                    image_copy[y + h, j, 1] = 255;
+                    image_copy[y + h - 1, j, 1] = 255;
+                    image_copy[y + h - 2, j, 1] = 255;
+                }
+            }
+
+            if (radioButton4.Checked)
+            {
+                int x1 = image_copy.GetUpperBound(1) + 1;
+                int y1 = image_copy.GetUpperBound(0) + 1;
+                int l1 = x1 * 3;
+                pictureBox1.Image = new Bitmap(x1, y1, x1 * 3, PixelFormat.Format24bppRgb,
+                    Marshal.UnsafeAddrOfPinnedArrayElement(image_copy, 0));
+            }
+            else
+            {
+                pictureBox1.Image = new Bitmap(bmp_.Width, bmp_.Height, bmp_.Width * 3, PixelFormat.Format24bppRgb,
+                    Marshal.UnsafeAddrOfPinnedArrayElement(image_copy, 0));
+            }
+
+            pictureBox1.Update();
+        }
+        private void checkBox13_CheckedChanged(object sender, EventArgs e)
+        {
+            button4.Enabled = !checkBox13.Checked;
+        }
+
+        private void checkBox12_CheckedChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                trackBar3.Enabled = radioButton3.Checked;
+                trackBar6.Enabled = radioButton3.Checked;
+                comboBox6.Enabled = radioButton3.Checked;
+                comboBox5.Enabled = radioButton3.Checked;
+                
+                if (radioButton3.Checked)
+                {
+                    set_defaults();
+
+                    trackBar3.SetRange(0, image.GetUpperBound(1)- int.Parse(comboBox5.Text));
+                    trackBar3.Update();
+                    trackBar6.SetRange(0, image.GetUpperBound(0) - int.Parse(comboBox6.Text));
+                    trackBar6.Update();
+                }
+                
+            }
+            catch { }
+        }
+
+        private void trackBar3_Scroll_1(object sender, EventArgs e)
+        {
+            framing();
+        }
+
+        private void trackBar6_Scroll(object sender, EventArgs e)
+        {
+            framing();
+        }
+
+        private void comboBox6_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            framing();
+        }
+
+        private void comboBox5_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            framing();
+        }
+
+        private void label13_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label12_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label11_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label15_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox14_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                trackBar3.Enabled = radioButton3.Checked;
+                trackBar6.Enabled = radioButton3.Checked;
+                comboBox6.Enabled = radioButton3.Checked;
+                comboBox5.Enabled = radioButton3.Checked;
+
+                if (radioButton3.Checked)
+                {
+                    if (comboBox6.Text == null || comboBox6.Text == string.Empty)
+                    {
+                        comboBox6.SelectedIndex = 1;
+                        comboBox5.SelectedIndex = 1;
+                        comboBox6.Text = comboBox6.Items[1].ToString();
+                        comboBox5.Text = comboBox6.Items[1].ToString();
+                    }
+
+                    trackBar3.SetRange(0, image.GetUpperBound(1) - int.Parse(comboBox5.Text));
+                    trackBar3.Update();
+                    trackBar6.SetRange(0, image.GetUpperBound(0) - int.Parse(comboBox6.Text));
+                    trackBar6.Update();
+                }
+                framing();
+            }
+            catch { }
+        }
+        private void radioButton5_CheckedChanged(object sender, EventArgs e)
+        {
+            framing();
+        }
+
+        private void radioButton4_CheckedChanged(object sender, EventArgs e)
+        {
+            execute();
+        }
+
+        private void set_defaults()
+        {
+            if (comboBox6.Text == null || comboBox6.Text == string.Empty)
+            {
+                comboBox6.SelectedIndex = 1;
+                comboBox6.Text = comboBox6.Items[1].ToString();
+            }
+
+            if (comboBox5.Text == null || comboBox5.Text == string.Empty)
+            {
+                comboBox5.SelectedIndex = 1;
+                comboBox5.Text = comboBox6.Items[1].ToString();
+            }
         }
     }
 }

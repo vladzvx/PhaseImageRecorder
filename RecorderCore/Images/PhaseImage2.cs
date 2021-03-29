@@ -126,7 +126,7 @@ namespace RecorderCore.Images
                     double max = ImageSource.maxParallel(image);
                     double min = ImageSource.minParallel(image);
 
-                    if (this.calc)
+                    if (!this.calc)
                     {
                         byte[,,] nImage = new byte[size0, size1, 3];
                         _images.Add(nImage);
