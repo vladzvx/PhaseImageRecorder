@@ -550,6 +550,7 @@ namespace PhaseImageRecorderToupCam
                             ev_ = new DelegateEvent(DelegateOnEvent);
                             toupcam_.StartPullModeWithCallback(new ToupTek.ToupCam.DelegateEventCallback(DelegateOnEventCallback));
                         }
+                        calculator.EreaseWorkingQueues();
                         SetLimits(width, height);
                     }
                 }

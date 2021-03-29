@@ -66,9 +66,9 @@ namespace RecorderCore
         }
     }
 
-
     public class HilbertCalculator2
     {
+        private object locker = new object();
         CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
         private ConcurrentQueue<HilbertPhaseImage2> InputQueue = new ConcurrentQueue<HilbertPhaseImage2>();
         private ConcurrentQueue<HilbertPhaseImage2> CalcQueue = new ConcurrentQueue<HilbertPhaseImage2>();
@@ -159,12 +159,26 @@ namespace RecorderCore
             }
         }
 
+        public void EreaseWorkingQueues()
+        {
+            lock (locker)
+            {
+                while (InputQueue.TryDequeue(out var trash)) ;
+                while (CalcQueue.TryDequeue(out var trash)) ;
+                while (UnwrapQueue.TryDequeue(out var trash)) ;
+                while (ReverseConvertQueue.TryDequeue(out var trash)) ;
+                while (ResultQueue.TryDequeue(out var trash)) ;
+            }
+        }
+
         public void PutImage(byte[,,] image, int level = 2, double wavelength = 632.8, bool unwrap = false, int summDepth = 0, bool smooth = false, bool calc=false)
         {
-            HilbertPhaseImage2 hpi = new HilbertPhaseImage2(image, level, wavelength, unwrap, smooth);
-            hpi.summDepth = summDepth;
-            hpi.calc = calc;
-            InputQueue.Enqueue(hpi);
+            lock (locker)
+            {
+                HilbertPhaseImage2 hpi = new HilbertPhaseImage2(image, level, wavelength, unwrap, smooth) {summDepth = summDepth,calc = calc };
+                hpi.summDepth = summDepth;
+                InputQueue.Enqueue(hpi);
+            }
         }
         public HilbertPhaseImage2 GetImage()
         {
