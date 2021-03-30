@@ -293,6 +293,21 @@ namespace RecorderCore
                 }
             }
         }
+
+        public static void del_level(double[,] matrix, double value)
+        {
+            if (value == 0) return;
+            subtract_min(matrix);
+            for (int i = 0; i <= matrix.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j <= matrix.GetUpperBound(1); j++)
+                {
+                    double newValue = matrix[i, j] - value;
+                    matrix[i, j] = newValue>=0? newValue: 0;
+                }
+            }
+        }
+
         public static double sum(double[,] matrix)
         {
             double d = 0;

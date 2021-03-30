@@ -20,6 +20,8 @@ namespace PhaseImageRecorderToupCam
 {
     public partial class Form1 : Form
     {
+        private double subtractiong_value = 0;
+        private System.Timers.Timer recordingTomer = new System.Timers.Timer();
         private object locker = new object();
         private Regex pahtCheckRegex = new Regex(@"^\w:\w+.+$");
         private string FolderPath = "images";
@@ -282,6 +284,7 @@ namespace PhaseImageRecorderToupCam
         }
         private void Form1_Load(object sender, EventArgs e)
         {
+            recordingTomer.Elapsed += RecordingTimerAction;
             button2.Enabled = false;
             // button3.Enabled = false;
             trackBar1.Enabled = false;
@@ -346,7 +349,10 @@ namespace PhaseImageRecorderToupCam
                 }
                 else
                 {
+                    label16.Enabled = true;
+                    textBox1.Enabled = true;
                     checkBox1.Enabled = true;
+                    checkBox12.Enabled = true;
                     checkBox2.Enabled = true;
                     checkBox4.Enabled = true;
                     checkBox5.Enabled = true;
@@ -482,7 +488,6 @@ namespace PhaseImageRecorderToupCam
         {
             if (hpi2!=null)
             {
-                
                 HilbertPhaseImage2 temp = hpi2;
                 Task.Factory.StartNew(() => {
                     string folder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location); ;
@@ -935,6 +940,7 @@ namespace PhaseImageRecorderToupCam
                         calc = checkBox11.Checked,
                         del_trend = checkBox9.Checked,
                         smooth = checkBox8.Checked,
+                        delete_value = subtractiong_value
                     };
                     pictureBox1.Image = new Bitmap(bmp_.Width, bmp_.Height, bmp_.Width * 3, PixelFormat.Format24bppRgb, pointer);
                     pictureBox1.Update();
@@ -1004,6 +1010,7 @@ namespace PhaseImageRecorderToupCam
                     calc = checkBox11.Checked,
                     del_trend = checkBox9.Checked,
                     smooth = checkBox8.Checked,
+                    delete_value = subtractiong_value
                 };
             }
             else
@@ -1013,6 +1020,7 @@ namespace PhaseImageRecorderToupCam
                     calc = checkBox11.Checked,
                     del_trend = checkBox9.Checked,
                     smooth = checkBox8.Checked,
+                    delete_value = subtractiong_value
                 };
             }
 
@@ -1194,6 +1202,47 @@ namespace PhaseImageRecorderToupCam
             {
                 comboBox5.SelectedIndex = 1;
                 comboBox5.Text = comboBox6.Items[1].ToString();
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox12_CheckedChanged_1(object sender, EventArgs e)
+        {
+            if (checkBox12.Checked)
+            {
+                if (double.TryParse(textBox1.Text, out double val))
+                {
+                    recordingTomer.Interval = val*1000;
+                    recordingTomer.Start();
+                }
+            }
+            else recordingTomer.Stop();
+        }
+
+        private void RecordingTimerAction(object sender, System.Timers.ElapsedEventArgs args)
+        {
+            OnSnap(null, null);
+        }
+
+        private void textBox1_TextChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            if (double.TryParse(textBox2.Text,out double val))
+            {
+                subtractiong_value = val;
             }
         }
     }

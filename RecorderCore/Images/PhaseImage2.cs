@@ -74,6 +74,7 @@ namespace RecorderCore.Images
 
     public class PhaseImage2
     {
+        public double delete_value = 0;
         public bool calc = false;
         public bool del_trend = false;
         private object locker = new object();
@@ -171,6 +172,7 @@ namespace RecorderCore.Images
                 for (int i=0;i< images.Count; i++)
                 {
                     images[i] = ImageSource.DelTrend(images[i]);
+                    ImageSource.del_level(images[i], delete_value);
                 }
         }
 
