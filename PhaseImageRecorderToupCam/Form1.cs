@@ -1245,5 +1245,29 @@ namespace PhaseImageRecorderToupCam
                 subtractiong_value = val;
             }
         }
+
+        private void button5_Click_2(object sender, EventArgs e)
+        {
+
+            //var graphic1 = ImageSource.draw(100, 300, null);
+            //pictureBox2.Image = new Bitmap(graphic1.GetUpperBound(1) + 1, graphic1.GetUpperBound(0) + 1, 3 * (graphic1.GetUpperBound(1) + 1),
+            //    System.Drawing.Imaging.PixelFormat.Format24bppRgb, Marshal.UnsafeAddrOfPinnedArrayElement(graphic1, 0));
+            //pictureBox2.Update();
+
+
+
+            //var graphic2 = ImageSource.draw(100, 300, null);
+
+            //pictureBox3.Image = new Bitmap(graphic2.GetUpperBound(1) + 1, graphic2.GetUpperBound(0) + 1, 3 * (graphic2.GetUpperBound(1) + 1),
+            //    System.Drawing.Imaging.PixelFormat.Format24bppRgb, Marshal.UnsafeAddrOfPinnedArrayElement(graphic2, 0));
+            //pictureBox3.Update();
+
+
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

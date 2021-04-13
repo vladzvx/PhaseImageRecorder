@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace PhaseImageRecorder
+namespace PhaseImageRecorder_Old
 {
     partial class Form1
     {

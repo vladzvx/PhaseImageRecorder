@@ -224,6 +224,37 @@ namespace RecorderCore
             }
         }
 
+
+        public static byte[,,] draw(int hight, int width, double[] graphic)
+        {
+            double k = ((double)graphic.Length) / width;
+            double min = graphic.Min();
+            for (int i = 0; i < graphic.Length; i++)
+                graphic[i] -= min;
+
+            double max = graphic.Max();
+            for (int i = 0; i < graphic.Length; i++)
+            {
+                graphic[i] /= max;
+                graphic[i] *= hight;
+            }
+                
+
+            byte[,,] graphic1 = new byte[hight, width, 3];
+
+            for (int i = 0; i < hight; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    graphic1[i, j, 0] = 255;
+                    graphic1[i, j, 1] = 255;
+                    graphic1[i, j, 2] = 255;
+                }
+            }
+
+            return graphic1;
+
+        }
         public static void AddNoise(double[,] matrix, double A)
         {
             Random rnd = new Random();
