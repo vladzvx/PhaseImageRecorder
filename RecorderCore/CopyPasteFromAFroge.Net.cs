@@ -1151,21 +1151,26 @@ namespace RecorderCore
 
         public static void ApplyFilter(Complex[,] image,double[,] filter)
         {
-            int size0 = image.GetUpperBound(0);
-            int size1 = image.GetUpperBound(1);
-            int _size0 = filter.GetUpperBound(0);
-            int _size1 = filter.GetUpperBound(1);
-            if (size0 != _size0 || size1 != _size1) throw new ArgumentException("Uncomp. array sizes!0");
-            for (int i = 0; i <= size0; i++)
+            try
             {
-                for (int j = 0; j <= size1; j++)
+                int size0 = image.GetUpperBound(0);
+                int size1 = image.GetUpperBound(1);
+                int _size0 = filter.GetUpperBound(0);
+                int _size1 = filter.GetUpperBound(1);
+                if (size0 != _size0 || size1 != _size1) throw new ArgumentException("Uncomp. array sizes!0");
+                for (int i = 0; i <= size0; i++)
                 {
-                    Complex value = image[i, j];
-                    value.Re *= filter[i, j];
-                    value.Im *= filter[i, j];
-                    image[i, j] = value;
+                    for (int j = 0; j <= size1; j++)
+                    {
+                        Complex value = image[i, j];
+                        value.Re *= filter[i, j];
+                        value.Im *= filter[i, j];
+                        image[i, j] = value;
+                    }
                 }
             }
+            catch { }
+
         }
 
         /// <summary>

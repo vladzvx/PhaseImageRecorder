@@ -507,6 +507,8 @@ namespace PhaseImageRecorderToupCam
             }
             else
             {
+
+
                 //if (toupcam_ != null)
                 //{
                 //    if (toupcam_.StillResolutionNumber <= 0)
@@ -1268,6 +1270,20 @@ namespace PhaseImageRecorderToupCam
         private void pictureBox2_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void button5_Click_1(object sender, EventArgs e)
+        {
+            string folder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location); ;
+            string folderPath = Path.Combine(folder, FolderPath);
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            DateTime dt = DateTime.UtcNow;
+            string path = Path.Combine(folderPath, dt.ToString().Replace('.', '_').Replace(':', '_').Replace(' ', '_'));
+            path += dt.Millisecond.ToString();
+            hpi2.Save(path);
         }
     }
 }

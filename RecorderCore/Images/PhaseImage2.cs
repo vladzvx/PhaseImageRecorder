@@ -40,7 +40,8 @@ namespace RecorderCore.Images
                     string line = "";
                     for (int j = 0; j < images[0].GetUpperBound(1) + 1; j++)
                     {
-                        line += ((int)images[0][i, j]).ToString() + ";";
+
+                        line += ((int)(images[0][i, j] * Wavelength)).ToString() + (j + 1 != images[0].GetUpperBound(1) + 1 ? ";" : "");
                     }
                     lines.Add(line);
                 }
